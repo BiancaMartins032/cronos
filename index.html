@@ -1,0 +1,623 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#f5f2ec">
+<title>Cronos — História do Mundo</title>
+
+<style>
+:root {
+  --bg: #f5f2ec;
+  --surface: #ffffff;
+  --text: #292b32;
+  --muted: #85838a;
+  --accent: #8066ae;
+  --line: #ded6e9;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: Arial, sans-serif;
+}
+
+header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: rgba(245,242,236,.96);
+  backdrop-filter: blur(12px);
+  padding: 18px 20px;
+  border-bottom: 1px solid #e8e2d9;
+}
+
+.header-inner {
+  max-width: 850px;
+  margin: auto;
+}
+
+.top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.logo {
+  font-family: Georgia, serif;
+  font-size: 29px;
+  letter-spacing: 3px;
+  font-weight: bold;
+}
+
+.subtitle {
+  color: var(--muted);
+  font-size: 10px;
+  letter-spacing: 2px;
+  margin-top: 5px;
+}
+
+.search {
+  width: 100%;
+  margin-top: 17px;
+  padding: 13px 15px;
+  border: 1px solid #e2dce6;
+  border-radius: 12px;
+  background: white;
+  font-size: 14px;
+  outline: none;
+}
+
+.filters {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-top: 12px;
+  scrollbar-width: none;
+}
+
+.filter {
+  border: 1px solid #ddd5e7;
+  background: white;
+  color: #625d69;
+  padding: 8px 13px;
+  border-radius: 20px;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.filter.active {
+  background: var(--accent);
+  color: white;
+  border-color: var(--accent);
+}
+
+main {
+  max-width: 850px;
+  margin: auto;
+  padding: 28px 18px 60px;
+}
+
+.intro {
+  margin-bottom: 28px;
+}
+
+.intro h1 {
+  font-family: Georgia, serif;
+  font-size: 27px;
+  font-weight: normal;
+  margin: 0 0 8px;
+}
+
+.intro p {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.timeline {
+  position: relative;
+}
+
+.day {
+  display: grid;
+  grid-template-columns: 27px 1fr;
+  gap: 12px;
+  margin-bottom: 28px;
+}
+
+.marker {
+  position: relative;
+  display: flex;
+  justify-content: center;
+}
+
+.marker::before {
+  content: "";
+  position: absolute;
+  top: 12px;
+  bottom: -40px;
+  width: 2px;
+  background: var(--line);
+}
+
+.day:last-child .marker::before {
+  display: none;
+}
+
+.dot {
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: var(--accent);
+  border: 3px solid var(--bg);
+  outline: 1px solid var(--accent);
+  z-index: 1;
+  margin-top: 4px;
+}
+
+.date {
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: bold;
+  letter-spacing: .5px;
+  margin-bottom: 11px;
+}
+
+.events {
+  display: grid;
+  gap: 12px;
+}
+
+.event {
+  background: var(--surface);
+  border-radius: 15px;
+  overflow: hidden;
+  cursor: pointer;
+  box-shadow: 0 3px 12px rgba(40,30,50,.045);
+  transition: transform .2s, box-shadow .2s;
+}
+
+.event:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 7px 20px rgba(40,30,50,.09);
+}
+
+.event img {
+  display: block;
+  width: 100%;
+  height: 185px;
+  object-fit: cover;
+  background: #e9e3db;
+}
+
+.event-content {
+  padding: 15px;
+}
+
+.category {
+  color: var(--accent);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: bold;
+}
+
+.event h2 {
+  font-family: Georgia, serif;
+  font-size: 19px;
+  font-weight: normal;
+  margin: 7px 0;
+}
+
+.event p {
+  color: #77747c;
+  font-size: 13px;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.open {
+  color: var(--accent);
+  font-size: 11px;
+  font-weight: bold;
+  text-align: right;
+  margin-top: 13px;
+}
+
+.empty {
+  display: none;
+  text-align: center;
+  padding: 40px 10px;
+  color: var(--muted);
+}
+
+.modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(20,20,25,.65);
+  z-index: 30;
+  overflow-y: auto;
+  padding: 20px;
+}
+
+.modal.open {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.modal-content {
+  width: 100%;
+  max-width: 650px;
+  background: var(--bg);
+  border-radius: 18px;
+  overflow: hidden;
+  margin: auto;
+}
+
+.modal-image {
+  width: 100%;
+  max-height: 330px;
+  object-fit: cover;
+  display: block;
+}
+
+.modal-body {
+  padding: 23px;
+}
+
+.close {
+  float: right;
+  border: 0;
+  background: #e8e1ed;
+  color: var(--text);
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.modal-body h2 {
+  font-family: Georgia, serif;
+  font-size: 27px;
+  font-weight: normal;
+  margin: 12px 0;
+}
+
+.modal-body p {
+  color: #55525b;
+  line-height: 1.8;
+  font-size: 14px;
+}
+
+.detail-label {
+  font-weight: bold;
+  margin-top: 24px;
+}
+
+@media(min-width:650px) {
+  main {
+    padding-top: 38px;
+  }
+
+  .event img {
+    height: 230px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="top">
+      <div>
+        <div class="logo">CRONOS</div>
+        <div class="subtitle">A HISTÓRIA DO MUNDO</div>
+      </div>
+      <span>⌛</span>
+    </div>
+
+    <input
+      id="search"
+      class="search"
+      placeholder="Pesquisar acontecimentos, pessoas..."
+    >
+
+    <div class="filters" id="filters">
+      <button class="filter active" data-category="Todos">Todos</button>
+      <button class="filter" data-category="Política">Política</button>
+      <button class="filter" data-category="Ciência">Ciência</button>
+      <button class="filter" data-category="Guerras">Guerras</button>
+      <button class="filter" data-category="Religião">Religião</button>
+      <button class="filter" data-category="Cultura">Cultura</button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section class="intro">
+    <h1>Uma viagem pela história</h1>
+    <p>Explore acontecimentos que transformaram o mundo, desde as primeiras civilizações até os dias atuais.</p>
+  </section>
+
+  <section class="timeline" id="timeline"></section>
+  <div class="empty" id="empty">Nenhum acontecimento encontrado.</div>
+</main>
+
+<div class="modal" id="modal">
+  <div class="modal-content">
+    <img class="modal-image" id="modalImage" alt="">
+    <div class="modal-body">
+      <button class="close" id="closeModal">×</button>
+      <div class="category" id="modalCategory"></div>
+      <h2 id="modalTitle"></h2>
+      <div class="date" id="modalDate"></div>
+
+      <div class="detail-label">O que aconteceu?</div>
+      <p id="modalDescription"></p>
+
+      <div class="detail-label">Importância histórica</div>
+      <p id="modalImportance"></p>
+
+      <div class="detail-label">Contexto histórico</div>
+      <p id="modalContext"></p>
+
+      <div class="detail-label">Local</div>
+      <p id="modalLocation"></p>
+    </div>
+  </div>
+</div>
+
+<script>
+const events = [
+  {
+    date: "c. 3500 a.C.",
+    sort: -3500,
+    title: "Desenvolvimento das primeiras cidades de Uruk",
+    category: "Cultura",
+    location: "Mesopotâmia, atual Iraque",
+    image: "https://commons.wikimedia.org/wiki/Special:FilePath/White_Temple_and_ziggurat,_Uruk.jpg",
+    summary: "Uruk tornou-se um dos primeiros grandes centros urbanos da humanidade.",
+    description: "Na região da Mesopotâmia, a cidade de Uruk cresceu e desenvolveu estruturas administrativas, templos, comércio e organização social complexa.",
+    importance: "O desenvolvimento de Uruk representa uma transformação fundamental na história da urbanização e da organização das sociedades humanas.",
+    context: "O crescimento agrícola, a irrigação e a especialização do trabalho permitiram o surgimento de grandes centros populacionais."
+  },
+  {
+    date: "c. 3400–3200 a.C.",
+    sort: -3300,
+    title: "Desenvolvimento da escrita cuneiforme",
+    category: "Cultura",
+    location: "Mesopotâmia",
+    image: "https://commons.wikimedia.org/wiki/Special:FilePath/Cuneiform_script2.jpg",
+    summary: "Surgimento dos primeiros sistemas de escrita conhecidos.",
+    description: "Os habitantes da Mesopotâmia desenvolveram sistemas de registro usando sinais gravados em tabuletas de argila. Esses registros estavam inicialmente ligados à administração e à contabilidade.",
+    importance: "A escrita possibilitou registrar informações, administrar cidades e transmitir conhecimentos entre gerações.",
+    context: "O crescimento das cidades e das atividades comerciais exigia métodos mais eficientes de controle e registro."
+  },
+  {
+    date: "c. 3100 a.C.",
+    sort: -3100,
+    title: "Unificação do Egito Antigo",
+    category: "Política",
+    location: "Vale do Nilo, Egito",
+    image: "https://commons.wikimedia.org/wiki/Special:FilePath/Narmer_Palette.jpg",
+    summary: "Consolidação de um Estado unificado no vale do Nilo.",
+    description: "O Alto e o Baixo Egito foram unificados em um processo tradicionalmente associado ao governante Narmer.",
+    importance: "A unificação estabeleceu as bases do Estado faraônico e de uma civilização que influenciaria profundamente a história do Mediterrâneo e do nordeste africano.",
+    context: "Comunidades agrícolas do vale do Nilo desenvolveram estruturas políticas e administrativas progressivamente mais complexas."
+  },
+  {
+    date: "c. 2600 a.C.",
+    sort: -2600,
+    title: "Construção das grandes pirâmides de Gizé",
+    category: "Cultura",
+    location: "Egito",
+    image: "https://commons.wikimedia.org/wiki/Special:FilePath/Giza-pyramids.JPG",
+    summary: "Construção de monumentos funerários monumentais para os faraós.",
+    description: "Durante o Reino Antigo do Egito, foram construídas as pirâmides de Quéops, Quéfren e Miquerinos, em Gizé.",
+    importance: "As pirâmides demonstram a capacidade de organização administrativa, técnica e econômica da sociedade egípcia.",
+    context: "O poder centralizado dos faraós permitia mobilizar trabalhadores, recursos e conhecimentos especializados."
+  },
+  {
+    date: "c. 1754 a.C.",
+    sort: -1754,
+    title: "Código de Hamurábi",
+    category: "Política",
+    location: "Babilônia, Mesopotâmia",
+    image: "https://commons.wikimedia.org/wiki/Special:FilePath/Code-de-Hammurabi-1.jpg",
+    summary: "Registro de um dos mais conhecidos conjuntos de leis da Antiguidade.",
+    description: "O rei Hamurábi da Babilônia promoveu um conjunto de decisões jurídicas inscritas em uma estela de pedra.",
+    importance: "O código é uma fonte fundamental para estudar justiça, sociedade, propriedade e autoridade política na antiga Mesopotâmia.",
+    context: "A Babilônia consolidava seu poder político sobre diferentes cidades e populações da região."
+  },
+  {
+    date: "776 a.C.",
+    sort: -776,
+    title: "Primeiros Jogos Olímpicos registrados",
+    category: "Cultura",
+    location: "Olímpia, Grécia",
+    image: "https://commons.wikimedia.org/wiki/Special:FilePath/Olympia-Greece.jpg",
+    summary: "Primeira edição tradicionalmente registrada dos Jogos Olímpicos antigos.",
+    description: "Os jogos eram realizados em Olímpia, na Grécia, como parte de festivais religiosos dedicados a Zeus.",
+    importance: "Os Jogos Olímpicos tornaram-se uma das tradições culturais mais duradouras do mundo antigo.",
+    context: "As competições faziam parte da vida religiosa e social das cidades gregas."
+  },
+  {
+    date: "753 a.C.",
+    sort: -753,
+    title: "Fundação lendária de Roma",
+    category: "Política",
+    location: "Península Itálica",
+    image: "https://commons.wikimedia.org/wiki/Special:FilePath/Capitoline_she-wolf_Musei_Capitolini.jpg",
+    summary: "Data tradicionalmente associada à fundação de Roma.",
+    description: "Segundo a tradição romana, Rômulo fundou Roma após o episódio lendário envolvendo ele e seu irmão Remo.",
+    importance: "Roma se tornaria uma das cidades mais influentes da história, dando origem a uma república e posteriormente a um vasto império.",
+    context: "A arqueologia indica que a região já era ocupada por comunidades antes da data tradicional de fundação."
+  },
+  {
+    date: "27 a.C.",
+    sort: -27,
+    title: "Início do Império Romano",
+    category: "Política",
+    location: "Roma, atual Itália",
+    image: "https://commons.wikimedia.org/wiki/Special:FilePath/Augustus_of_Prima_Porta.jpg",
+    summary: "Otávio recebe o título de Augusto e inaugura o regime imperial.",
+    description: "Após as guerras civis romanas, Otávio consolidou seu poder e recebeu o título de Augusto do Senado.",
+    importance: "O novo regime transformou a estrutura política romana e iniciou um período de enorme expansão e influência cultural.",
+    context: "A República Romana havia enfrentado décadas de disputas políticas e conflitos militares."
+  },
+  {
+    date: "476 d.C.",
+    sort: 476,
+    title: "Queda do Império Romano do Ocidente",
+    category: "Política",
+    location: "Ravena, atual Itália",
+    image: "https://commons.wikimedia.org/wiki/Special:FilePath/Romulus_Augustulus.jpg",
+    summary: "Deposição do último imperador romano do Ocidente.",
+    description: "Odoacro depôs Rômulo Augústulo, acontecimento tradicionalmente utilizado como marco do fim do Império Romano do Ocidente.",
+    importance: "O episódio simboliza uma grande transformação política na Europa ocidental e é frequentemente usado como referência para o fim da Antiguidade.",
+    context: "O império já estava enfraquecido por crises políticas, econômicas e militares."
+  }
+];
+
+let activeCategory = "Todos";
+
+function render() {
+  const timeline = document.getElementById("timeline");
+  const query = document.getElementById("search").value.toLowerCase();
+
+  const filtered = events
+    .filter(e => activeCategory === "Todos" || e.category === activeCategory)
+    .filter(e => (
+      e.title + " " + e.summary + " " + e.location + " " + e.category
+    ).toLowerCase().includes(query))
+    .sort((a,b) => a.sort - b.sort);
+
+  const groups = new Map();
+
+  filtered.forEach(event => {
+    if (!groups.has(event.date)) groups.set(event.date, []);
+    groups.get(event.date).push(event);
+  });
+
+  timeline.innerHTML = "";
+
+  groups.forEach((items, date) => {
+    const day = document.createElement("div");
+    day.className = "day";
+
+    const marker = document.createElement("div");
+    marker.className = "marker";
+    marker.innerHTML = '<div class="dot"></div>';
+
+    const content = document.createElement("div");
+
+    const dateElement = document.createElement("div");
+    dateElement.className = "date";
+    dateElement.textContent = date;
+
+    const cards = document.createElement("div");
+    cards.className = "events";
+
+    items.forEach(event => {
+      const card = document.createElement("article");
+      card.className = "event";
+
+      const img = document.createElement("img");
+      img.src = event.image;
+      img.alt = event.title;
+      img.loading = "lazy";
+
+      const body = document.createElement("div");
+      body.className = "event-content";
+
+      const category = document.createElement("div");
+      category.className = "category";
+      category.textContent = event.category;
+
+      const title = document.createElement("h2");
+      title.textContent = event.title;
+
+      const summary = document.createElement("p");
+      summary.textContent = event.summary;
+
+      const open = document.createElement("div");
+      open.className = "open";
+      open.textContent = "VER DETALHES →";
+
+      body.append(category, title, summary, open);
+      card.append(img, body);
+      card.addEventListener("click", () => openEvent(event));
+      cards.appendChild(card);
+    });
+
+    content.append(dateElement, cards);
+    day.append(marker, content);
+    timeline.appendChild(day);
+  });
+
+  document.getElementById("empty").style.display =
+    filtered.length ? "none" : "block";
+}
+
+function openEvent(event) {
+  document.getElementById("modalImage").src = event.image;
+  document.getElementById("modalImage").alt = event.title;
+  document.getElementById("modalCategory").textContent = event.category;
+  document.getElementById("modalTitle").textContent = event.title;
+  document.getElementById("modalDate").textContent = event.date;
+  document.getElementById("modalDescription").textContent = event.description;
+  document.getElementById("modalImportance").textContent = event.importance;
+  document.getElementById("modalContext").textContent = event.context;
+  document.getElementById("modalLocation").textContent = event.location;
+
+  document.getElementById("modal").classList.add("open");
+  document.body.style.overflow = "hidden";
+}
+
+function closeModal() {
+  document.getElementById("modal").classList.remove("open");
+  document.body.style.overflow = "";
+}
+
+document.getElementById("search").addEventListener("input", render);
+
+document.querySelectorAll(".filter").forEach(button => {
+  button.addEventListener("click", () => {
+    activeCategory = button.dataset.category;
+
+    document.querySelectorAll(".filter").forEach(b =>
+      b.classList.remove("active")
+    );
+
+    button.classList.add("active");
+    render();
+  });
+});
+
+document.getElementById("closeModal").addEventListener("click", closeModal);
+
+document.getElementById("modal").addEventListener("click", e => {
+  if (e.target.id === "modal") closeModal();
+});
+
+document.addEventListener("keydown", e => {
+  if (e.key === "Escape") closeModal();
+});
+
+render();
+</script>
+
+</body>
+</html>
