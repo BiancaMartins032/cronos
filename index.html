@@ -121,63 +121,87 @@ main {
   line-height: 1.5;
 }
 
+
 .timeline {
   position: relative;
+  max-width: 1050px;
+  margin: auto;
 }
 
-.day {
-  display: grid;
-  grid-template-columns: 27px 1fr;
-  gap: 12px;
-  margin-bottom: 28px;
-}
-
-.marker {
-  position: relative;
-  display: flex;
-  justify-content: center;
-}
-
-.marker::before {
+.timeline::before {
   content: "";
   position: absolute;
-  top: 12px;
-  bottom: -40px;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
   width: 2px;
   background: var(--line);
 }
 
-.day:last-child .marker::before {
-  display: none;
+.day {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 150px minmax(0, 1fr);
+  gap: 16px;
+  align-items: center;
+  margin-bottom: 30px;
+  position: relative;
+}
+
+.side {
+  min-width: 0;
+  display: flex;
+}
+
+.side.left {
+  justify-content: flex-end;
+}
+
+.side.right {
+  justify-content: flex-start;
+}
+
+.axis {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 110px;
+}
+
+.date {
+  width: 100%;
+  margin: 0;
+  padding: 8px 3px;
+  background: var(--bg);
+  color: var(--accent);
+  font-size: 19px;
+  line-height: 1.25;
+  font-weight: bold;
+  text-align: center;
 }
 
 .dot {
-  width: 13px;
-  height: 13px;
+  width: 15px;
+  height: 15px;
+  flex-shrink: 0;
   border-radius: 50%;
   background: var(--accent);
   border: 3px solid var(--bg);
   outline: 1px solid var(--accent);
-  z-index: 1;
-  margin-top: 4px;
-}
-
-.date {
-  color: var(--accent);
-  font-size: 12px;
-  font-weight: bold;
-  letter-spacing: .5px;
-  margin-bottom: 11px;
-}
-
-.events {
-  display: grid;
-  gap: 12px;
+  margin-top: 8px;
 }
 
 .event {
+  width: 100%;
+  max-width: 390px;
+  display: grid;
+  grid-template-columns: 105px minmax(0, 1fr);
+  align-items: center;
   background: var(--surface);
-  border-radius: 15px;
+  border-radius: 13px;
   overflow: hidden;
   cursor: pointer;
   box-shadow: 0 3px 12px rgba(40,30,50,.045);
@@ -191,45 +215,98 @@ main {
 
 .event img {
   display: block;
-  width: 100%;
-  height: 185px;
+  width: 105px;
+  height: 112px;
   object-fit: cover;
   background: #e9e3db;
 }
 
 .event-content {
-  padding: 15px;
+  min-width: 0;
+  padding: 12px;
 }
 
 .category {
   color: var(--accent);
-  font-size: 10px;
+  font-size: 9px;
   text-transform: uppercase;
-  letter-spacing: 1px;
+  letter-spacing: .8px;
   font-weight: bold;
 }
 
 .event h2 {
   font-family: Georgia, serif;
-  font-size: 19px;
+  font-size: 16px;
   font-weight: normal;
-  margin: 7px 0;
+  line-height: 1.3;
+  margin: 6px 0;
 }
 
 .event p {
   color: #77747c;
-  font-size: 13px;
-  line-height: 1.5;
+  font-size: 11px;
+  line-height: 1.4;
   margin: 0;
 }
 
 .open {
   color: var(--accent);
-  font-size: 11px;
+  font-size: 10px;
   font-weight: bold;
   text-align: right;
-  margin-top: 13px;
+  margin-top: 9px;
 }
+
+@media (max-width: 650px) {
+  .day {
+    grid-template-columns: minmax(0, 1fr) 76px minmax(0, 1fr);
+    gap: 5px;
+    margin-bottom: 22px;
+  }
+
+  .axis {
+    min-height: 125px;
+  }
+
+  .date {
+    font-size: 12px;
+    padding: 6px 1px;
+    overflow-wrap: anywhere;
+  }
+
+  .event {
+    grid-template-columns: 1fr;
+    border-radius: 10px;
+  }
+
+  .event img {
+    width: 100%;
+    height: 70px;
+  }
+
+  .event-content {
+    padding: 8px;
+  }
+
+  .category {
+    font-size: 8px;
+  }
+
+  .event h2 {
+    font-size: 12px;
+    line-height: 1.25;
+  }
+
+  .event p {
+    font-size: 10px;
+  }
+
+  .open {
+    font-size: 8px;
+    margin-top: 7px;
+  }
+}
+
 
 .empty {
   display: none;
@@ -614,6 +691,7 @@ const events = [
 
 let activeCategory = "Todos";
 
+
 function render() {
   const timeline = document.getElementById("timeline");
   const query = document.getElementById("search").value.toLowerCase();
@@ -623,74 +701,76 @@ function render() {
     .filter(e => (
       e.title + " " + e.summary + " " + e.location + " " + e.category
     ).toLowerCase().includes(query))
-    .sort((a,b) => a.sort - b.sort);
-
-  const groups = new Map();
-
-  filtered.forEach(event => {
-    if (!groups.has(event.date)) groups.set(event.date, []);
-    groups.get(event.date).push(event);
-  });
+    .sort((a, b) => a.sort - b.sort);
 
   timeline.innerHTML = "";
 
-  groups.forEach((items, date) => {
+  filtered.forEach((event, index) => {
     const day = document.createElement("div");
     day.className = "day";
 
-    const marker = document.createElement("div");
-    marker.className = "marker";
-    marker.innerHTML = '<div class="dot"></div>';
+    const left = document.createElement("div");
+    left.className = "side left";
 
-    const content = document.createElement("div");
+    const axis = document.createElement("div");
+    axis.className = "axis";
 
-    const dateElement = document.createElement("div");
-    dateElement.className = "date";
-    dateElement.textContent = date;
+    const date = document.createElement("div");
+    date.className = "date";
+    date.textContent = event.date;
 
-    const cards = document.createElement("div");
-    cards.className = "events";
+    const dot = document.createElement("div");
+    dot.className = "dot";
 
-    items.forEach(event => {
-      const card = document.createElement("article");
-      card.className = "event";
+    axis.append(date, dot);
 
-      const img = document.createElement("img");
-      img.src = event.image;
-      img.alt = event.title;
-      img.loading = "lazy";
+    const right = document.createElement("div");
+    right.className = "side right";
 
-      const body = document.createElement("div");
-      body.className = "event-content";
+    const card = document.createElement("article");
+    card.className = "event";
 
-      const category = document.createElement("div");
-      category.className = "category";
-      category.textContent = event.category;
+    const img = document.createElement("img");
+    img.src = event.image;
+    img.alt = event.title;
+    img.loading = "lazy";
 
-      const title = document.createElement("h2");
-      title.textContent = event.title;
+    const body = document.createElement("div");
+    body.className = "event-content";
 
-      const summary = document.createElement("p");
-      summary.textContent = event.summary;
+    const category = document.createElement("div");
+    category.className = "category";
+    category.textContent = event.category;
 
-      const open = document.createElement("div");
-      open.className = "open";
-      open.textContent = "VER DETALHES →";
+    const title = document.createElement("h2");
+    title.textContent = event.title;
 
-      body.append(category, title, summary, open);
-      card.append(img, body);
-      card.addEventListener("click", () => openEvent(event));
-      cards.appendChild(card);
-    });
+    const summary = document.createElement("p");
+    summary.textContent = event.summary;
 
-    content.append(dateElement, cards);
-    day.append(marker, content);
+    const open = document.createElement("div");
+    open.className = "open";
+    open.textContent = "VER DETALHES →";
+
+    body.append(category, title, summary, open);
+    card.append(img, body);
+
+    card.addEventListener("click", () => openEvent(event));
+
+    if (index % 2 === 0) {
+      left.appendChild(card);
+    } else {
+      right.appendChild(card);
+    }
+
+    day.append(left, axis, right);
     timeline.appendChild(day);
   });
 
   document.getElementById("empty").style.display =
     filtered.length ? "none" : "block";
 }
+
 
 function openEvent(event) {
   document.getElementById("modalImage").src = event.image;
