@@ -1092,7 +1092,7 @@ await Promise.all(features.map(async feature => {
   const cca2 = country.cca2?.toLowerCase();
   if (!cca2) return;
 
-  const flagUrl = `https://flagcdn.com/w320/${cca2}.png`;
+  const flagUrl = `flags/4x3/${cca2}.svg`;
 
   const img = new Image();
   img.crossOrigin = "anonymous";
