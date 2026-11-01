@@ -1079,29 +1079,31 @@ showPage("historia");
       world.objects.countries
     ).features;
     
+
 const defs = svg.append("defs");
 
 features.forEach(feature => {
   const id = String(Number(feature.id));
   const country = countriesById.get(id);
 
-  if (!country || !country.flags) return;
+  if (!country) return;
 
-  const flagUrl = country.flags.svg || country.flags.png;
+  const cca2 = country.cca2?.toLowerCase();
 
-  if (!flagUrl) return;
+  if (!cca2) return;
+
+  const flagUrl = `https://flagcdn.com/w320/${cca2}.png`;
 
   const pattern = defs.append("pattern")
     .attr("id", `flag-${id}`)
-    .attr("patternUnits", "objectBoundingBox")
-    .attr("patternContentUnits", "objectBoundingBox")
-    .attr("width", 1)
-    .attr("height", 1);
+    .attr("patternUnits", "userSpaceOnUse")
+    .attr("width", 160)
+    .attr("height", 100);
 
   pattern.append("image")
     .attr("href", flagUrl)
-    .attr("width", 1)
-    .attr("height", 1)
+    .attr("width", 160)
+    .attr("height", 100)
     .attr("preserveAspectRatio", "xMidYMid slice");
 });
 
