@@ -1113,7 +1113,6 @@ features.forEach(feature => {
     .attr("width", 1)
     .attr("height", 1)
     .attr("preserveAspectRatio", "xMidYMid meet")
-    .attr("style", "image-rendering: optimizeSpeed;");
 });
 
 
@@ -1185,8 +1184,18 @@ mapGroup.selectAll(".country")
 
 const zoom = d3.zoom()
   .scaleExtent([1, 12])
+  .on("start", () => {
+    mapGroup.selectAll(".country")
+      .attr("fill", getCountryColor);
+  })
   .on("zoom", event => {
     mapGroup.attr("transform", event.transform);
+  })
+  .on("end", () => {
+    mapGroup.selectAll(".country")
+      .attr("fill", feature =>
+        `url(#flag-${String(Number(feature.id))})`
+      );
   });
 
 svg.call(zoom);
