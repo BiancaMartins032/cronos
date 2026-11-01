@@ -1000,6 +1000,33 @@ document.addEventListener("keydown", e => {
 });
 
 render();
+  const mainTabs = document.querySelectorAll(".main-tab");
+
+function showPage(page) {
+  const isHistory = page === "historia";
+
+  document.getElementById("historiaPage").style.display =
+    isHistory ? "block" : "none";
+
+  document.getElementById("geografiaPage").style.display =
+    isHistory ? "none" : "block";
+
+  document.querySelector(".search").style.display =
+    isHistory ? "block" : "none";
+
+  document.getElementById("filters").style.display =
+    isHistory ? "flex" : "none";
+
+  mainTabs.forEach(tab => {
+    tab.classList.toggle("active", tab.dataset.tab === page);
+  });
+}
+
+mainTabs.forEach(tab => {
+  tab.addEventListener("click", () => showPage(tab.dataset.tab));
+});
+
+showPage("historia");
 </script>
 
 </body>
