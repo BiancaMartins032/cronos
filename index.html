@@ -1035,7 +1035,7 @@ showPage("historia");
   try {
     const [worldResponse, countriesResponse] = await Promise.all([
       fetch("https://cdn.jsdelivr.net/npm/world-atlas@2/countries-50m.json"),
-      fetch("https://restcountries.com/v3.1/all?fields=name,cca2,ccn3,flags,capital,region,languages,population,currencies,translations")
+      fetch("https://restcountries.com/v5.0/all?fields=name,cca2,ccn3,flags,capital,region,languages,population,currencies,translations")
     ]);
 
     if (!worldResponse.ok || !countriesResponse.ok) {
