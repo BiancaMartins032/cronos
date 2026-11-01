@@ -1122,9 +1122,7 @@ mapGroup.selectAll(".country")
   .append("path")
   .attr("class", "country")
   .attr("d", path)
-  .attr("fill", feature =>
-    `url(#flag-${String(Number(feature.id))})`
-  )
+  .attr("fill", feature => getCountryColor(feature))
   .attr("stroke", "#64501D")
   .attr("stroke-width", 0.7)
   .style("cursor", "pointer")
