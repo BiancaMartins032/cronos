@@ -1083,7 +1083,7 @@ showPage("historia");
 
 const defs = svg.append("defs");
 
-await Promise.all(features.map(async feature => {
+features.forEach(feature => {
   const id = String(Number(feature.id));
   const country = countriesById.get(id);
 
@@ -1094,26 +1094,6 @@ await Promise.all(features.map(async feature => {
 
   const flagUrl = `flags/4x3/${cca2}.svg`;
 
-  const img = new Image();
-  img.crossOrigin = "anonymous";
-
-  await new Promise(resolve => {
-    img.onload = resolve;
-    img.onerror = resolve;
-    img.src = flagUrl;
-  });
-
-  if (!img.complete || !img.naturalWidth) return;
-
-  const canvas = document.createElement("canvas");
-  canvas.width = img.naturalWidth;
-  canvas.height = img.naturalHeight;
-
-  const ctx = canvas.getContext("2d");
-  ctx.drawImage(img, 0, 0);
-
-  const aspect = img.naturalWidth / img.naturalHeight;
-
   const pattern = defs.append("pattern")
     .attr("id", `flag-${id}`)
     .attr("patternUnits", "objectBoundingBox")
@@ -1121,73 +1101,19 @@ await Promise.all(features.map(async feature => {
     .attr("width", 1)
     .attr("height", 1);
 
-  if (aspect >= 1) {
-    const flagHeight = 1 / aspect;
-    const margin = (1 - flagHeight) / 2;
+  pattern.append("rect")
+    .attr("width", 1)
+    .attr("height", 1)
+    .attr("fill", "#FFFAF1");
 
-    const topColor = ctx.getImageData(
-      Math.floor(img.naturalWidth / 2), 0, 1, 1
-    ).data;
-
-    const bottomColor = ctx.getImageData(
-      Math.floor(img.naturalWidth / 2),
-      img.naturalHeight - 1, 1, 1
-    ).data;
-
-    const top = `rgb(${topColor[0]},${topColor[1]},${topColor[2]})`;
-    const bottom = `rgb(${bottomColor[0]},${bottomColor[1]},${bottomColor[2]})`;
-
-    pattern.append("rect")
-      .attr("width", 1)
-      .attr("height", margin)
-      .attr("fill", top);
-
-    pattern.append("rect")
-      .attr("y", margin + flagHeight)
-      .attr("width", 1)
-      .attr("height", margin)
-      .attr("fill", bottom);
-
-    pattern.append("image")
-      .attr("href", flagUrl)
-      .attr("x", 0)
-      .attr("y", margin)
-      .attr("width", 1)
-      .attr("height", flagHeight);
-
-  } else {
-    const flagWidth = aspect;
-    const margin = (1 - flagWidth) / 2;
-
-    const leftColor = ctx.getImageData(
-      0, Math.floor(img.naturalHeight / 2), 1, 1
-    ).data;
-
-    const rightColor = ctx.getImageData(
-      img.naturalWidth - 1,
-      Math.floor(img.naturalHeight / 2), 1, 1
-    ).data;
-
-    pattern.append("rect")
-      .attr("width", margin)
-      .attr("height", 1)
-      .attr("fill", `rgb(${leftColor[0]},${leftColor[1]},${leftColor[2]})`);
-
-    pattern.append("rect")
-      .attr("x", margin + flagWidth)
-      .attr("width", margin)
-      .attr("height", 1)
-      .attr("fill", `rgb(${rightColor[0]},${rightColor[1]},${rightColor[2]})`);
-
-    pattern.append("image")
-      .attr("href", flagUrl)
-      .attr("x", margin)
-      .attr("y", 0)
-      .attr("width", flagWidth)
-      .attr("height", 1);
-  }
-}));
-
+  pattern.append("image")
+    .attr("href", flagUrl)
+    .attr("x", 0)
+    .attr("y", 0)
+    .attr("width", 1)
+    .attr("height", 1)
+    .attr("preserveAspectRatio", "xMidYMid meet");
+});
 
 
     const projection = d3.geoNaturalEarth1()
