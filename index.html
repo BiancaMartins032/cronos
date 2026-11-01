@@ -1121,17 +1121,26 @@ showPage("historia");
       })
       .attr("text-anchor", "middle")
       .attr("dominant-baseline", "central")
-      .attr("font-size", "8px")
+      .attr("font-size", "5px")
+      .attr("font-weight", "600")
+      .attr("paint-order", "stroke")
+      .attr("stroke", "#FFFAF1")
+      .attr("stroke-width", "1.5px")
+      .attr("stroke-linejoin", "round")
       .attr("fill", "#543B32")
       .attr("pointer-events", "none");
 
     const zoom = d3.zoom()
-      .scaleExtent([1, 12])
-      .on("zoom", event => {
-        mapGroup.attr("transform", event.transform);
-      });
+  .scaleExtent([1, 12])
+  .on("zoom", event => {
+    mapGroup.attr("transform", event.transform);
 
-    svg.call(zoom);
+    mapGroup.selectAll(".country-label")
+      .attr("font-size", `${5 / event.transform.k}px`)
+      .attr("stroke-width", `${1.5 / event.transform.k}px`);
+  });
+
+svg.call(zoom);
 
   } catch (error) {
     mapElement.innerHTML =
