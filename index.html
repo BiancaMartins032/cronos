@@ -507,6 +507,50 @@ input:focus-visible {
 #countryInfo {
   margin-top: 20px;
 }
+  .region-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+  margin: 25px 0;
+}
+
+.region-card {
+  min-height: 145px;
+  padding: 25px 20px;
+  border: 1px solid #A18A46;
+  border-radius: 12px;
+  background: #FFFAF1;
+  box-shadow: 0 4px 12px rgba(84, 59, 50, .10);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+}
+
+.region-card h2 {
+  margin: 0 0 12px;
+  color: #543B32;
+  font-family: Georgia, serif;
+  font-size: 19px;
+}
+
+.region-card p {
+  margin: 0;
+  color: #806D55;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+@media (max-width: 650px) {
+  .region-cards {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .region-card {
+    min-height: 110px;
+  }
+}
 </style>
 </head>
 
