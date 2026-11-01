@@ -482,10 +482,10 @@ input:focus-visible {
 
 #worldMap {
   width: 100%;
-  height: min(75vh, 750px);
-  min-height: 550px;
+  height: min(65vh, 650px);
+  min-height: 450px;
   margin: 12px auto 24px;
-  background: #FFFAF1;
+  background: #BFD3D8 !important;
   border: 1px solid #A18A46;
   border-radius: 8px;
   overflow: hidden;
@@ -607,23 +607,6 @@ input:focus-visible {
 
   <div id="worldMap">
   <div id="mapLoading">Carregando mapa-múndi...</div>
-</div>
-
-<div class="region-cards">
-  <div class="region-card">
-    <h2>AMÉRICAS</h2>
-    <p>América do Norte, Central e do Sul</p>
-  </div>
-
-  <div class="region-card">
-    <h2>ÁFRICA E EUROPA</h2>
-    <p>História, povos e civilizações</p>
-  </div>
-
-  <div class="region-card">
-    <h2>ÁSIA E OCEANIA</h2>
-    <p>Culturas e territórios do Oriente</p>
-  </div>
 </div>
 
 <div id="countryInfo"></div>
@@ -1133,11 +1116,6 @@ showPage("historia");
       .attr("width", "100%")
       .attr("height", "auto");
 
-    svg.append("rect")
-  .attr("width", width)
-  .attr("height", height)
-  .attr("fill", "#BFD3D8");
-
 const mapGroup = svg.append("g");
 
     const features = topojson.feature(
@@ -1211,7 +1189,8 @@ mapGroup.selectAll(".country")
 
 const mapLabels = [
   { name: "AMÉRICA DO NORTE", lon: -105, lat: 43, size: 19 },
-  { name: "AMÉRICA DO SUL", lon: -60, lat: -20, size: 19 },
+  { name: "AMÉRICA", lon: -43, lat: -25, size: 19 },
+  { name: "DO SUL", lon: -43, lat: -29, size: 19 },
   { name: "EUROPA", lon: 15, lat: 52, size: 19 },
   { name: "ÁFRICA", lon: 20, lat: -5, size: 19 },
   { name: "ÁSIA", lon: 100, lat: 42, size: 19 },
@@ -1234,7 +1213,7 @@ mapGroup.selectAll(".map-label")
   .attr("font-family", "Arial, sans-serif")
   .attr("font-weight", "bold")
   .attr("letter-spacing", 2)
-  .attr("fill", "#52666A")
+  .attr("fill", d => d.name === "AMÉRICA" || d.name === "DO SUL" ? "#E87532" : "#52666A")
   .attr("opacity", 0.8)
   .style("pointer-events", "none")
   .text(d => d.name);
