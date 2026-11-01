@@ -1189,8 +1189,8 @@ mapGroup.selectAll(".country")
 
 const mapLabels = [
   { name: "AMÉRICA DO NORTE", lon: -105, lat: 43, size: 19 },
-  { name: "AMÉRICA", lon: -30, lat: -25, size: 19 },
-  { name: "DO SUL", lon: -30, lat: -29, size: 19 },
+  { name: "AMÉRICA", lon: -22, lat: -25, size: 19 },
+  { name: "DO SUL", lon: -22, lat: -29, size: 19 },
   { name: "EUROPA", lon: 15, lat: 52, size: 19 },
   { name: "ÁFRICA", lon: 20, lat: -5, size: 19 },
   { name: "ÁSIA", lon: 100, lat: 42, size: 19 },
@@ -1214,6 +1214,9 @@ mapGroup.selectAll(".map-label")
   .attr("font-weight", "900")
   .attr("letter-spacing", 2)
   .attr("fill", d => d.name === "AMÉRICA" || d.name === "DO SUL" ? "#E87532" : "#52666A")
+  .attr("stroke", d => d.name === "AMÉRICA" || d.name === "DO SUL" ? "#FFFFFF" : "none")
+  .attr("stroke-width", 2)
+  .attr("paint-order", "stroke")
   .attr("opacity", 0.8)
   .style("pointer-events", "none")
   .text(d => d.name);
