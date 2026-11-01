@@ -1087,13 +1087,37 @@ showPage("historia");
 
     const path = d3.geoPath(projection);
 
+    
+function getCountryColor(feature) {
+  const country = countriesById.get(String(Number(feature.id)));
+
+  const palettes = {
+    "Northern America": ["#78B84A", "#8FCB5A", "#A6CE65"],
+    "Central America": ["#8EBE50", "#B8C94B"],
+    "South America": ["#F2B52B", "#E99A27", "#F5C64C"],
+    "Caribbean": ["#E9B94D", "#F2D078"],
+    "Europe": ["#E65B78", "#D94D65", "#EC8292"],
+    "Africa": ["#A477C5", "#8D61B5", "#B18AD0"],
+    "Asia": ["#65B9AD", "#83C9B9", "#4EA99E"],
+    "Oceania": ["#D94D3F", "#E66B55", "#C9433B"],
+    "Antarctica": ["#D9D9D9"]
+  };
+
+  const palette =
+    palettes[country?.subregion] ||
+    palettes[country?.region] ||
+    ["#B8C9A5"];
+
+  return palette[Number(feature.id) % palette.length];
+}
+
     mapGroup.selectAll(".country")
       .data(features)
       .enter()
       .append("path")
       .attr("class", "country")
       .attr("d", path)
-      .attr("fill", "#DCCB9D")
+      .attr("fill", getCountryColor)
       .attr("stroke", "#64501D")
       .attr("stroke-width", 0.7)
       .style("cursor", "pointer")
@@ -1104,7 +1128,7 @@ showPage("historia");
         if (!country) return;
 
         mapGroup.selectAll(".country")
-          .attr("fill", "#DCCB9D");
+          .attr("fill", getCountryColor)
 
         d3.select(this).attr("fill", "#A18A46");
 
