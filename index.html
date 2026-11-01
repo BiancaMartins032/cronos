@@ -1194,7 +1194,7 @@ const mapLabels = [
   { name: "CENTRAL", lon: -100, lat: 3, size: 19 },
   { name: "AMÉRICA", lon: -22, lat: -25, size: 19 },
   { name: "DO SUL", lon: -22, lat: -29, size: 19 },
-  { name: "EUROPA", lon: 15, lat: 52, size: 19 },
+  { name: "EUROPA", lon: -8, lat: 48, size: 19 },
   { name: "ÁFRICA", lon: 20, lat: -5, size: 19 },
   { name: "ÁSIA", lon: 100, lat: 42, size: 19 },
   { name: "OCEANIA", lon: 135, lat: -25, size: 19 },
@@ -1220,16 +1220,18 @@ mapGroup.selectAll(".map-label")
     if (d.lat === 35 || d.lat === 31) return "#568B35";
     if (d.lat === 7 || d.lat === 3) return "#E5B52A";
     if (d.lat === -25 || d.lat === -29) return "#E87532";
+    if (d.name === "EUROPA") return "#A51F35";
     return "#52666A";
   })
   .attr("stroke", d => {
     if (
       d.lat === 35 || d.lat === 31 ||
       d.lat === 7 || d.lat === 3 ||
-      d.lat === -25 || d.lat === -29
+      d.lat === -25 || d.lat === -29 ||
+      d.name === "EUROPA"
     ) return "#FFFFFF";
     return "none";
-  })
+})
   .attr("stroke-width", 2)
   .attr("paint-order", "stroke")
   .attr("opacity", 0.8)
