@@ -1081,39 +1081,6 @@ showPage("historia");
     
 
 
-const defs = svg.append("defs");
-
-features.forEach(feature => {
-  const id = String(Number(feature.id));
-  const country = countriesById.get(id);
-
-  if (!country) return;
-
-  const cca2 = country.cca2?.toLowerCase();
-  if (!cca2) return;
-
-  const flagUrl = `flags/4x3/${cca2}.svg`;
-
-  const pattern = defs.append("pattern")
-    .attr("id", `flag-${id}`)
-    .attr("patternUnits", "objectBoundingBox")
-    .attr("patternContentUnits", "objectBoundingBox")
-    .attr("width", 1)
-    .attr("height", 1);
-
-  pattern.append("rect")
-    .attr("width", 1)
-    .attr("height", 1)
-    .attr("fill", "#FFFAF1");
-
-  pattern.append("image")
-    .attr("href", flagUrl)
-    .attr("x", 0)
-    .attr("y", 0)
-    .attr("width", 1)
-    .attr("height", 1)
-    .attr("preserveAspectRatio", "xMidYMid meet")
-});
 
 
     const projection = d3.geoNaturalEarth1()
