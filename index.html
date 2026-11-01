@@ -1190,8 +1190,8 @@ mapGroup.selectAll(".country")
 const mapLabels = [
   { name: "AMÉRICA", lon: -45, lat: 35, size: 19 },
   { name: "DO NORTE", lon: -45, lat: 31, size: 19 },
-  { name: "AMÉRICA", lon: -110, lat: 7, size: 19 },
-  { name: "CENTRAL", lon: -110, lat: 3, size: 19 },
+  { name: "AMÉRICA", lon: -100, lat: 7, size: 19 },
+  { name: "CENTRAL", lon: -100, lat: 3, size: 19 },
   { name: "AMÉRICA", lon: -22, lat: -25, size: 19 },
   { name: "DO SUL", lon: -22, lat: -29, size: 19 },
   { name: "EUROPA", lon: 15, lat: 52, size: 19 },
@@ -1218,14 +1218,14 @@ mapGroup.selectAll(".map-label")
   .attr("letter-spacing", 2)
   .attr("fill", d => {
     if (d.lat === 35 || d.lat === 31) return "#568B35";
-    if (d.lat === 12 || d.lat === 8) return "#E5B52A";
+    if (d.lat === 7 || d.lat === 3) return "#E5B52A";
     if (d.lat === -25 || d.lat === -29) return "#E87532";
     return "#52666A";
   })
   .attr("stroke", d => {
     if (
       d.lat === 35 || d.lat === 31 ||
-      d.lat === 12 || d.lat === 8 ||
+      d.lat === 7 || d.lat === 3 ||
       d.lat === -25 || d.lat === -29
     ) return "#FFFFFF";
     return "none";
@@ -1235,7 +1235,6 @@ mapGroup.selectAll(".map-label")
   .attr("opacity", 0.8)
   .style("pointer-events", "none")
   .text(d => d.name);
-
 
 const zoom = d3.zoom()
   .scaleExtent([1, 12])
