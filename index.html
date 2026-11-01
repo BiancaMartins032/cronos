@@ -1248,16 +1248,16 @@ const labelData = features.map(feature => {
 
   const availableWidth = position.radius * 2 * 0.82;
 
-  const fontSize = Math.min(
-    12,
-    availableWidth / (name.length * 0.58)
-  );
-
+  const fontSize = Math.max(
+  8,
+  Math.min(14, availableWidth / (name.length * 0.45))
+);
+  
   return {
     name,
     x: position.x,
     y: position.y,
-    fontSize: Math.max(1.5, fontSize)
+    fontSize: fontSize
   };
 }).filter(Boolean);
 
@@ -1285,9 +1285,7 @@ const zoom = d3.zoom()
     mapGroup.attr("transform", event.transform);
 
     mapGroup.selectAll(".country-label")
-      .attr("font-size", d =>
-        Math.min(16 / event.transform.k, d.fontSize)
-      )
+      .attr("font-size", d => d.fontSize)
       .attr("stroke-width", `${1.5 / event.transform.k}px`);
   });
 
