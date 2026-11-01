@@ -1078,6 +1078,33 @@ showPage("historia");
       world,
       world.objects.countries
     ).features;
+    
+const defs = svg.append("defs");
+
+features.forEach(feature => {
+  const id = String(Number(feature.id));
+  const country = countriesById.get(id);
+
+  if (!country || !country.flags) return;
+
+  const flagUrl = country.flags.svg || country.flags.png;
+
+  if (!flagUrl) return;
+
+  const pattern = defs.append("pattern")
+    .attr("id", `flag-${id}`)
+    .attr("patternUnits", "objectBoundingBox")
+    .attr("patternContentUnits", "objectBoundingBox")
+    .attr("width", 1)
+    .attr("height", 1);
+
+  pattern.append("image")
+    .attr("href", flagUrl)
+    .attr("width", 1)
+    .attr("height", 1)
+    .attr("preserveAspectRatio", "xMidYMid slice");
+});
+
 
     const projection = d3.geoNaturalEarth1()
       .fitExtent([[15, 15], [width - 15, height - 15]], {
@@ -1111,29 +1138,36 @@ function getCountryColor(feature) {
   return palette[Number(feature.id) % palette.length];
 }
 
+    
+mapGroup.selectAll(".country")
+  .data(features)
+  .enter()
+  .append("path")
+  .attr("class", "country")
+  .attr("d", path)
+  .attr("fill", feature =>
+    `url(#flag-${String(Number(feature.id))})`
+  )
+  .attr("stroke", "#64501D")
+  .attr("stroke-width", 0.7)
+  .style("cursor", "pointer")
+  .on("click", function(event, feature) {
+    const id = String(Number(feature.id));
+    const country = countriesById.get(id);
+
+    if (!country) return;
+
     mapGroup.selectAll(".country")
-      .data(features)
-      .enter()
-      .append("path")
-      .attr("class", "country")
-      .attr("d", path)
-      .attr("fill", getCountryColor)
       .attr("stroke", "#64501D")
-      .attr("stroke-width", 0.7)
-      .style("cursor", "pointer")
-      .on("click", function(event, feature) {
-        const id = String(Number(feature.id));
-        const country = countriesById.get(id);
+      .attr("stroke-width", 0.7);
 
-        if (!country) return;
+    d3.select(this)
+      .attr("stroke", "#F5B82E")
+      .attr("stroke-width", 3);
 
-        mapGroup.selectAll(".country")
-          .attr("fill", getCountryColor)
+    showCountryInfo(country);
+  });
 
-        d3.select(this).attr("fill", "#A18A46");
-
-        showCountryInfo(country);
-      });
 
     
 function pointInRing(point, ring) {
@@ -1285,35 +1319,15 @@ const labelData = features.map(feature => {
   };
 }).filter(Boolean);
 
-mapGroup.selectAll(".country-label")
-  .data(labelData)
-  .enter()
-  .append("text")
-  .attr("class", "country-label")
-  .attr("transform", d => `translate(${d.x},${d.y})`)
-  .text(d => d.name)
-  .attr("text-anchor", "middle")
-  .attr("dominant-baseline", "central")
-  .attr("font-size", d => d.fontSize)
-  .attr("font-weight", "600")
-  .attr("paint-order", "stroke")
-  .attr("stroke", "#FFFAF1")
-  .attr("stroke-width", "1.5px")
-  .attr("stroke-linejoin", "round")
-  .attr("fill", "#543B32")
-  .attr("pointer-events", "none");
 
 const zoom = d3.zoom()
   .scaleExtent([1, 12])
   .on("zoom", event => {
     mapGroup.attr("transform", event.transform);
-
-    mapGroup.selectAll(".country-label")
-      .attr("font-size", d => d.fontSize)
-      .attr("stroke-width", `${1.5 / event.transform.k}px`);
   });
 
 svg.call(zoom);
+
 
 
   } catch (error) {
