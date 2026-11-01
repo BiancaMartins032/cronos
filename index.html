@@ -1072,7 +1072,12 @@ showPage("historia");
       .attr("width", "100%")
       .attr("height", "auto");
 
-    const mapGroup = svg.append("g");
+    svg.append("rect")
+  .attr("width", width)
+  .attr("height", height)
+  .attr("fill", "#BFD3D8");
+
+const mapGroup = svg.append("g");
 
     const features = topojson.feature(
       world,
