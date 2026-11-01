@@ -453,6 +453,50 @@ button:focus-visible,
 input:focus-visible {
   outline-color: #A18A46;
 }
+  .main-tabs {
+  display: flex;
+  gap: 10px;
+  margin-top: 22px;
+  border-bottom: 1px solid #A18A46;
+}
+
+.main-tab {
+  border: none;
+  background: transparent;
+  color: #806D55;
+  padding: 12px 22px;
+  font-size: 15px;
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+}
+
+.main-tab.active {
+  color: #543B32;
+  border-bottom-color: #A18A46;
+  font-weight: bold;
+}
+
+#geografiaPage {
+  padding-bottom: 40px;
+}
+
+#worldMap {
+  width: 100%;
+  min-height: 420px;
+  margin: 20px auto;
+  background: #FFFAF1;
+  border: 1px solid #A18A46;
+  border-radius: 12px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #806D55;
+}
+
+#countryInfo {
+  margin-top: 20px;
+}
 </style>
 </head>
 
@@ -461,12 +505,17 @@ input:focus-visible {
 <header>
   <div class="header-inner">
     <div class="top">
-      <div>
-        <div class="logo">CRONOS</div>
-        <div class="subtitle">A HISTÓRIA DO MUNDO</div>
-      </div>
-      <span>⌛</span>
-    </div>
+  <div>
+    <div class="logo">CRONOS</div>
+    <div class="subtitle">HISTÓRIA E GEOGRAFIA DO MUNDO</div>
+  </div>
+  <span>⌛</span>
+</div>
+
+<nav class="main-tabs">
+  <button class="main-tab active" data-tab="historia">História</button>
+  <button class="main-tab" data-tab="geografia">Geografia</button>
+</nav>
 
     <input
       id="search"
@@ -486,6 +535,7 @@ input:focus-visible {
 </header>
 
 <main>
+  <section id="historiaPage">
   <section class="intro">
     <h1>Uma viagem pela história</h1>
     <p>Explore acontecimentos que transformaram o mundo, desde as primeiras civilizações até os dias atuais.</p>
@@ -493,6 +543,20 @@ input:focus-visible {
 
   <section class="timeline" id="timeline"></section>
   <div class="empty" id="empty">Nenhum acontecimento encontrado.</div>
+    </section>
+
+<section id="geografiaPage" style="display:none;">
+  <div class="intro">
+    <h1>Explore o mundo</h1>
+    <p>Selecione um país no mapa para conhecer sua bandeira, idiomas, cultura e gastronomia.</p>
+  </div>
+
+  <div id="worldMap">
+    <p>O mapa interativo será inserido nesta área.</p>
+  </div>
+
+  <div id="countryInfo"></div>
+</section>
 </main>
 
 <div class="modal" id="modal">
