@@ -1193,9 +1193,7 @@ const zoom = d3.zoom()
   })
   .on("end", () => {
     mapGroup.selectAll(".country")
-      .attr("fill", feature =>
-        `url(#flag-${String(Number(feature.id))})`
-      );
+      .attr("fill", getCountryColor);
   });
 
 svg.call(zoom);
