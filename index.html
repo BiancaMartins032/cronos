@@ -1256,18 +1256,54 @@ mapGroup.selectAll(".map-label")
   .style("pointer-events", "none")
   .text(d => d.name);
 
+    // NOMES DOS PAÍSES
+const countryLabels = mapGroup.selectAll(".country-name")
+  .data(features.filter(feature => {
+    const country = countriesById.get(String(Number(feature.id)));
+    return country && country.name;
+  }))
+  .enter()
+  .append("text")
+  .attr("class", "country-name")
+  .attr("x", d => path.centroid(d)[0])
+  .attr("y", d => path.centroid(d)[1])
+  .attr("text-anchor", "middle")
+  .attr("dominant-baseline", "middle")
+  .attr("font-family", "Arial, sans-serif")
+  .attr("font-size", 12)
+  .attr("font-weight", "bold")
+  .attr("fill", "#343746")
+  .attr("stroke", "#FFFFFF")
+  .attr("stroke-width", 3)
+  .attr("paint-order", "stroke")
+  .style("pointer-events", "all")
+  .style("cursor", "pointer")
+  .text(d => {
+    const country = countriesById.get(String(Number(d.id)));
+    return country.translations?.por?.common ||
+           country.name.common;
+  })
+  .on("click", (event, feature) => {
+    event.stopPropagation();
+
+    mapGroup.selectAll(".country")
+      .filter(d => d.id === feature.id)
+      .dispatch("click");
+  });
 const zoom = d3.zoom()
   .scaleExtent([1, 12])
-  .on("start", () => {
-    mapGroup.selectAll(".country")
-      .attr("fill", getCountryColor);
-  })
   .on("zoom", event => {
     mapGroup.attr("transform", event.transform);
-  })
-  .on("end", () => {
-    mapGroup.selectAll(".country")
-      .attr("fill", getCountryColor);
+
+    const scale = event.transform.k;
+
+    countryLabels.style("display", d => {
+      const area = path.area(d);
+
+      return area * scale * scale > 12000
+        ? "block"
+        : "none";
+    });
   });
 
 svg.call(zoom);
