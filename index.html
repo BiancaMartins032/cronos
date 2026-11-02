@@ -558,6 +558,42 @@ input:focus-visible {
     min-height: 110px;
   }
 }
+  #worldMap .climate-legend-bar {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 10;
+  padding: 12px 24px 10px;
+  background: rgba(20, 45, 67, 0.94);
+  box-sizing: border-box;
+  pointer-events: none;
+}
+
+#worldMap .climate-legend-gradient {
+  height: 18px;
+  border-radius: 4px;
+  background: linear-gradient(
+    to right,
+    #D94D3F,
+    #E98A45,
+    #F2D16B,
+    #78B86A,
+    #75B9C9,
+    #BBD5EA,
+    #FFFFFF
+  );
+}
+
+#worldMap .climate-legend-labels {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 6px;
+  color: #FFFFFF;
+  font-size: 12px;
+  font-weight: 600;
+}
 </style>
 </head>
 
@@ -1337,52 +1373,20 @@ const zoom = d3.zoom()
         : "none";
     });
   });
-
-    const legend = svg.append("g")
-  .attr("class", "climate-legend")
-  .attr("transform", `translate(${width / 2 - 250}, ${height - 28})`);
-
-const legendColors = [
-  "#D94D3F",
-  "#E98A45",
-  "#F2D16B",
-  "#78B86A",
-  "#75B9C9",
-  "#BBD5EA",
-  "#FFFFFF"
-];
-
-const legendLabels = [
-  "Quente",
-  "",
-  "Temperado",
-  "",
-  "Frio",
-  "",
-  "Polar"
-];
-
-legendColors.forEach((color, i) => {
-  legend.append("rect")
-    .attr("x", i * 72)
-    .attr("y", 0)
-    .attr("width", 72)
-    .attr("height", 12)
-    .attr("fill", color)
-    .attr("stroke", "#52666A")
-    .attr("stroke-width", 0.5);
-
-  if (legendLabels[i]) {
-    legend.append("text")
-      .attr("x", i * 72 + 36)
-      .attr("y", 25)
-      .attr("text-anchor", "middle")
-      .attr("font-size", 11)
-      .attr("fill", "#FFFFFF")
-      .text(legendLabels[i]);
-  }
-});
 svg.call(zoom);
+    const legendBar = document.createElement("div");
+legendBar.className = "climate-legend-bar";
+legendBar.innerHTML = `
+  <div class="climate-legend-gradient"></div>
+  <div class="climate-legend-labels">
+    <span>Quente</span>
+    <span>Tropical</span>
+    <span>Temperado</span>
+    <span>Frio</span>
+    <span>Polar</span>
+  </div>
+`;
+mapElement.appendChild(legendBar);
 
 
 
