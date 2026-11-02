@@ -1298,6 +1298,28 @@ const countryLabels = mapGroup.selectAll(".country-name")
       .filter(d => d.id === feature.id)
       .dispatch("click");
   });
+    const equatorY = projection([0, 0])[1];
+
+mapGroup.append("line")
+  .attr("class", "equator-line")
+  .attr("x1", projection([-180, 0])[0])
+  .attr("x2", projection([180, 0])[0])
+  .attr("y1", equatorY)
+  .attr("y2", equatorY)
+  .attr("stroke", "#FFFFFF")
+  .attr("stroke-width", 2)
+  .attr("stroke-dasharray", "10 7")
+  .style("pointer-events", "none");
+
+mapGroup.append("text")
+  .attr("x", projection([-5, 0])[0])
+  .attr("y", equatorY - 9)
+  .attr("fill", "#FFFFFF")
+  .attr("font-size", 15)
+  .attr("font-weight", "bold")
+  .attr("text-anchor", "end")
+  .style("pointer-events", "none")
+  .text("EQUADOR");
 const zoom = d3.zoom()
   .scaleExtent([1, 12])
   .on("zoom", event => {
