@@ -1240,6 +1240,10 @@ climateStops.forEach(([latitude, color]) => {
 
 function getCountryColor(feature) {
   const id = String(Number(feature.id));
+
+  // Antártida: branca
+  if (id === "10") return "#FFFFFF";
+
   const country = countriesById.get(id);
 
   if (!country) return "#B8C5CC";
@@ -1273,7 +1277,7 @@ function getCountryColor(feature) {
   if (country.region === "Americas") {
     const subregion = country.subregion;
 
-    if (subregion === "Northern America") {
+    if (subregion === "Northern America" || subregion === "North America") {
       continent = "América do Norte";
     } else if (subregion === "Central America" || subregion === "Caribbean") {
       continent = "América Central";
@@ -1297,7 +1301,6 @@ function getCountryColor(feature) {
 
   return palette[shadeIndex];
 }
-
     
 mapGroup.selectAll(".country")
   .data(features)
