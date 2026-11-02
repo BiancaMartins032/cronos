@@ -1328,15 +1328,31 @@ const countryLabels = mapGroup.selectAll(".country-name")
   const name = country.translations?.por?.common ||
                country.name.common;
 
-  let lines = [name];
+  const lineBreaks = {
+  "África do Sul": ["África", "do Sul"],
+  "Arábia Saudita": ["Arábia", "Saudita"],
+  "Coreia do Norte": ["Coreia do", "Norte"],
+  "Coreia do Sul": ["Coreia do", "Sul"],
+  "Costa do Marfim": ["Costa do", "Marfim"],
+  "Nova Zelândia": ["Nova", "Zelândia"],
+  "Papua-Nova Guiné": ["Papua-Nova", "Guiné"],
+  "República Centro-Africana": ["República", "Centro-Africana"],
+  "República Democrática do Congo": ["República Democrática", "do Congo"],
+  "República do Congo": ["República", "do Congo"],
+  "Sri Lanka": ["Sri", "Lanka"],
+  "Estados Unidos": ["Estados", "Unidos"],
+  "Reino Unido": ["Reino", "Unido"],
+  "Emirados Árabes Unidos": ["Emirados Árabes", "Unidos"],
+  "Guiné-Bissau": ["Guiné", "Bissau"],
+  "Guiné Equatorial": ["Guiné", "Equatorial"],
+  "Burkina Faso": ["Burkina", "Faso"],
+  "Serra Leoa": ["Serra", "Leoa"],
+  "Trinidad e Tobago": ["Trinidad e", "Tobago"],
+  "Antígua e Barbuda": ["Antígua e", "Barbuda"],
+  "São Tomé e Príncipe": ["São Tomé e", "Príncipe"]
+};
 
-  if (name === "África do Sul") {
-    lines = ["África", "do Sul"];
-  }
-
-  if (name === "Arábia Saudita") {
-    lines = ["Arábia", "Saudita"];
-  }
+const lines = lineBreaks[name] || [name];
 
   const label = d3.select(this);
 
