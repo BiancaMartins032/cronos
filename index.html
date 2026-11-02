@@ -1469,16 +1469,20 @@ const zoom = d3.zoom()
 svg.call(zoom);
     const legendBar = document.createElement("div");
 legendBar.className = "climate-legend-bar";
+
 legendBar.innerHTML = `
-  <div class="climate-legend-gradient"></div>
   <div class="climate-legend-labels">
-    <span>Quente</span>
-    <span>Tropical</span>
-    <span>Temperado</span>
-    <span>Frio</span>
-    <span>Polar</span>
+    <span><i style="background:#5686AA"></i>América do Norte</span>
+    <span><i style="background:#48A69D"></i>América Central</span>
+    <span><i style="background:#6AA477"></i>América do Sul</span>
+    <span><i style="background:#8D7BAA"></i>Europa</span>
+    <span><i style="background:#D58B56"></i>Ásia</span>
+    <span><i style="background:#C1A34F"></i>África</span>
+    <span><i style="background:#BE8193"></i>Oceania</span>
   </div>
 `;
+
+mapElement.appendChild(legendBar);
 mapElement.appendChild(legendBar);
 
 
