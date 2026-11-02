@@ -1196,7 +1196,7 @@ const mapLabels = [
   { name: "DO SUL", lon: -22, lat: -29, size: 19 },
   { name: "EUROPA", lon: -23, lat: 48, size: 19 },
   { name: "ÁFRICA", lon: -5, lat: -5, size: 19 },
-  { name: "ÁSIA", lon: 100, lat: 42, size: 19 },
+  { name: "ÁSIA", lon: 130, lat: 42, size: 19 },
   { name: "OCEANIA", lon: 135, lat: -25, size: 19 },
   { name: "OCEANO PACÍFICO", lon: -150, lat: 0, size: 13 },
   { name: "OCEANO ATLÂNTICO", lon: -30, lat: 0, size: 13 },
@@ -1222,6 +1222,7 @@ mapGroup.selectAll(".map-label")
     if (d.lat === -25 || d.lat === -29) return "#E87532";
     if (d.name === "EUROPA") return "#A51F35";
     if (d.name === "ÁFRICA") return "#8036A8";
+    if (d.name === "ÁSIA") return "#245C32";
     return "#52666A";
   })
   .attr("stroke", d => {
@@ -1231,6 +1232,7 @@ mapGroup.selectAll(".map-label")
       d.lat === -25 || d.lat === -29 ||
       d.name === "EUROPA" ||
       d.name === "ÁFRICA"
+      d.name === "ÁSIA" ||
     ) return "#FFFFFF";
     return "none";
   })
