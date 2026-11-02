@@ -587,12 +587,28 @@ input:focus-visible {
 
 #worldMap .climate-legend-labels {
   display: flex;
-  justify-content: space-between;
-  gap: 8px;
-  margin-top: 6px;
+  justify-content: space-around;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px 16px;
   color: #FFFFFF;
   font-size: 12px;
   font-weight: 600;
+}
+
+#worldMap .climate-legend-labels span {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+#worldMap .climate-legend-labels i {
+  display: inline-block;
+  width: 13px;
+  height: 13px;
+  border-radius: 3px;
+  flex-shrink: 0;
 }
 </style>
 </head>
