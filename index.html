@@ -586,11 +586,12 @@ input:focus-visible {
 }
 
 #worldMap .climate-legend-labels {
-  display: flex;
-  justify-content: space-around;
+  display: grid;
+  grid-template-columns: 1.3fr 0.8fr 0.8fr;
+  grid-template-rows: repeat(3, auto);
+  grid-auto-flow: column;
   align-items: center;
-  flex-wrap: wrap;
-  gap: 10px 16px;
+  gap: 9px 24px;
   color: #FFFFFF;
   font-size: 12px;
   font-weight: 600;
@@ -599,7 +600,7 @@ input:focus-visible {
 #worldMap .climate-legend-labels span {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 7px;
   white-space: nowrap;
 }
 
