@@ -1329,6 +1329,55 @@ mapGroup.selectAll(".country")
 
     showCountryInfo(country);
   });
+    // DIVISÃO VISUAL DA RÚSSIA ENTRE EUROPA E ÁSIA
+const russiaFeature = features.find(
+  feature => String(Number(feature.id)) === "643"
+);
+
+if (russiaFeature) {
+  const russiaGeometry = russiaFeature.geometry;
+
+  const russiaCoordinates =
+    russiaGeometry.type === "Polygon"
+      ? [russiaGeometry.coordinates]
+      : russiaGeometry.coordinates;
+
+  // Fronteira geográfica aproximada pela região dos Urais
+  const asiaBoundary = [
+    [60, 90],
+    [60, 70],
+    [61, 65],
+    [60, 60],
+    [58, 55],
+    [56, 52],
+    [53, 50],
+    [51, 48],
+    [50, 45],
+    [180, 45],
+    [180, 90],
+    [60, 90]
+  ];
+
+  const asiaRegion = [[asiaBoundary]];
+
+  const asianPart = polygonClipping.intersection(
+    russiaCoordinates,
+    asiaRegion
+  );
+
+  if (asianPart.length) {
+    mapGroup.append("path")
+      .datum({
+        type: "MultiPolygon",
+        coordinates: asianPart
+      })
+      .attr("class", "russia-asia")
+      .attr("d", path)
+      .attr("fill", "#E2AC7D")
+      .attr("stroke", "none")
+      .style("pointer-events", "none");
+  }
+}
 
 const mapLabels = [
   { name: "AMÉRICA", lon: -45, lat: 35, size: 19 },
