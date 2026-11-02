@@ -1143,34 +1143,42 @@ const mapGroup = svg.append("g");
     const path = d3.geoPath(projection);
 
     
-function getCountryColor(feature) {
-  const country = countriesById.get(String(Number(feature.id)));
+const defs = svg.append("defs");
 
-  const palettes = {
-    "Northern America": ["#78B84A", "#8FCB5A", "#A6CE65"],
-    "Central America": ["#8EBE50", "#B8C94B"],
-    "South America": ["#F2B52B", "#E99A27", "#F5C64C"],
-    "Caribbean": ["#E9B94D", "#F2D078"],
-    "Europe": ["#E65B78", "#D94D65", "#EC8292"],
-    "Africa": ["#A477C5", "#8D61B5", "#B18AD0"],
-    "Asia": ["#65B9AD", "#83C9B9", "#4EA99E"],
-    "Oceania": ["#D94D3F", "#E66B55", "#C9433B"],
-    "Antarctica": [
-  "#FFFFFF",
-  "#E8F2FA",
-  "#BBD5EA",
-  "#82ADD1",
-  "#477EAD",
-  "#173B63"
-]
-  };
+const climateGradient = defs.append("linearGradient")
+  .attr("id", "climateGradient")
+  .attr("gradientUnits", "userSpaceOnUse")
+  .attr("x1", 0)
+  .attr("y1", 15)
+  .attr("x2", 0)
+  .attr("y2", height - 15);
 
-  const palette =
-    palettes[country?.subregion] ||
-    palettes[country?.region] ||
-    ["#B8C9A5"];
+const climateStops = [
+  [90, "#FFFFFF"],
+  [75, "#BBD5EA"],
+  [60, "#75B9C9"],
+  [45, "#78B86A"],
+  [30, "#F2D16B"],
+  [15, "#E98A45"],
+  [0, "#D94D3F"],
+  [-15, "#E98A45"],
+  [-30, "#F2D16B"],
+  [-45, "#78B86A"],
+  [-60, "#75B9C9"],
+  [-75, "#BBD5EA"],
+  [-90, "#FFFFFF"]
+];
 
-  return palette[Number(feature.id) % palette.length];
+climateStops.forEach(([latitude, color]) => {
+  const y = projection([0, latitude])[1];
+
+  climateGradient.append("stop")
+    .attr("offset", `${((y - 15) / (height - 30)) * 100}%`)
+    .attr("stop-color", color);
+});
+
+function getCountryColor() {
+  return "url(#climateGradient)";
 }
 
     
