@@ -1323,11 +1323,32 @@ const countryLabels = mapGroup.selectAll(".country-name")
   .style("pointer-events", "all")
   .style("cursor", "pointer")
   .style("display", "none")
-  .text(d => {
-    const country = countriesById.get(String(Number(d.id)));
-    return country.translations?.por?.common ||
-           country.name.common;
-  })
+  .each(function(d) {
+  const country = countriesById.get(String(Number(d.id)));
+  const name = country.translations?.por?.common ||
+               country.name.common;
+
+  let lines = [name];
+
+  if (name === "África do Sul") {
+    lines = ["África", "do Sul"];
+  }
+
+  if (name === "Arábia Saudita") {
+    lines = ["Arábia", "Saudita"];
+  }
+
+  const label = d3.select(this);
+
+  lines.forEach((line, i) => {
+    label.append("tspan")
+      .attr("x", path.centroid(d)[0])
+      .attr("dy", i === 0
+        ? `${-(lines.length - 1) * 0.55}em`
+        : "1.1em")
+      .text(line);
+  });
+})
   .on("click", (event, feature) => {
     event.stopPropagation();
 
