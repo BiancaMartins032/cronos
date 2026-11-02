@@ -1213,8 +1213,64 @@ climateStops.forEach(([latitude, color]) => {
     .attr("stop-color", color);
 });
 
-function getCountryColor() {
-  return "url(#climateGradient)";
+function getCountryColor(feature) {
+  const id = String(Number(feature.id));
+  const country = countriesById.get(id);
+
+  if (!country) return "#B8C5CC";
+
+  const palettes = {
+    "América do Norte": [
+      "#244E75", "#376A91", "#5686AA", "#7FA9C4", "#A9C9DC"
+    ],
+    "América Central": [
+      "#176B69", "#268B85", "#48A69D", "#75C0B7", "#A3D8D1"
+    ],
+    "América do Sul": [
+      "#326B45", "#49885A", "#6AA477", "#91BE96", "#B7D5B9"
+    ],
+    "Europa": [
+      "#574477", "#705C91", "#8D7BAA", "#AC9DC1", "#CDC3D9"
+    ],
+    "Ásia": [
+      "#A65327", "#C16C37", "#D58B56", "#E2AC7D", "#EFCBA9"
+    ],
+    "África": [
+      "#8A6B24", "#A88736", "#C1A34F", "#D6BD7B", "#E9D8AA"
+    ],
+    "Oceania": [
+      "#874D63", "#A56479", "#BE8193", "#D4A4B0", "#E7C5CD"
+    ]
+  };
+
+  let continent;
+
+  if (country.region === "Americas") {
+    const subregion = country.subregion;
+
+    if (subregion === "Northern America") {
+      continent = "América do Norte";
+    } else if (subregion === "Central America" || subregion === "Caribbean") {
+      continent = "América Central";
+    } else if (subregion === "South America") {
+      continent = "América do Sul";
+    }
+  } else if (country.region === "Europe") {
+    continent = "Europa";
+  } else if (country.region === "Asia") {
+    continent = "Ásia";
+  } else if (country.region === "Africa") {
+    continent = "África";
+  } else if (country.region === "Oceania") {
+    continent = "Oceania";
+  }
+
+  if (!continent) return "#B8C5CC";
+
+  const palette = palettes[continent];
+  const shadeIndex = Number(feature.id) % palette.length;
+
+  return palette[shadeIndex];
 }
 
     
