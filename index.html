@@ -1286,6 +1286,7 @@ const countryLabels = mapGroup.selectAll(".country-name")
   .attr("paint-order", "stroke")
   .style("pointer-events", "all")
   .style("cursor", "pointer")
+  .style("display", "none")
   .text(d => {
     const country = countriesById.get(String(Number(d.id)));
     return country.translations?.por?.common ||
@@ -1320,26 +1321,7 @@ mapGroup.append("text")
   .attr("text-anchor", "end")
   .style("pointer-events", "none")
   .text("EQUADOR");
-    const countryLabels = mapGroup.selectAll(".country-label")
-  .data(features)
-  .enter()
-  .append("text")
-  .attr("class", "country-label")
-  .attr("x", feature => path.centroid(feature)[0])
-  .attr("y", feature => path.centroid(feature)[1])
-  .attr("text-anchor", "middle")
-  .attr("dominant-baseline", "middle")
-  .attr("font-size", 8)
-  .attr("font-weight", "bold")
-  .attr("fill", "#263B42")
-  .attr("stroke", "#FFFFFF")
-  .attr("stroke-width", 1.5)
-  .attr("paint-order", "stroke")
-  .style("pointer-events", "none")
-  .text(feature => {
-    const country = countriesById.get(String(Number(feature.id)));
-    return country?.translations?.por?.common || country?.name?.common || "";
-  });
+    
 const zoom = d3.zoom()
   .scaleExtent([1, 12])
   .on("zoom", event => {
