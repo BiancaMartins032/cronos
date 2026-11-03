@@ -1,0 +1,490 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#100D20">
+<title>Comunidade — Multiverso Nerd</title>
+
+<style>
+:root {
+  --bg: #100D20;
+  --surface: #19152D;
+  --card: #211B3B;
+  --purple: #8655F5;
+  --blue: #536DFF;
+  --text: #F5F1FF;
+  --muted: #AAA0C7;
+  --border: #393052;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: Arial, sans-serif;
+  padding-bottom: 85px;
+}
+
+header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: rgba(16,13,32,.96);
+  border-bottom: 1px solid var(--border);
+  padding: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 19px;
+  font-weight: bold;
+}
+
+.logo {
+  font-size: 30px;
+  color: #A987FF;
+}
+
+.header-actions {
+  display: flex;
+  gap: 18px;
+  font-size: 22px;
+  color: #BCA5FF;
+}
+
+main {
+  width: 100%;
+  max-width: 760px;
+  margin: auto;
+  padding: 20px 14px;
+}
+
+h1 {
+  font-size: 26px;
+  margin: 5px 0;
+}
+
+.subtitle {
+  color: var(--muted);
+  font-size: 14px;
+  margin-bottom: 22px;
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 17px;
+  padding: 15px;
+  margin-bottom: 17px;
+}
+
+.section-title {
+  font-size: 18px;
+  margin: 25px 0 13px;
+}
+
+.composer {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+}
+
+.avatar {
+  width: 43px;
+  height: 43px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: var(--card);
+}
+
+.composer-input {
+  flex: 1;
+  padding: 13px;
+  border-radius: 25px;
+  background: var(--card);
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.post-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.post-user {
+  flex: 1;
+}
+
+.post-user strong {
+  display: block;
+  font-size: 14px;
+}
+
+.post-meta {
+  color: var(--muted);
+  font-size: 11px;
+  margin-top: 4px;
+}
+
+.seal {
+  display: inline-block;
+  background: #422C77;
+  color: #D9C7FF;
+  border-radius: 20px;
+  padding: 5px 9px;
+  font-size: 10px;
+  margin-top: 5px;
+}
+
+.post-text {
+  font-size: 14px;
+  line-height: 1.6;
+  margin: 15px 0;
+}
+
+.post-image {
+  width: 100%;
+  max-height: 350px;
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+.post-actions {
+  display: flex;
+  gap: 20px;
+  color: var(--muted);
+  font-size: 13px;
+  padding-top: 13px;
+}
+
+.action {
+  cursor: pointer;
+}
+
+.action:hover {
+  color: #C3A8FF;
+}
+
+.people-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.person {
+  text-align: center;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 15px;
+  padding: 14px 8px;
+}
+
+.person img {
+  width: 67px;
+  height: 67px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.person strong {
+  display: block;
+  font-size: 13px;
+  margin: 8px 0 5px;
+}
+
+.person p {
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.5;
+  min-height: 34px;
+}
+
+.affinity {
+  color: #B99BFF;
+  font-size: 18px;
+  font-weight: bold;
+  margin: 9px 0;
+}
+
+button {
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.add-friend {
+  background: linear-gradient(120deg, #7950E8, #536DFF);
+  color: white;
+  padding: 10px;
+  border-radius: 20px;
+  width: 100%;
+  font-size: 12px;
+}
+
+.universes {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.universe {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 15px 10px;
+  text-align: center;
+  color: white;
+  text-decoration: none;
+}
+
+.universe span {
+  display: block;
+  font-size: 24px;
+  margin-bottom: 7px;
+}
+
+.universe strong {
+  font-size: 12px;
+}
+
+.bottom-nav {
+  position: fixed;
+  z-index: 20;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #17132A;
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: space-around;
+  padding: 12px 3px;
+}
+
+.bottom-nav a {
+  text-decoration: none;
+  color: var(--muted);
+  text-align: center;
+  font-size: 11px;
+}
+
+.bottom-nav span {
+  display: block;
+  font-size: 21px;
+  margin-bottom: 4px;
+}
+
+.bottom-nav .active {
+  color: #B99BFF;
+}
+
+@media (min-width: 600px) {
+  main {
+    padding: 25px;
+  }
+
+  .people-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="brand">
+    <span class="logo">🪐</span>
+    <span>Multiverso Nerd</span>
+  </div>
+  <div class="header-actions">
+    <span>⌕</span>
+    <span>♧</span>
+  </div>
+</header>
+
+<main>
+
+  <h1>Comunidade</h1>
+  <div class="subtitle">
+    Conheça pessoas e compartilhe suas nerdices.
+  </div>
+
+  <section class="card composer">
+    <img class="avatar"
+      src="https://i.pravatar.cc/100?img=12"
+      alt="Sua foto de perfil">
+    <div class="composer-input">
+      Compartilhe suas nerdices...
+    </div>
+    <span>▧</span>
+  </section>
+
+  <h2 class="section-title">Publicações para você</h2>
+
+  <article class="card">
+    <div class="post-header">
+      <img class="avatar"
+        src="https://i.pravatar.cc/100?img=47"
+        alt="Foto de LunaNerd">
+      <div class="post-user">
+        <strong>LunaNerd</strong>
+        <div class="post-meta">Leitura · Cinema · 2 horas atrás</div>
+        <span class="seal">✦ Mestre da Sétima Arte</span>
+      </div>
+      <span>•••</span>
+    </div>
+
+    <div class="post-text">
+      Revendo Interstellar pela terceira vez.
+      É incrível como esse filme consegue misturar ciência,
+      emoção e filosofia. Qual é a interpretação favorita de vocês?
+    </div>
+
+    <img class="post-image"
+      src="https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?w=900"
+      alt="Imagem do espaço">
+
+    <div class="post-actions">
+      <span class="action">♡ 243 curtidas</span>
+      <span class="action">▢ 47 comentários</span>
+      <span class="action">↗ Compartilhar</span>
+    </div>
+  </article>
+
+  <article class="card">
+    <div class="post-header">
+      <img class="avatar"
+        src="https://i.pravatar.cc/100?img=11"
+        alt="Foto de PedroGeek">
+      <div class="post-user">
+        <strong>PedroGeek</strong>
+        <div class="post-meta">História · Geografia · 4 horas atrás</div>
+        <span class="seal">✦ Explorador dos Mundos</span>
+      </div>
+      <span>•••</span>
+    </div>
+
+    <div class="post-text">
+      Comecei uma coleção de mapas históricos.
+      É fascinante observar como as fronteiras mudaram
+      ao longo dos séculos!
+    </div>
+
+    <img class="post-image"
+      src="https://images.unsplash.com/photo-1524666041070-9b876833853d?w=900"
+      alt="Mapa antigo">
+
+    <div class="post-actions">
+      <span class="action">♡ 128 curtidas</span>
+      <span class="action">▢ 26 comentários</span>
+      <span class="action">↗ Compartilhar</span>
+    </div>
+  </article>
+
+  <h2 class="section-title">Pessoas que combinam com você</h2>
+
+  <section class="people-grid">
+
+    <div class="person">
+      <img src="https://i.pravatar.cc/150?img=44" alt="Luna">
+      <strong>LunaNerd</strong>
+      <p>Leitura · Cinema · Fantasia</p>
+      <div class="affinity">94%</div>
+      <button class="add-friend" type="button">
+        + Adicionar
+      </button>
+    </div>
+
+    <div class="person">
+      <img src="https://i.pravatar.cc/150?img=12" alt="Rafael">
+      <strong>RafaelNerd</strong>
+      <p>Games · História · Ficção científica</p>
+      <div class="affinity">91%</div>
+      <button class="add-friend" type="button">
+        + Adicionar
+      </button>
+    </div>
+
+    <div class="person">
+      <img src="https://i.pravatar.cc/150?img=32" alt="Maya">
+      <strong>MayaGeek</strong>
+      <p>Anime · Games · Cinema</p>
+      <div class="affinity">87%</div>
+      <button class="add-friend" type="button">
+        + Adicionar
+      </button>
+    </div>
+
+    <div class="person">
+      <img src="https://i.pravatar.cc/150?img=15" alt="Lucas">
+      <strong>LucasNerd</strong>
+      <p>História · Literatura · Mitologia</p>
+      <div class="affinity">85%</div>
+      <button class="add-friend" type="button">
+        + Adicionar
+      </button>
+    </div>
+
+  </section>
+
+  <h2 class="section-title">Explore seus universos</h2>
+
+  <section class="universes">
+    <a class="universe" href="index.html">
+      <span>🏛️</span>
+      <strong>HISTÓRIA</strong>
+    </a>
+
+    <a class="universe" href="index.html">
+      <span>🌎</span>
+      <strong>GEOGRAFIA</strong>
+    </a>
+
+    <a class="universe" href="leitura.html">
+      <span>📚</span>
+      <strong>LEITURA</strong>
+    </a>
+
+    <a class="universe" href="cinefilos.html">
+      <span>🎬</span>
+      <strong>CINEMA</strong>
+    </a>
+
+    <a class="universe" href="games.html">
+      <span>🎮</span>
+      <strong>GAMES</strong>
+    </a>
+  </section>
+
+</main>
+
+<nav class="bottom-nav">
+  <a href="comunidade.html" class="active">
+    <span>⌂</span>Comunidade
+  </a>
+  <a href="index.html">
+    <span>🪐</span>Universos
+  </a>
+  <a href="#competicoes">
+    <span>🏆</span>Competições
+  </a>
+  <a href="#perfil">
+    <span>♙</span>Perfil
+  </a>
+</nav>
+
+</body>
+</html>
