@@ -4,11 +4,45 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Leitura — Cronos</title>
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #F7F4ED;
+    }
+
+    header {
+      height: 48px;
+      display: flex;
+      align-items: center;
+      padding: 0 12px;
+      background: #F7F4ED;
+    }
+
+    a {
+      color: #4053BD;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    iframe {
+      display: block;
+      width: 100%;
+      height: calc(100vh - 48px);
+      border: 0;
+    }
+  </style>
 </head>
 <body>
+  <header>
+    <a href="index.html">← MENU INICIAL</a>
+  </header>
 
-  <h1>Entre Páginas</h1>
-  <p>Livros aproximam pessoas.</p>
-
+  <iframe
+    src="https://cantinho-da-leitura.biancamartins-xoxo.workers.dev"
+    title="Entre Páginas">
+  </iframe>
 </body>
 </html>
