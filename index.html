@@ -643,6 +643,17 @@ input:focus-visible {
   letter-spacing: 1px;
   cursor: pointer;
 }
+  #backHome {
+  margin: 12px 20px;
+  padding: 9px 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--accent);
+  color: #FFFAF1;
+  font-size: 12px;
+  font-weight: bold;
+  cursor: pointer;
+}
 </style>
 </head>
 
@@ -653,6 +664,7 @@ input:focus-visible {
 </div>
 
 <header id="appHeader" style="display:none;">
+  <button id="backHome" onclick="backToHome()">← MENU INICIAL</button>
   <div class="header-inner">
     <div class="top">
   <div>
@@ -1165,6 +1177,11 @@ function showPage(page) {
 
   document.getElementById("filters").style.display =
     isHistory ? "flex" : "none";
+}
+  function backToHome() {
+  document.getElementById("homePage").style.display = "flex";
+  document.getElementById("appHeader").style.display = "none";
+  document.getElementById("appMain").style.display = "none";
 }
 
   
