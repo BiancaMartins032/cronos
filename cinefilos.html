@@ -137,8 +137,128 @@
         <p>Descubra avaliações, críticas e opiniões de outras pessoas.</p>
       </div>
     </section>
+        <h2 class="section-title">Adicionar à minha coleção</h2>
+
+    <section class="intro">
+      <form id="movieForm">
+        <label for="movieName">Nome do filme ou série</label>
+        <input id="movieName" type="text" required
+          placeholder="Digite o nome da produção">
+
+        <p>Tipo de produção</p>
+        <select id="movieType">
+          <option value="Filme">Filme</option>
+          <option value="Série">Série</option>
+        </select>
+
+        <p>Status</p>
+        <select id="movieStatus">
+          <option value="Quero assistir">Quero assistir</option>
+          <option value="Já assisti">Já assisti</option>
+        </select>
+
+        <button type="submit">Adicionar à coleção</button>
+      </form>
+    </section>
+
+    <h2 class="section-title">Minha coleção</h2>
+    <section id="movieList"></section>
   </main>
 
+  <script>
+const movieForm = document.getElementById("movieForm");
+const movieList = document.getElementById("movieList");
+
+let movies = JSON.parse(localStorage.getItem("cronosMovies") || "[]");
+
+function saveMovies() {
+  localStorage.setItem("cronosMovies", JSON.stringify(movies));
+}
+
+function renderMovies() {
+  movieList.innerHTML = "";
+
+  if (movies.length === 0) {
+    movieList.innerHTML = "<p>Você ainda não adicionou filmes ou séries.</p>";
+    return;
+  }
+
+  movies.forEach((movie, index) => {
+    const card = document.createElement("div");
+    card.className = "category";
+    card.style.marginBottom = "12px";
+
+    const name = document.createElement("h3");
+    name.textContent = movie.name;
+
+    const info = document.createElement("p");
+    info.textContent = movie.type + " • " + movie.status;
+
+    const remove = document.createElement("button");
+    remove.textContent = "Remover";
+    remove.type = "button";
+    remove.onclick = () => {
+      movies.splice(index, 1);
+      saveMovies();
+      renderMovies();
+    };
+
+    card.append(name, info, remove);
+
+    if (movie.status === "Já assisti") {
+      const rating = document.createElement("div");
+      rating.style.marginTop = "12px";
+      rating.textContent = "Sua avaliação: ";
+
+      for (let star = 1; star <= 5; star++) {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.textContent = star <= (movie.rating || 0) ? "★" : "☆";
+        button.style.border = "0";
+        button.style.background = "transparent";
+        button.style.color = "#A18A46";
+        button.style.fontSize = "25px";
+        button.style.cursor = "pointer";
+
+        button.onclick = () => {
+          movie.rating = star;
+          saveMovies();
+          renderMovies();
+        };
+
+        rating.append(button);
+      }
+
+      card.append(rating);
+    }
+
+    movieList.append(card);
+  });
+}
+
+movieForm.addEventListener("submit", function(event) {
+  event.preventDefault();
+
+  const name = document.getElementById("movieName").value.trim();
+  const type = document.getElementById("movieType").value;
+  const status = document.getElementById("movieStatus").value;
+
+  if (!name) return;
+
+  movies.push({
+    name,
+    type,
+    status,
+    rating: 0
+  });
+
+  saveMovies();
+  movieForm.reset();
+  renderMovies();
+});
+
+renderMovies();
+</script>
 </body>
 </html>
 
