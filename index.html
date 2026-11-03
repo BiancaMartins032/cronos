@@ -1358,7 +1358,7 @@ if (russiaFeature) {
     d3.line()(points) +
     `L ${width + 50} ${last[1]}` +
     `L ${width + 50} -50` +
-    `L ${first[0]} -50 Z`;
+    `L ${last[0]} -50 Z`;
 
   defs.append("clipPath")
     .attr("id", "russiaAsiaClip")
