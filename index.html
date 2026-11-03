@@ -1328,6 +1328,53 @@ mapGroup.selectAll(".country")
 
     showCountryInfo(country);
   });
+    // COLORIR A PARTE ASIÁTICA DA RÚSSIA
+const russiaFeature = features.find(
+  feature => String(Number(feature.id)) === "643"
+);
+
+if (russiaFeature) {
+  const boundary = [
+    [40, 44],
+    [45, 45],
+    [49, 47],
+    [51, 49],
+    [53, 51],
+    [55, 53],
+    [57, 55],
+    [59, 58],
+    [60, 61],
+    [61, 64],
+    [63, 67],
+    [66, 70],
+    [70, 73]
+  ];
+
+  const points = boundary.map(coord => projection(coord));
+  const last = points[points.length - 1];
+  const first = points[0];
+
+  const clipShape =
+    d3.line()(points) +
+    `L ${width + 50} ${last[1]}` +
+    `L ${width + 50} -50` +
+    `L ${first[0]} -50 Z`;
+
+  defs.append("clipPath")
+    .attr("id", "russiaAsiaClip")
+    .attr("clipPathUnits", "userSpaceOnUse")
+    .append("path")
+    .attr("d", clipShape);
+
+  mapGroup.append("path")
+    .datum(russiaFeature)
+    .attr("d", path)
+    .attr("fill", "#E2AC7D")
+    .attr("stroke", "#64501D")
+    .attr("stroke-width", 0.7)
+    .attr("clip-path", "url(#russiaAsiaClip)")
+    .style("pointer-events", "none");
+}
     
 
 const mapLabels = [
