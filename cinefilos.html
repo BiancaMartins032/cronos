@@ -1,1 +1,144 @@
 
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cinéfilos — Cronos</title>
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #F7F4ED;
+      color: #343746;
+    }
+
+    header {
+      padding: 18px 20px;
+      background: #343746;
+      color: #fff;
+    }
+
+    header a {
+      color: #F8D7A4;
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: bold;
+    }
+
+    header h1 {
+      margin: 22px 0 6px;
+      font-size: 28px;
+    }
+
+    header p {
+      margin: 0;
+      color: #E8E1D5;
+      font-size: 14px;
+    }
+
+    main {
+      width: min(900px, 92%);
+      margin: 24px auto;
+    }
+
+    .intro {
+      padding: 22px;
+      background: white;
+      border-radius: 16px;
+      margin-bottom: 20px;
+    }
+
+    .intro h2 {
+      margin-top: 0;
+      font-size: 20px;
+    }
+
+    .intro p {
+      color: #737585;
+      line-height: 1.6;
+    }
+
+    .section-title {
+      font-size: 19px;
+      margin: 26px 0 12px;
+    }
+
+    .categories {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+
+    .category {
+      background: white;
+      padding: 20px;
+      border-radius: 14px;
+      border: 1px solid #E8E1D5;
+    }
+
+    .category h3 {
+      margin: 0 0 8px;
+      color: #4053BD;
+    }
+
+    .category p {
+      margin: 0;
+      color: #737585;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    @media (max-width: 500px) {
+      .categories { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <a href="index.html">← MENU INICIAL</a>
+    <h1>🎬 Cinéfilos</h1>
+    <p>Filmes, séries, opiniões e descobertas.</p>
+  </header>
+
+  <main>
+    <section class="intro">
+      <h2>Seu universo cinematográfico</h2>
+      <p>
+        Descubra histórias, registre o que já assistiu,
+        organize sua lista do que deseja assistir e compartilhe
+        suas opiniões com outros cinéfilos.
+      </p>
+    </section>
+
+    <h2 class="section-title">Sua coleção</h2>
+
+    <section class="categories">
+      <div class="category">
+        <h3>Já assisti</h3>
+        <p>Registre os filmes e séries que você já assistiu e avalie com até cinco estrelas.</p>
+      </div>
+
+      <div class="category">
+        <h3>Quero assistir</h3>
+        <p>Monte sua lista pessoal de próximos filmes e séries.</p>
+      </div>
+
+      <div class="category">
+        <h3>Favoritos</h3>
+        <p>Guarde suas produções favoritas.</p>
+      </div>
+
+      <div class="category">
+        <h3>Comunidade</h3>
+        <p>Descubra avaliações, críticas e opiniões de outras pessoas.</p>
+      </div>
+    </section>
+  </main>
+
+</body>
+</html>
+
