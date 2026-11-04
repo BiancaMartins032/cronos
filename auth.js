@@ -1,29 +1,28 @@
+(() => {
 const SUPABASE_URL = "https://wzjopvvrallnaueecfnk.supabase.co";
 const SUPABASE_KEY = "sb_publishable_u0T3tEkGAjpuCXT5UKFlQA_-y3j9vNV";
 
-const supabaseClient = window.supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_KEY
-);
+ window.mnSupabaseClient = window.supabase.createClient(URL, KEY);
 
-async function verificarAcesso() {
-  const { data, error } = await supabaseClient.auth.getSession();
+  window.verificarAcesso = async function () {
+    const { data, error } = await window.mnSupabaseClient.auth.getSession();
 
-  if (error || !data.session) {
+    if (error || !data.session) {
+      window.location.replace("login.html");
+      return null;
+    }
+
+    return data.session;
+  };
+
+  window.sairDaConta = async function () {
+    const { error } = await window.mnSupabaseClient.auth.signOut();
+
+    if (error) {
+      alert("Não foi possível sair da conta: " + error.message);
+      return;
+    }
+
     window.location.replace("login.html");
-    return null;
-  }
-
-  return data.session;
-}
-
-async function sairDaConta() {
-  const { error } = await supabaseClient.auth.signOut();
-
-  if (error) {
-    alert("Não foi possível sair da conta: " + error.message);
-    return;
-  }
-
-  window.location.replace("login.html");
-}
+  };
+})();
