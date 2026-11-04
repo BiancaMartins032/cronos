@@ -3984,7 +3984,7 @@ if (id === "discover") loadSharedBooks();
 
 if (id === "profile") {
   renderMyBooks();
-  loadMyBooksFromSupabase();
+  loadMyBooks();
   loadProfileFeed();
 }
 
@@ -6538,23 +6538,41 @@ if (profileBioText) {
 
   saveAppData();
 
-try {
-  await saveProfileToSupabase();
-  toggleProfileEdit(false);
-  alert("Perfil atualizado e salvo na sua conta! 💚");
-} catch (error) {
-  console.error("Erro ao salvar perfil no Supabase:", error);
-  alert("Os dados foram salvos apenas neste dispositivo. Erro: " + error.message);
-}
+  try {
+    await saveProfileToSupabase();
+    toggleProfileEdit(false);
+    alert("Perfil atualizado e salvo na sua conta! 💚");
+  } catch (error) {
+    console.error("Erro ao salvar perfil no Supabase:", error);
+    alert("Os dados foram salvos apenas neste dispositivo. Erro: " + error.message);
+  }
 });
 
-  async function logoutAccount() {
+async function logoutAccount() {
   const confirmar = confirm("Deseja realmente sair da sua conta?");
 
   if (!confirmar) return;
 
   await window.sairDaConta();
 }
+
+  async function loadMyBooks() {
+  const { data: userData, error: userError } =
+    await supabaseClient.auth.getUser();
+
+  const user = userData?.user;
+
+  if (userError || !user) return;
+
+  const { data, error } = await supabaseClient
+    .from("livros")
+    .select("*")
+    .eq("usuario_id", user.id);
+
+  if (error) {
+    console.error("Erro ao carregar meus livros:", error);
+    return;
+  }
 
   const savedLocalBooks = Array.isArray(myBooks) ? myBooks : [];
 
