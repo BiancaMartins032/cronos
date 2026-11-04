@@ -1,0 +1,385 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#100D20">
+<title>Competições — Multiverso Nerd</title>
+
+<style>
+:root {
+  --bg: #100D20;
+  --surface: #19152D;
+  --card: #211B3B;
+  --text: #F5F1FF;
+  --muted: #AAA0C7;
+  --border: #393052;
+  --purple: #A987FF;
+  --blue: #718BFF;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: Arial, sans-serif;
+  padding-bottom: 85px;
+}
+
+header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: rgba(16,13,32,.97);
+  border-bottom: 1px solid var(--border);
+  padding: 15px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 19px;
+  font-weight: bold;
+}
+
+.logo {
+  font-size: 29px;
+  color: var(--purple);
+}
+
+main {
+  max-width: 760px;
+  margin: auto;
+  padding: 20px 14px;
+}
+
+h1 {
+  font-size: 26px;
+  margin: 5px 0 8px;
+}
+
+.subtitle {
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.5;
+  margin-bottom: 24px;
+}
+
+.points {
+  background: linear-gradient(120deg, #34245F, #24204D);
+  border: 1px solid #59468A;
+  border-radius: 15px;
+  padding: 19px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 27px;
+}
+
+.points small {
+  color: #D0C3F2;
+  display: block;
+  margin-bottom: 7px;
+}
+
+.points strong {
+  font-size: 27px;
+}
+
+.points-icon {
+  font-size: 35px;
+}
+
+.section-title {
+  font-size: 18px;
+  margin: 25px 0 12px;
+}
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 13px;
+  padding: 17px;
+  margin-bottom: 12px;
+}
+
+.card-top {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.card-icon {
+  width: 45px;
+  height: 45px;
+  border-radius: 12px;
+  background: #34265A;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  flex-shrink: 0;
+}
+
+.card h3 {
+  font-size: 16px;
+  margin: 0 0 5px;
+}
+
+.card p {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.tag {
+  display: inline-block;
+  color: #C9B5FF;
+  background: #34265A;
+  border-radius: 20px;
+  padding: 5px 9px;
+  font-size: 10px;
+  font-weight: bold;
+  letter-spacing: .4px;
+  margin-bottom: 11px;
+}
+
+.status {
+  display: inline-block;
+  color: #C8B9E8;
+  background: #302744;
+  border: 1px solid #51416E;
+  border-radius: 20px;
+  padding: 6px 10px;
+  font-size: 11px;
+  margin-top: 13px;
+}
+
+.categories {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.category {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 15px 10px;
+  text-align: center;
+}
+
+.category span {
+  display: block;
+  font-size: 26px;
+  margin-bottom: 9px;
+}
+
+.category strong {
+  font-size: 11px;
+  letter-spacing: .4px;
+}
+
+.ranking {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 13px;
+  padding: 18px;
+  text-align: center;
+}
+
+.ranking-icon {
+  font-size: 34px;
+  margin-bottom: 8px;
+}
+
+.ranking p {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.bottom-nav {
+  position: fixed;
+  z-index: 20;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #17132A;
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: space-around;
+  padding: 12px 3px;
+}
+
+.bottom-nav a {
+  text-decoration: none;
+  color: var(--muted);
+  text-align: center;
+  font-size: 11px;
+}
+
+.bottom-nav span {
+  display: block;
+  font-size: 21px;
+  margin-bottom: 4px;
+}
+
+.bottom-nav .active {
+  color: #B99BFF;
+}
+
+@media (min-width: 600px) {
+  main {
+    padding: 25px;
+  }
+
+  .categories {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="brand">
+    <span class="logo">🪐</span>
+    <span>Multiverso Nerd</span>
+  </div>
+</header>
+
+<main>
+
+  <h1>Competições</h1>
+  <div class="subtitle">
+    Coloque seus conhecimentos à prova, desafie outras pessoas e conquiste seu espaço no Multiverso.
+  </div>
+
+  <div class="points">
+    <div>
+      <small>SUA PONTUAÇÃO</small>
+      <strong>0 pontos</strong>
+    </div>
+    <div class="points-icon">🏆</div>
+  </div>
+
+  <h2 class="section-title">Desafie seus conhecimentos</h2>
+
+  <div class="card">
+    <div class="card-top">
+      <div class="card-icon">🧠</div>
+      <div>
+        <h3>Desafio diário</h3>
+        <p>Uma nova oportunidade para aprender e pontuar todos os dias.</p>
+      </div>
+    </div>
+    <span class="tag">CONHECIMENTO GERAL</span>
+    <p>Questões de diferentes assuntos para testar sua cultura e raciocínio.</p>
+    <span class="status">EM DESENVOLVIMENTO</span>
+  </div>
+
+  <div class="card">
+    <div class="card-top">
+      <div class="card-icon">⚔️</div>
+      <div>
+        <h3>Duelo de conhecimento</h3>
+        <p>Enfrente outro participante em uma disputa de perguntas e respostas.</p>
+      </div>
+    </div>
+    <span class="tag">1 CONTRA 1</span>
+    <p>Compare seus conhecimentos e descubra quem consegue mais acertos.</p>
+    <span class="status">EM DESENVOLVIMENTO</span>
+  </div>
+
+  <h2 class="section-title">Competições por universo</h2>
+  <p class="subtitle">
+    Escolha sua especialidade e dispute desafios relacionados aos assuntos que você domina.
+  </p>
+
+  <div class="categories">
+    <div class="category">
+      <span>🏛️</span>
+      <strong>HISTÓRIA</strong>
+    </div>
+
+    <div class="category">
+      <span>🌎</span>
+      <strong>GEOGRAFIA</strong>
+    </div>
+
+    <div class="category">
+      <span>📚</span>
+      <strong>LEITURA</strong>
+    </div>
+
+    <div class="category">
+      <span>🎬</span>
+      <strong>CINEMA</strong>
+    </div>
+
+    <div class="category">
+      <span>🎮</span>
+      <strong>GAMES</strong>
+    </div>
+  </div>
+
+  <h2 class="section-title">Ranking da comunidade</h2>
+
+  <div class="ranking">
+    <div class="ranking-icon">🥇</div>
+    <h3>Quem será o próximo destaque?</h3>
+    <p>
+      O ranking mostrará os participantes com melhor desempenho,
+      suas pontuações e suas conquistas.
+    </p>
+    <span class="status">AGUARDANDO COMPETIÇÕES</span>
+  </div>
+
+  <h2 class="section-title">Suas conquistas</h2>
+
+  <div class="card">
+    <div class="card-top">
+      <div class="card-icon">🎖️</div>
+      <div>
+        <h3>Selos de especialista</h3>
+        <p>
+          Conquiste reconhecimento pelo seu desempenho nos universos
+          e desenvolva sua especialidade ao longo do tempo.
+        </p>
+      </div>
+    </div>
+    <span class="status">SUAS CONQUISTAS APARECERÃO AQUI</span>
+  </div>
+
+</main>
+
+<nav class="bottom-nav">
+  <a href="comunidade.html">
+    <span>⌂</span>Comunidade
+  </a>
+
+  <a href="universos.html">
+    <span>🪐</span>Universos
+  </a>
+
+  <a href="competicoes.html" class="active">
+    <span>🏆</span>Competições
+  </a>
+
+  <a href="perfil.html">
+    <span>♙</span>Perfil
+  </a>
+</nav>
+
+</body>
+</html>
