@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -6,9 +7,7 @@
 <title>Entrar — Multiverso Nerd</title>
 
 <style>
-* {
-  box-sizing: border-box;
-}
+* { box-sizing: border-box; }
 
 body {
   margin: 0;
@@ -76,9 +75,7 @@ input {
   font-size: 15px;
 }
 
-input:focus {
-  border-color: #9275ff;
-}
+input:focus { border-color: #9275ff; }
 
 button {
   width: 100%;
@@ -121,10 +118,6 @@ a {
   font-size: 13px;
   line-height: 1.5;
 }
-
-.hidden {
-  display: none;
-}
 </style>
 </head>
 
@@ -151,25 +144,29 @@ a {
   </button>
 
   <div class="links">
-    <a id="registerLink">Criar conta</a>
-    <a id="forgotLink">Esqueci minha senha</a>
+    <a id="registerLink" href="cadastro.html">Criar conta</a>
+    <a id="forgotLink" href="#">Esqueci minha senha</a>
   </div>
 
   <p class="message" id="message"></p>
 </main>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="auth.js"></script>
 
 <script>
-const SUPABASE_URL = "https://wzjopvvrallnaueecfnk.supabase.co";
-const SUPABASE_KEY = "sb_publishable_u0T3tEkGAjpuCXT5UKFlQA_-y3j9vNV";
-
-const supabaseClient = window.supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_KEY
-);
-
+const supabaseClient = window.mnSupabaseClient;
 const message = document.getElementById("message");
+
+if (!supabaseClient) {
+  message.textContent = "Não foi possível conectar ao sistema. Tente novamente.";
+} else {
+  supabaseClient.auth.getSession().then(({ data, error }) => {
+    if (!error && data.session) {
+      window.location.replace("comunidade.html");
+    }
+  });
+}
 
 document.getElementById("loginForm").addEventListener("submit", async (event) => {
   event.preventDefault();
@@ -185,11 +182,11 @@ document.getElementById("loginForm").addEventListener("submit", async (event) =>
   });
 
   if (error) {
-    message.textContent = error.message;
+    message.textContent = "Não foi possível entrar. Verifique seu e-mail e sua senha.";
     return;
   }
 
-  window.location.href = "comunidade.html";
+  window.location.replace("comunidade.html");
 });
 
 document.getElementById("googleButton").addEventListener("click", async () => {
@@ -202,10 +199,14 @@ document.getElementById("googleButton").addEventListener("click", async () => {
     }
   });
 
-  if (error) message.textContent = error.message;
+  if (error) {
+    message.textContent = "Não foi possível iniciar o acesso pelo Google.";
+  }
 });
 
-document.getElementById("forgotLink").addEventListener("click", async () => {
+document.getElementById("forgotLink").addEventListener("click", async (event) => {
+  event.preventDefault();
+
   const email = document.getElementById("email").value.trim();
 
   if (!email) {
@@ -213,17 +214,15 @@ document.getElementById("forgotLink").addEventListener("click", async () => {
     return;
   }
 
+  message.textContent = "Enviando instruções...";
+
   const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
     redirectTo: window.location.origin + "/redefinir-senha.html"
   });
 
   message.textContent = error
-    ? error.message
-    : "Enviamos as instruções de recuperação para seu e-mail.";
-});
-
-document.getElementById("registerLink").addEventListener("click", () => {
-  window.location.href = "cadastro.html";
+    ? "Não foi possível enviar o e-mail de recuperação."
+    : "Confira seu e-mail para recuperar sua senha.";
 });
 </script>
 
