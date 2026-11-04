@@ -6553,31 +6553,8 @@ try {
 
   if (!confirmar) return;
 
-  const { error } = await supabaseClient.auth.signOut();
-
-  if (error) {
-    alert("Não foi possível sair da conta: " + error.message);
-    return;
-  }
-
-  showPanel("auth");
-  alert("Você saiu da sua conta. Seus livros salvos não foram apagados.");
+  await window.sairDaConta();
 }
-  async function loadMyBooksFromSupabase() {
-  const { data: userData, error: userError } =
-    await supabaseClient.auth.getUser();
-
-  if (userError || !userData.user) return;
-
-  const { data, error } = await supabaseClient
-    .from("livros")
-    .select("*")
-    .eq("usuario_id", userData.user.id);
-
-  if (error) {
-    console.error("Erro ao carregar meus livros:", error);
-    return;
-  }
 
   const savedLocalBooks = Array.isArray(myBooks) ? myBooks : [];
 
