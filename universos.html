@@ -1,0 +1,224 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#100D20">
+<title>Universos — Multiverso Nerd</title>
+
+<style>
+:root {
+  --bg: #100D20;
+  --surface: #19152D;
+  --card: #211B3B;
+  --text: #F5F1FF;
+  --muted: #AAA0C7;
+  --border: #393052;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: Arial, sans-serif;
+  padding-bottom: 85px;
+}
+
+header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: rgba(16,13,32,.96);
+  border-bottom: 1px solid var(--border);
+  padding: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 19px;
+  font-weight: bold;
+}
+
+.logo {
+  font-size: 30px;
+  color: #A987FF;
+}
+
+main {
+  width: 100%;
+  max-width: 760px;
+  margin: auto;
+  padding: 20px 14px;
+}
+
+h1 {
+  font-size: 26px;
+  margin: 5px 0;
+}
+
+.subtitle {
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.5;
+  margin-bottom: 25px;
+}
+
+.section-title {
+  font-size: 18px;
+  margin: 25px 0 13px;
+}
+
+.universes {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.universe {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 22px 10px;
+  min-height: 112px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: white;
+  text-decoration: none;
+  transition: transform .2s, border-color .2s;
+}
+
+.universe:hover {
+  transform: translateY(-3px);
+  border-color: #8655F5;
+}
+
+.universe span {
+  display: block;
+  font-size: 28px;
+  margin-bottom: 9px;
+}
+
+.universe strong {
+  font-size: 12px;
+  letter-spacing: .5px;
+}
+
+.bottom-nav {
+  position: fixed;
+  z-index: 20;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #17132A;
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: space-around;
+  padding: 12px 3px;
+}
+
+.bottom-nav a {
+  text-decoration: none;
+  color: var(--muted);
+  text-align: center;
+  font-size: 11px;
+}
+
+.bottom-nav span {
+  display: block;
+  font-size: 21px;
+  margin-bottom: 4px;
+}
+
+.bottom-nav .active {
+  color: #B99BFF;
+}
+
+@media (min-width: 600px) {
+  main {
+    padding: 25px;
+  }
+
+  .universes {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="brand">
+    <span class="logo">🪐</span>
+    <span>Multiverso Nerd</span>
+  </div>
+</header>
+
+<main>
+  <h1>Explore seus universos</h1>
+  <div class="subtitle">
+    Escolha um universo, descubra novos conhecimentos e mergulhe nos assuntos que você ama.
+  </div>
+
+  <section class="universes">
+    <a class="universe" href="index.html">
+      <span>🏛️</span>
+      <strong>HISTÓRIA</strong>
+    </a>
+
+    <a class="universe" href="index.html">
+      <span>🌎</span>
+      <strong>GEOGRAFIA</strong>
+    </a>
+
+    <a class="universe" href="leitura.html">
+      <span>📚</span>
+      <strong>LEITURA</strong>
+    </a>
+
+    <a class="universe" href="cinefilos.html">
+      <span>🎬</span>
+      <strong>CINEMA</strong>
+    </a>
+
+    <a class="universe" href="games.html">
+      <span>🎮</span>
+      <strong>GAMES</strong>
+    </a>
+  </section>
+</main>
+
+<nav class="bottom-nav">
+  <a href="comunidade.html">
+    <span>⌂</span>Comunidade
+  </a>
+
+  <a href="universos.html" class="active">
+    <span>🪐</span>Universos
+  </a>
+
+  <a href="index.html">
+    <span>🏆</span>Competições
+  </a>
+
+  <a href="perfil.html">
+    <span>♙</span>Perfil
+  </a>
+</nav>
+
+</body>
+</html>
