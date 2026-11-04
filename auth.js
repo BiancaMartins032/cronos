@@ -2,7 +2,7 @@
 const SUPABASE_URL = "https://wzjopvvrallnaueecfnk.supabase.co";
 const SUPABASE_KEY = "sb_publishable_u0T3tEkGAjpuCXT5UKFlQA_-y3j9vNV";
 
- window.mnSupabaseClient = window.supabase.createClient(URL, KEY);
+ window.mnSupabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
   window.verificarAcesso = async function () {
     const { data, error } = await window.mnSupabaseClient.auth.getSession();
