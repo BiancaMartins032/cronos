@@ -170,7 +170,25 @@ document.getElementById("registerForm").addEventListener("submit", async (event)
     return;
   }
 
-  if (data.session) {
+    if (data.session) {
+    const user = data.user;
+
+    const { error: profileError } = await supabaseClient
+      .from("perfis")
+      .upsert(
+        {
+          id: user.id,
+          username: username,
+          nome: name
+        },
+        { onConflict: "id" }
+      );
+
+    if (profileError) {
+      message.textContent = "Conta criada, mas houve um problema ao sincronizar seu perfil: " + profileError.message;
+      return;
+    }
+
     message.textContent = "Conta criada! Redirecionando...";
     window.location.replace("comunidade.html");
   } else {
