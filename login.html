@@ -176,7 +176,7 @@ document.getElementById("loginForm").addEventListener("submit", async (event) =>
   const email = document.getElementById("email").value.trim();
   const password = document.getElementById("password").value;
 
-  const { error } = await supabaseClient.auth.signInWithPassword({
+    const { data, error } = await supabaseClient.auth.signInWithPassword({
     email,
     password
   });
@@ -184,6 +184,28 @@ document.getElementById("loginForm").addEventListener("submit", async (event) =>
   if (error) {
     message.textContent = "Não foi possível entrar. Verifique seu e-mail e sua senha.";
     return;
+  }
+
+  const user = data.user;
+  const username = user?.user_metadata?.username;
+  const nome = user?.user_metadata?.name || "";
+
+  if (username) {
+    const { error: profileError } = await supabaseClient
+      .from("perfis")
+      .upsert(
+        {
+          id: user.id,
+          username: username,
+          nome: nome
+        },
+        { onConflict: "id" }
+      );
+
+    if (profileError) {
+      message.textContent = "Login realizado, mas houve um problema ao sincronizar seu perfil: " + profileError.message;
+      return;
+    }
   }
 
   window.location.replace("comunidade.html");
