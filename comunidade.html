@@ -486,5 +486,27 @@ button {
   </a>
 </nav>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+const SUPABASE_URL = "https://wzjopvvrallnaueecfnk.supabase.co";
+const SUPABASE_KEY = "sb_publishable_u0T3tEkGAjpuCXT5UKFlQA_-y3j9vNV";
+
+const supabaseClient = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
+  supabaseClient.auth.getSession().then(({ data, error }) => {
+  if (error) {
+    console.error("Erro de autenticação:", error.message);
+    return;
+  }
+
+  console.log(
+    "Sessão encontrada:",
+    data.session ? "Usuário autenticado" : "Nenhum usuário conectado"
+  );
+});
+</script>
 </body>
 </html>
