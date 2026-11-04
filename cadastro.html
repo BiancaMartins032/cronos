@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Criar conta — Multiverso Nerd</title>
+
+<style>
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  font-family: Arial, sans-serif;
+  color: #f5f3ff;
+  background:
+    radial-gradient(circle at top, #30205c, transparent 45%),
+    linear-gradient(145deg, #090817, #15102b 60%, #080713);
+}
+
+.card {
+  width: 100%;
+  max-width: 420px;
+  padding: 32px 26px;
+  border: 1px solid #51417d;
+  border-radius: 22px;
+  background: #191430;
+  box-shadow: 0 20px 60px #0008;
+}
+
+.logo {
+  width: 60px;
+  height: 60px;
+  display: grid;
+  place-items: center;
+  margin: 0 auto 16px;
+  border-radius: 18px;
+  font-size: 28px;
+  background: linear-gradient(135deg, #7655e8, #287bdc);
+}
+
+h1 { margin: 0; text-align: center; font-size: 26px; }
+
+.subtitle {
+  margin: 10px 0 25px;
+  color: #aaa4c5;
+  text-align: center;
+  line-height: 1.5;
+}
+
+label {
+  display: block;
+  margin: 15px 0 7px;
+  color: #d9d4ef;
+  font-size: 14px;
+}
+
+input {
+  width: 100%;
+  padding: 14px;
+  border: 1px solid #51476f;
+  border-radius: 11px;
+  outline: none;
+  color: white;
+  background: #100d20;
+  font-size: 15px;
+}
+
+input:focus { border-color: #9275ff; }
+
+button {
+  width: 100%;
+  padding: 14px;
+  margin-top: 22px;
+  border: 0;
+  border-radius: 11px;
+  color: white;
+  background: linear-gradient(100deg, #7655e8, #3478df);
+  font-size: 15px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+a {
+  display: block;
+  margin-top: 20px;
+  color: #b9a8ff;
+  text-align: center;
+  font-size: 13px;
+  text-decoration: none;
+}
+
+.message {
+  min-height: 20px;
+  margin-top: 16px;
+  color: #f4c77b;
+  text-align: center;
+  font-size: 13px;
+  line-height: 1.5;
+}
+</style>
+</head>
+
+<body>
+
+<main class="card">
+  <div class="logo">✦</div>
+
+  <h1>Faça parte do Multiverso</h1>
+  <p class="subtitle">Crie sua conta e encontre pessoas que compartilham seus universos.</p>
+
+  <form id="registerForm">
+    <label for="name">Nome</label>
+    <input id="name" type="text" placeholder="Como quer ser chamado?" required maxlength="60">
+
+    <label for="username">Nome de usuário (@)</label>
+    <input id="username" type="text" placeholder="Ex.: aventureiro_nerd" required maxlength="20">
+
+    <label for="email">E-mail</label>
+    <input id="email" type="email" placeholder="Seu e-mail" required>
+
+    <label for="password">Senha</label>
+    <input id="password" type="password" placeholder="Mínimo de 6 caracteres" required minlength="6">
+
+    <button type="submit">CRIAR MINHA CONTA</button>
+  </form>
+
+  <p class="message" id="message"></p>
+
+  <a href="login.html">Já tenho uma conta — entrar</a>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+const SUPABASE_URL = "https://wzjopvvrallnaueecfnk.supabase.co";
+const SUPABASE_KEY = "sb_publishable_u0T3tEkGAjpuCXT5UKFlQA_-y3j9vNV";
+
+const supabaseClient = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
+
+const message = document.getElementById("message");
+
+document.getElementById("registerForm").addEventListener("submit", async (event) => {
+  event.preventDefault();
+
+  const name = document.getElementById("name").value.trim();
+  const username = document.getElementById("username").value.trim().toLowerCase();
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value;
+
+  if (!/^[a-z0-9_]{3,20}$/.test(username)) {
+    message.textContent = "O @ deve ter de 3 a 20 caracteres, usando letras, números ou _.";
+    return;
+  }
+
+  message.textContent = "Criando sua conta...";
+
+  const { data, error } = await supabaseClient.auth.signUp({
+    email,
+    password,
+    options: {
+      data: {
+        name,
+        username
+      }
+    }
+  });
+
+  if (error) {
+    message.textContent = error.message;
+    return;
+  }
+
+  if (data.session) {
+    message.textContent = "Conta criada! Redirecionando...";
+    window.location.href = "comunidade.html";
+  } else {
+    message.textContent = "Conta criada! Confira seu e-mail para confirmar o cadastro. Depois, entre pela página de login.";
+  }
+});
+</script>
+
+</body>
+</html>
