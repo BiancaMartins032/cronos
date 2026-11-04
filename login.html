@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Entrar — Multiverso Nerd</title>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  font-family: Arial, sans-serif;
+  color: #f5f3ff;
+  background:
+    radial-gradient(circle at top, #30205c 0%, transparent 45%),
+    linear-gradient(145deg, #090817, #15102b 60%, #080713);
+}
+
+.login {
+  width: 100%;
+  max-width: 420px;
+  padding: 34px 26px;
+  border: 1px solid #51417d;
+  border-radius: 22px;
+  background: rgba(25, 20, 48, 0.94);
+  box-shadow: 0 20px 60px #0008;
+}
+
+.logo {
+  width: 66px;
+  height: 66px;
+  display: grid;
+  place-items: center;
+  margin: 0 auto 18px;
+  border-radius: 20px;
+  font-size: 30px;
+  background: linear-gradient(135deg, #7655e8, #287bdc);
+}
+
+h1 {
+  margin: 0;
+  text-align: center;
+  font-size: 27px;
+}
+
+.subtitle {
+  margin: 10px 0 28px;
+  color: #aaa4c5;
+  text-align: center;
+  line-height: 1.5;
+}
+
+label {
+  display: block;
+  margin: 16px 0 7px;
+  color: #d9d4ef;
+  font-size: 14px;
+}
+
+input {
+  width: 100%;
+  padding: 14px;
+  border: 1px solid #51476f;
+  border-radius: 11px;
+  outline: none;
+  color: white;
+  background: #100d20;
+  font-size: 15px;
+}
+
+input:focus {
+  border-color: #9275ff;
+}
+
+button {
+  width: 100%;
+  padding: 14px;
+  margin-top: 18px;
+  border: 0;
+  border-radius: 11px;
+  color: white;
+  background: linear-gradient(100deg, #7655e8, #3478df);
+  font-size: 15px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.google {
+  margin-top: 12px;
+  border: 1px solid #625786;
+  background: #211a39;
+}
+
+.links {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+a {
+  color: #b9a8ff;
+  font-size: 13px;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.message {
+  min-height: 20px;
+  margin-top: 18px;
+  color: #f4c77b;
+  text-align: center;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.hidden {
+  display: none;
+}
+</style>
+</head>
+
+<body>
+
+<main class="login">
+  <div class="logo">✦</div>
+
+  <h1>Multiverso Nerd</h1>
+  <p class="subtitle">Conhecimento aproxima pessoas. Descubra seu universo.</p>
+
+  <form id="loginForm">
+    <label for="email">E-mail</label>
+    <input id="email" type="email" placeholder="Seu e-mail" required>
+
+    <label for="password">Senha</label>
+    <input id="password" type="password" placeholder="Sua senha" required>
+
+    <button type="submit">ENTRAR</button>
+  </form>
+
+  <button class="google" id="googleButton" type="button">
+    Entrar com Google
+  </button>
+
+  <div class="links">
+    <a id="registerLink">Criar conta</a>
+    <a id="forgotLink">Esqueci minha senha</a>
+  </div>
+
+  <p class="message" id="message"></p>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+const SUPABASE_URL = "https://wzjopvvrallnaueecfnk.supabase.co";
+const SUPABASE_KEY = "sb_publishable_u0T3tEkGAjpuCXT5UKFlQA_-y3j9vNV";
+
+const supabaseClient = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
+
+const message = document.getElementById("message");
+
+document.getElementById("loginForm").addEventListener("submit", async (event) => {
+  event.preventDefault();
+
+  message.textContent = "Verificando seus dados...";
+
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value;
+
+  const { error } = await supabaseClient.auth.signInWithPassword({
+    email,
+    password
+  });
+
+  if (error) {
+    message.textContent = error.message;
+    return;
+  }
+
+  window.location.href = "comunidade.html";
+});
+
+document.getElementById("googleButton").addEventListener("click", async () => {
+  message.textContent = "Conectando ao Google...";
+
+  const { error } = await supabaseClient.auth.signInWithOAuth({
+    provider: "google",
+    options: {
+      redirectTo: window.location.origin + "/comunidade.html"
+    }
+  });
+
+  if (error) message.textContent = error.message;
+});
+
+document.getElementById("forgotLink").addEventListener("click", async () => {
+  const email = document.getElementById("email").value.trim();
+
+  if (!email) {
+    message.textContent = "Digite seu e-mail primeiro.";
+    return;
+  }
+
+  const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
+    redirectTo: window.location.origin + "/redefinir-senha.html"
+  });
+
+  message.textContent = error
+    ? error.message
+    : "Enviamos as instruções de recuperação para seu e-mail.";
+});
+
+document.getElementById("registerLink").addEventListener("click", () => {
+  window.location.href = "cadastro.html";
+});
+</script>
+
+</body>
+</html>
