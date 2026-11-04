@@ -7695,17 +7695,15 @@ async function initializeApp() {
   renderMap();
   setAuthMode("login");
 
-  const { data, error } = await supabaseClient.auth.getSession();
+    const { data, error } = await supabaseClient.auth.getSession();
 
-  if (error) {
-    console.error("Erro ao verificar sessão:", error);
-    showPanel("auth");
+  if (error || !data.session) {
+    window.location.replace("login.html");
     return;
   }
 
-  if (data.session) {
+  {
     const user = data.session.user;
-
     profile.name =
       user.user_metadata?.name ||
       user.email ||
@@ -7728,14 +7726,13 @@ if (profileHeading) {
 }
     
     showPanel("discover");
-  } else {
-    showPanel("auth");
-  }
 
   applyCustomColors();
 }
 
-initializeApp();
+verificarAcesso().then((session) => {
+  if (session) initializeApp();
+});
 
 </script>
 </body>
