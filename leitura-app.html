@@ -3692,14 +3692,12 @@ style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:2px;width:
 </nav>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="auth.js"></script>
 <script>
   const SUPABASE_URL = "https://wzjopvvrallnaueecfnk.supabase.co";
 const SUPABASE_KEY = "sb_publishable_u0T3tEkGAjpuCXT5UKFlQA_-y3j9vNV";
 
-const supabaseClient = window.supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_KEY
-);
+const supabaseClient = window.mnSupabaseClient;
  supabaseClient
   .from("livros")
   .select("id")
