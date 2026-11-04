@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -135,16 +136,10 @@ a {
 </main>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="auth.js"></script>
 
 <script>
-const SUPABASE_URL = "https://wzjopvvrallnaueecfnk.supabase.co";
-const SUPABASE_KEY = "sb_publishable_u0T3tEkGAjpuCXT5UKFlQA_-y3j9vNV";
-
-const supabaseClient = window.supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_KEY
-);
-
+const supabaseClient = window.mnSupabaseClient;
 const message = document.getElementById("message");
 
 document.getElementById("registerForm").addEventListener("submit", async (event) => {
@@ -166,10 +161,7 @@ document.getElementById("registerForm").addEventListener("submit", async (event)
     email,
     password,
     options: {
-      data: {
-        name,
-        username
-      }
+      data: { name, username }
     }
   });
 
@@ -180,7 +172,7 @@ document.getElementById("registerForm").addEventListener("submit", async (event)
 
   if (data.session) {
     message.textContent = "Conta criada! Redirecionando...";
-    window.location.href = "comunidade.html";
+    window.location.replace("comunidade.html");
   } else {
     message.textContent = "Conta criada! Confira seu e-mail para confirmar o cadastro. Depois, entre pela página de login.";
   }
