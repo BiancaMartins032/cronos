@@ -1,0 +1,437 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#100D20">
+<title>Meu Perfil — Multiverso Nerd</title>
+
+<style>
+:root {
+  --bg:#100D20;
+  --surface:#19152D;
+  --card:#211B3B;
+  --purple:#8655F5;
+  --blue:#536DFF;
+  --text:#F5F1FF;
+  --muted:#AAA0C7;
+  --border:#393052;
+}
+* {box-sizing:border-box}
+body {
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:Arial,sans-serif;
+  padding-bottom:85px;
+}
+header {
+  position:sticky;
+  top:0;
+  z-index:5;
+  background:rgba(16,13,32,.97);
+  border-bottom:1px solid var(--border);
+  padding:15px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+.brand {font-size:19px;font-weight:bold}
+.brand span {color:#B99BFF;font-size:25px;margin-right:8px}
+.back {color:#B99BFF;text-decoration:none;font-size:13px}
+main {max-width:720px;margin:auto;padding:18px 14px}
+.card {
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:17px;
+  padding:17px;
+  margin-bottom:15px;
+}
+.profile-top {text-align:center;padding:25px 17px}
+.avatar {
+  width:110px;height:110px;border-radius:50%;
+  object-fit:cover;border:3px solid var(--purple);
+}
+.username {font-size:23px;margin:12px 0 5px}
+.handle {color:var(--muted);font-size:13px}
+.seal {
+  display:inline-block;
+  margin-top:12px;
+  padding:8px 13px;
+  border-radius:20px;
+  background:#422C77;
+  color:#DECFFF;
+  font-size:12px;
+}
+.stats {
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  margin-top:22px;
+  border-top:1px solid var(--border);
+  padding-top:17px;
+}
+.stat strong {display:block;font-size:19px}
+.stat span {font-size:11px;color:var(--muted)}
+.section-title {font-size:17px;margin:22px 0 12px}
+.bio {font-size:14px;line-height:1.6;color:#DED7F0}
+.interests {display:flex;flex-wrap:wrap;gap:8px}
+.tag {
+  background:#30254E;
+  color:#D8C8FF;
+  padding:9px 12px;
+  border-radius:20px;
+  font-size:12px;
+}
+.progress {
+  height:8px;
+  background:#332A49;
+  border-radius:20px;
+  overflow:hidden;
+  margin-top:9px;
+}
+.progress div {
+  height:100%;
+  width:75%;
+  background:linear-gradient(90deg,var(--purple),var(--blue));
+}
+.achievement {
+  display:flex;align-items:center;gap:12px;
+  padding:12px 0;
+  border-bottom:1px solid var(--border);
+}
+.achievement:last-child {border:0}
+.achievement-icon {font-size:27px}
+.achievement small {display:block;color:var(--muted);margin-top:4px}
+.collection-grid {
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:9px;
+}
+.collection {
+  background:var(--card);
+  border-radius:12px;
+  padding:15px 5px;
+  text-align:center;
+}
+.collection span {display:block;font-size:25px;margin-bottom:8px}
+.collection strong {font-size:12px}
+.collection small {display:block;color:var(--muted);margin-top:5px}
+button {
+  border:0;cursor:pointer;font-weight:bold;
+}
+.primary {
+  background:linear-gradient(120deg,var(--purple),var(--blue));
+  color:white;padding:12px 20px;border-radius:22px;
+}
+.secondary {
+  background:var(--card);color:#CBB7FF;
+  border:1px solid var(--border);
+  padding:11px 18px;border-radius:22px;
+}
+.full {width:100%;margin-top:15px}
+input,textarea {
+  width:100%;background:var(--card);
+  color:white;border:1px solid var(--border);
+  border-radius:10px;padding:12px;
+  font-family:Arial,sans-serif;font-size:14px;
+}
+textarea {min-height:100px;resize:vertical}
+label {display:block;font-size:13px;margin:15px 0 7px}
+.editor {display:none}
+.editor.open {display:block}
+.choice {
+  display:flex;align-items:center;gap:8px;
+  background:var(--card);padding:10px;
+  border-radius:10px;font-size:13px;
+}
+.choice input {width:auto;accent-color:var(--purple)}
+.post {
+  padding:13px 0;border-bottom:1px solid var(--border);
+  font-size:13px;line-height:1.5;
+}
+.post:last-child {border:0}
+.bottom-nav {
+  position:fixed;bottom:0;left:0;right:0;
+  z-index:10;background:#17132A;
+  border-top:1px solid var(--border);
+  display:flex;justify-content:space-around;
+  padding:12px 3px;
+}
+.bottom-nav a {
+  text-decoration:none;color:var(--muted);
+  text-align:center;font-size:11px;
+}
+.bottom-nav span {display:block;font-size:21px;margin-bottom:4px}
+.bottom-nav .active {color:#B99BFF}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="brand"><span>🪐</span>Multiverso Nerd</div>
+  <a class="back" href="comunidade.html">← Comunidade</a>
+</header>
+
+<main>
+
+<section class="card profile-top">
+  <img class="avatar"
+    src="https://i.pravatar.cc/200?img=12"
+    alt="Foto do perfil">
+
+  <h1 class="username" id="profileName">RafaelNerd</h1>
+  <div class="handle">@rafaelnerd</div>
+
+  <div class="seal" id="profileSeal">
+    ✦ Explorador dos Mundos
+  </div>
+
+  <div class="stats">
+    <div class="stat">
+      <strong>245</strong>
+      <span>Pontos</span>
+    </div>
+    <div class="stat">
+      <strong>18</strong>
+      <span>Amigos</span>
+    </div>
+    <div class="stat">
+      <strong>7</strong>
+      <span>Conquistas</span>
+    </div>
+  </div>
+
+  <button class="secondary full" onclick="toggleEditor()">
+    ✎ Editar meu perfil
+  </button>
+</section>
+
+<section class="card editor" id="editor">
+  <h2 class="section-title">Personalizar perfil</h2>
+
+  <label for="nameInput">Nome de exibição</label>
+  <input id="nameInput" maxlength="35"
+    placeholder="Como quer ser conhecido?">
+
+  <label for="bioInput">Biografia</label>
+  <textarea id="bioInput" maxlength="300"
+    placeholder="Por favor, coloque seus hobbies nerds na Bio."></textarea>
+
+  <h3 class="section-title">Quais são suas nerdices?</h3>
+  <p style="font-size:12px;color:var(--muted)">
+    Selecione os assuntos que realmente fazem parte dos seus interesses.
+  </p>
+
+  <div class="interests">
+    <label class="choice"><input type="checkbox" value="História"> História</label>
+    <label class="choice"><input type="checkbox" value="Geografia"> Geografia</label>
+    <label class="choice"><input type="checkbox" value="Literatura"> Literatura</label>
+    <label class="choice"><input type="checkbox" value="Cinema"> Cinema</label>
+    <label class="choice"><input type="checkbox" value="Games"> Games</label>
+    <label class="choice"><input type="checkbox" value="Anime e mangá"> Anime e mangá</label>
+    <label class="choice"><input type="checkbox" value="Ciência"> Ciência</label>
+    <label class="choice"><input type="checkbox" value="Mitologia"> Mitologia</label>
+    <label class="choice"><input type="checkbox" value="Tecnologia"> Tecnologia</label>
+    <label class="choice"><input type="checkbox" value="Astronomia"> Astronomia</label>
+    <label class="choice"><input type="checkbox" value="RPG"> RPG</label>
+    <label class="choice"><input type="checkbox" value="Quadrinhos"> Quadrinhos</label>
+  </div>
+
+  <button class="primary full" onclick="saveProfile()">
+    Salvar alterações
+  </button>
+  <button class="secondary full" onclick="toggleEditor()">
+    Cancelar
+  </button>
+</section>
+
+<section class="card">
+  <h2 class="section-title">Sobre mim</h2>
+  <p class="bio" id="bioDisplay">
+    Apaixonado por história antiga, mitologia, jogos de estratégia
+    e ficção científica. Sempre em busca de novos conhecimentos.
+  </p>
+</section>
+
+<section class="card">
+  <h2 class="section-title">Minhas nerdices</h2>
+  <div class="interests" id="interestDisplay">
+    <span class="tag">História</span>
+    <span class="tag">Games</span>
+    <span class="tag">Mitologia</span>
+    <span class="tag">Ficção científica</span>
+  </div>
+</section>
+
+<section class="card">
+  <h2 class="section-title">Especialidade nerd</h2>
+  <div style="font-size:14px">✦ Explorador dos Mundos</div>
+  <p style="font-size:12px;color:var(--muted)">
+    Seu selo principal será definido pelo desempenho nas competições.
+  </p>
+  <div class="progress"><div></div></div>
+  <p style="font-size:11px;color:var(--muted)">
+    Exemplo demonstrativo de progresso.
+  </p>
+</section>
+
+<section class="card">
+  <h2 class="section-title">Minhas coleções</h2>
+  <div class="collection-grid">
+    <div class="collection">
+      <span>📚</span>
+      <strong>Leitura</strong>
+      <small>12 livros</small>
+    </div>
+    <div class="collection">
+      <span>🎬</span>
+      <strong>Cinema</strong>
+      <small>35 títulos</small>
+    </div>
+    <div class="collection">
+      <span>🎮</span>
+      <strong>Games</strong>
+      <small>18 jogos</small>
+    </div>
+  </div>
+</section>
+
+<section class="card">
+  <h2 class="section-title">Minhas conquistas</h2>
+
+  <div class="achievement">
+    <span class="achievement-icon">🏆</span>
+    <div><strong>Primeiro desafio</strong>
+      <small>Participou da primeira competição.</small>
+    </div>
+  </div>
+
+  <div class="achievement">
+    <span class="achievement-icon">📚</span>
+    <div><strong>Leitor dedicado</strong>
+      <small>Concluiu uma coleção de leitura.</small>
+    </div>
+  </div>
+
+  <div class="achievement">
+    <span class="achievement-icon">🌎</span>
+    <div><strong>Explorador</strong>
+      <small>Participou de desafios de geografia.</small>
+    </div>
+  </div>
+</section>
+
+<section class="card">
+  <h2 class="section-title">Minhas publicações</h2>
+  <div class="post">
+    **Minha coleção de mapas históricos está crescendo!**
+    <br><small style="color:var(--muted)">História · Publicação demonstrativa</small>
+  </div>
+  <div class="post">
+    **Terminei mais um jogo de estratégia.**
+    <br><small style="color:var(--muted)">Games · Publicação demonstrativa</small>
+  </div>
+</section>
+
+</main>
+
+<nav class="bottom-nav">
+  <a href="comunidade.html"><span>⌂</span>Comunidade</a>
+  <a href="index.html"><span>🪐</span>Universos</a>
+  <a href="index.html"><span>🏆</span>Competições</a>
+  <a href="perfil.html" class="active"><span>♙</span>Perfil</a>
+</nav>
+
+<script>
+const defaultBio =
+  "Apaixonado por história antiga, mitologia, jogos de estratégia e ficção científica. Sempre em busca de novos conhecimentos.";
+
+function toggleEditor() {
+  const editor = document.getElementById("editor");
+  editor.classList.toggle("open");
+
+  if (editor.classList.contains("open")) {
+    document.getElementById("nameInput").value =
+      localStorage.getItem("mn_profile_name") || "RafaelNerd";
+
+    document.getElementById("bioInput").value =
+      localStorage.getItem("mn_profile_bio") || defaultBio;
+
+    const saved = JSON.parse(
+      localStorage.getItem("mn_profile_interests") || "[]"
+    );
+
+    document.querySelectorAll(
+      '#editor input[type="checkbox"]'
+    ).forEach(input => {
+      input.checked = saved.includes(input.value);
+    });
+  }
+}
+
+function saveProfile() {
+  const name = document.getElementById("nameInput").value.trim();
+  const bio = document.getElementById("bioInput").value.trim();
+
+  if (!name) {
+    alert("Digite seu nome de exibição.");
+    return;
+  }
+
+  const interests = Array.from(
+    document.querySelectorAll(
+      '#editor input[type="checkbox"]:checked'
+    )
+  ).map(input => input.value);
+
+  localStorage.setItem("mn_profile_name", name);
+  localStorage.setItem("mn_profile_bio", bio);
+  localStorage.setItem(
+    "mn_profile_interests",
+    JSON.stringify(interests)
+  );
+
+  renderProfile();
+  document.getElementById("editor").classList.remove("open");
+  alert("Perfil atualizado neste navegador!");
+}
+
+function renderProfile() {
+  document.getElementById("profileName").textContent =
+    localStorage.getItem("mn_profile_name") || "RafaelNerd";
+
+  document.getElementById("bioDisplay").textContent =
+    localStorage.getItem("mn_profile_bio") || defaultBio;
+
+  const interests = JSON.parse(
+    localStorage.getItem("mn_profile_interests") || "[]"
+  );
+
+  if (interests.length) {
+    document.getElementById("interestDisplay").innerHTML =
+      interests.map(item =>
+        `<span class="tag"></span>`.replace(
+          '<span class="tag"></span>',
+          '<span class="tag">' + escapeText(item) + '</span>'
+        )
+      ).join("");
+  }
+}
+
+function escapeText(value) {
+  return value.replace(/[&<>"']/g, char => ({
+    "&":"&amp;",
+    "<":"&lt;",
+    ">":"&gt;",
+    '"':"&quot;",
+    "'":"&#39;"
+  })[char]);
+}
+
+renderProfile();
+</script>
+
+</body>
+</html>
