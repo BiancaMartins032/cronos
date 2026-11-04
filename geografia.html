@@ -1,0 +1,1661 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">   
+<meta name="theme-color" content="#FFF4E1">
+<title>Cronos — História do Mundo</title>
+
+<style>
+:root {
+  --bg: #FFF4E1;
+  --surface: #FFFAF1;
+  --text: #543B32;
+  --muted: #806D55;
+  --accent: #A18A46;
+  --line: #64501D; 
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: Arial, sans-serif;
+}
+
+header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: rgba(245,242,236,.96);
+  backdrop-filter: blur(12px);
+  padding: 18px 20px;
+  border-bottom: 1px solid #e8e2d9;
+}
+
+.header-inner {
+  max-width: 850px;
+  margin: auto;
+}
+
+.top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.logo {
+  font-family: Georgia, serif;
+  font-size: 29px;
+  letter-spacing: 3px;
+  font-weight: bold;
+}
+
+.subtitle {
+  color: var(--muted);
+  font-size: 10px;
+  letter-spacing: 2px;
+  margin-top: 5px;
+}
+
+.search {
+  width: 100%;
+  margin-top: 17px;
+  padding: 13px 15px;
+  border: 1px solid #e2dce6;
+  border-radius: 12px;
+  background: white;
+  font-size: 14px;
+  outline: none;
+}
+
+.filters {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-top: 12px;
+  scrollbar-width: none;
+}
+
+.filter {
+  border: 1px solid #ddd5e7;
+  background: white;
+  color: #625d69;
+  padding: 8px 13px;
+  border-radius: 20px;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.filter.active {
+  background: var(--accent);
+  color: white;
+  border-color: var(--accent);
+}
+
+main {
+  max-width: 850px;
+  margin: auto;
+  padding: 28px 18px 60px;
+}
+
+.intro {
+  margin-bottom: 28px;
+}
+
+.intro h1 {
+  font-family: Georgia, serif;
+  font-size: 27px;
+  font-weight: normal;
+  margin: 0 0 8px;
+}
+
+.intro p {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+
+
+
+.timeline {
+  position: relative;
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 25px 0;
+}
+
+.timeline::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 3px;
+  transform: translateX(-50%);
+  background: #64501D;
+}
+
+.timeline-row {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 170px minmax(0, 1fr);
+  align-items: center;
+  gap: 24px;
+  margin-bottom: 45px;
+}
+
+.flag {
+  position: relative;
+  justify-self: end;
+  width: 100%;
+  max-width: 430px;
+  min-height: 135px;
+  padding: 22px 42px 22px 25px;
+  background: #A18A46;
+  color: #543B32;
+  border: 1px solid #64501D;
+  clip-path: polygon(0 0, 92% 0, 100% 50%, 92% 100%, 0 100%);
+  box-shadow: 0 4px 8px rgba(84, 59, 50, .12);
+}
+
+.flag-category {
+  margin-bottom: 8px;
+  color: #FFF4E1;
+  font-size: 10px;
+  font-weight: bold;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+
+.flag h2 {
+  margin: 0 0 8px;
+  font-family: Georgia, serif;
+  font-size: 20px;
+  font-weight: normal;
+  line-height: 1.25;
+  color: #543B32;
+}
+
+.flag p {
+  margin: 0;
+  color: #FFF4E1;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.date-circle {
+  position: relative;
+  z-index: 1;
+  width: 155px;
+  height: 155px;
+  justify-self: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 15px;
+  border: 4px solid #64501D;
+  border-radius: 50%;
+  background: #FFF4E1;
+  color: #543B32;
+  font-family: Georgia, serif;
+  font-size: 25px;
+  font-weight: bold;
+  line-height: 1.2;
+  text-align: center;
+  box-shadow: 0 3px 12px rgba(84, 59, 50, .16);
+}
+
+.illustration {
+  width: 100%;
+  max-width: 330px;
+  height: 185px;
+  justify-self: start;
+  object-fit: contain;
+  background: transparent;
+  filter: sepia(.28) contrast(1.05);
+}
+
+.timeline-row:hover .date-circle {
+  border-color: #A18A46;
+  transform: scale(1.04);
+  transition: .2s;
+}
+
+@media (max-width: 650px) {
+  .timeline {
+    padding: 15px 0;
+  }
+
+  .timeline-row {
+    grid-template-columns: minmax(0, 1fr) 88px minmax(0, .75fr);
+    gap: 6px;
+    margin-bottom: 28px;
+  }
+
+  .flag {
+    min-height: 105px;
+    padding: 12px 22px 12px 10px;
+  }
+
+  .flag-category {
+    font-size: 8px;
+    letter-spacing: .7px;
+  }
+
+  .flag h2 {
+    font-size: 12px;
+  }
+
+  .flag p {
+    font-size: 10px;
+  }
+
+  .date-circle {
+    width: 84px;
+    height: 84px;
+    padding: 5px;
+    border-width: 3px;
+    font-size: 13px;
+  }
+
+  .illustration {
+    height: 105px;
+    width: 100%;
+  }
+}
+
+
+
+.empty {
+  display: none;
+  text-align: center;
+  padding: 40px 10px;
+  color: var(--muted);
+}
+
+.modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(20,20,25,.65);
+  z-index: 30;
+  overflow-y: auto;
+  padding: 20px;
+}
+
+.modal.open {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.modal-content {
+  width: 100%;
+  max-width: 650px;
+  background: var(--bg);
+  border-radius: 18px;
+  overflow: hidden;
+  margin: auto;
+}
+
+.modal-image {
+  width: 100%;
+  max-height: 330px;
+  object-fit: cover;
+  display: block;
+}
+
+.modal-body {
+  padding: 23px;
+}
+
+.close {
+  float: right;
+  border: 0;
+  background: #e8e1ed;
+  color: var(--text);
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.modal-body h2 {
+  font-family: Georgia, serif;
+  font-size: 27px;
+  font-weight: normal;
+  margin: 12px 0;
+}
+
+.modal-body p {
+  color: #55525b;
+  line-height: 1.8;
+  font-size: 14px;
+}
+
+.detail-label {
+  font-weight: bold;
+  margin-top: 24px;
+}
+
+@media(min-width:650px) {
+  main {
+    padding-top: 38px;
+  }
+
+  .event img {
+    height: 230px;
+  }
+}
+  /* PALETA OFICIAL DO CRONOS */
+
+body {
+  background: #FFF4E1;
+  color: #543B32;
+}
+
+header {
+  background: rgba(255, 244, 225, .96);
+  border-bottom-color: #A18A46;
+}
+
+.logo,
+.intro h1,
+.modal-body h2 {
+  color: #543B32;
+}
+
+.subtitle,
+.intro p,
+.empty {
+  color: #806D55;
+}
+
+.search {
+  background: #FFFAF1;
+  color: #543B32;
+  border-color: #A18A46;
+}
+
+.filter {
+  background: #FFFAF1;
+  color: #543B32;
+  border-color: #A18A46;
+}
+
+.filter.active {
+  background: #A18A46;
+  color: #FFFAF1;
+  border-color: #A18A46;
+}
+
+.timeline::before {
+  background: #64501D;
+}
+
+.flag {
+  background: #A18A46;
+  color: #FFFAF1;
+}
+
+.flag-category {
+  color: #FFF4E1;
+}
+
+.flag h2 {
+  color: #FFFAF1;
+}
+
+.flag p {
+  color: #FFF4E1;
+}
+
+.date-circle {
+  background: #FFFAF1;
+  border-color: #64501D;
+  color: #543B32;
+}
+
+.timeline-row:hover .date-circle {
+  border-color: #A18A46;
+}
+
+.modal {
+  background: rgba(54, 42, 20, .68);
+}
+
+.modal-content {
+  background: #FFF4E1;
+  border-color: #A18A46;
+}
+
+.modal-body {
+  color: #543B32;
+}
+
+.modal-body p {
+  color: #645548;
+}
+
+.close {
+  background: #A18A46;
+  color: #FFFAF1;
+}
+
+button:focus-visible,
+input:focus-visible {
+  outline-color: #A18A46;
+}
+  .main-tabs {
+  display: flex;
+  gap: 10px;
+  margin-top: 22px;
+  border-bottom: 1px solid #A18A46;
+}
+
+.main-tab {
+  border: none;
+  background: transparent;
+  color: #806D55;
+  padding: 12px 22px;
+  font-size: 15px;
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+}
+
+.main-tab.active {
+  color: #543B32;
+  border-bottom-color: #A18A46;
+  font-weight: bold;
+}
+
+#geografiaPage {
+  padding-bottom: 40px;
+}
+
+#worldMap {
+  width: 100%;
+  height: min(65vh, 650px);
+  min-height: 450px;
+  margin: 12px auto 24px;
+  background: linear-gradient(
+    to bottom,
+    #FFFFFF 0%,
+    #E8F2FA 25%,
+    #BBD5EA 50%,
+    #477EAD 75%,
+    #173B63 100%
+  ) !important;
+  border: 1px solid #A18A46;
+  border-radius: 8px;
+  overflow: hidden;
+  display: block;
+  position: relative;
+  touch-action: none;
+  cursor: grab;
+}
+
+#worldMap:active {
+  cursor: grabbing;
+}
+
+#worldMap svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+#countryInfo {
+  margin-top: 20px;
+}
+  .region-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+  margin: 25px 0;
+}
+
+.region-card {
+  min-height: 145px;
+  padding: 25px 20px;
+  border: 1px solid #A18A46;
+  border-radius: 12px;
+  background: #FFFAF1;
+  box-shadow: 0 4px 12px rgba(84, 59, 50, .10);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+}
+
+.region-card h2 {
+  margin: 0 0 12px;
+  color: #543B32;
+  font-family: Georgia, serif;
+  font-size: 19px;
+}
+
+.region-card p {
+  margin: 0;
+  color: #806D55;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+@media (max-width: 650px) {
+  .region-cards {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .region-card {
+    min-height: 110px;
+  }
+}
+  #worldMap .climate-legend-bar {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 10;
+  padding: 12px 24px 10px;
+  background: rgba(20, 45, 67, 0.94);
+  box-sizing: border-box;
+  pointer-events: none;
+}
+
+#worldMap .climate-legend-gradient {
+  height: 18px;
+  border-radius: 4px;
+  background: linear-gradient(
+    to right,
+    #D94D3F,
+    #E98A45,
+    #F2D16B,
+    #78B86A,
+    #75B9C9,
+    #BBD5EA,
+    #FFFFFF
+  );
+}
+
+#worldMap .climate-legend-labels {
+  display: grid;
+  grid-template-columns: 1.3fr 0.8fr 0.8fr;
+  grid-template-rows: repeat(3, auto);
+  grid-auto-flow: row;
+  align-items: center;
+  gap: 9px 24px;
+  color: #FFFFFF;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+#worldMap .climate-legend-labels span {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  white-space: nowrap;
+}
+
+#worldMap .climate-legend-labels span:nth-child(1) { grid-column: 1; grid-row: 1; }
+#worldMap .climate-legend-labels span:nth-child(2) { grid-column: 1; grid-row: 2; }
+#worldMap .climate-legend-labels span:nth-child(3) { grid-column: 1; grid-row: 3; }
+#worldMap .climate-legend-labels span:nth-child(4) { grid-column: 2; grid-row: 1; }
+#worldMap .climate-legend-labels span:nth-child(5) { grid-column: 3; grid-row: 1; }
+#worldMap .climate-legend-labels span:nth-child(6) { grid-column: 2; grid-row: 2; }
+#worldMap .climate-legend-labels span:nth-child(7) { grid-column: 3; grid-row: 2; }
+
+#worldMap .climate-legend-labels i {
+  display: inline-block;
+  width: 13px;
+  height: 13px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+  #homePage {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  background: #FFFFFF;
+}
+
+#homePage button {
+  width: min(280px, 80vw);
+  padding: 18px 20px;
+  border: 1px solid #64501D;
+  border-radius: 12px;
+  background: #A18A46;
+  color: #FFFAF1;
+  font-size: 16px;
+  font-weight: bold;
+  letter-spacing: 1px;
+  cursor: pointer;
+}
+  #backHome {
+  margin: 12px 20px;
+  padding: 9px 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--accent);
+  color: #FFFAF1;
+  font-size: 12px;
+  font-weight: bold;
+  cursor: pointer;
+}
+</style>
+</head>
+
+<body>
+  <div id="homePage">
+  <button onclick="showPage('historia')">HISTÓRIA</button>
+  <button onclick="showPage('geografia')">GEOGRAFIA</button>
+  <button onclick="window.location.href='leitura.html'">LEITURA</button>
+  <button onclick="window.location.href='cinefilos.html'">CINEMA</button>
+  <button onclick="window.location.href='games.html'">GAMES</button>
+</div>
+
+<header id="appHeader" style="display:none;">
+  <button id="backHome" onclick="backToHome()">← MENU INICIAL</button>
+  <div class="header-inner">
+    <div class="top">
+  <div>
+    <div class="logo">CRONOS</div>
+    <div class="subtitle">HISTÓRIA E GEOGRAFIA DO MUNDO</div>
+  </div>
+  <span>⌛</span>
+</div>
+
+    <input
+      id="search"
+      class="search"
+      placeholder="Pesquisar acontecimentos, pessoas..."
+    >
+
+    <div class="filters" id="filters">
+      <button class="filter active" data-category="Todos">Todos</button>
+      <button class="filter" data-category="Política">Política</button>
+      <button class="filter" data-category="Ciência">Ciência</button>
+      <button class="filter" data-category="Guerras">Guerras</button>
+      <button class="filter" data-category="Religião">Religião</button>
+      <button class="filter" data-category="Cultura">Cultura</button>
+    </div>
+  </div>
+</header>
+
+<main id="appMain" style="display:none;">
+  <section id="historiaPage">
+  <section class="intro">
+    <h1>Uma viagem pela história</h1>
+    <p>Explore acontecimentos que transformaram o mundo, desde as primeiras civilizações até os dias atuais.</p>
+  </section>
+
+  <section class="timeline" id="timeline"></section>
+  <div class="empty" id="empty">Nenhum acontecimento encontrado.</div>
+    </section>
+
+<section id="geografiaPage" style="display:none;">
+  <div class="intro">
+    <h1>Explore o mundo</h1>
+    <p>Selecione um país no mapa para conhecer sua bandeira, idiomas, cultura e gastronomia.</p>
+  </div>
+
+  <div id="worldMap">
+  <div id="mapLoading">Carregando mapa-múndi...</div>
+</div>
+
+<div id="countryInfo"></div>
+</section>
+</main>
+
+<div class="modal" id="modal">
+  <div class="modal-content">
+    <img class="modal-image" id="modalImage" alt="">
+    <div class="modal-body">
+      <button class="close" id="closeModal">×</button>
+      <div class="category" id="modalCategory"></div>
+      <h2 id="modalTitle"></h2>
+      <div class="date" id="modalDate"></div>
+
+      <div class="detail-label">O que aconteceu?</div>
+      <p id="modalDescription"></p>
+
+      <div class="detail-label">Importância histórica</div>
+      <p id="modalImportance"></p>
+
+      <div class="detail-label">Contexto histórico</div>
+      <p id="modalContext"></p>
+
+      <div class="detail-label">Local</div>
+      <p id="modalLocation"></p>
+    </div>
+  </div>
+</div>
+
+  <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+<script src="https://cdn.jsdelivr.net/npm/topojson-client@3"></script>
+<script>
+const events = [
+  {
+    date: "c. 3500 a.C.",
+    sort: -3500,
+    title: "Desenvolvimento das primeiras cidades de Uruk",
+    category: "Cultura",
+    location: "Mesopotâmia, atual Iraque",
+    image: "https://commons.wikimedia.org/wiki/Special:FilePath/White_Temple_ziggurat_in_Uruk.jpg",
+    summary: "Uruk tornou-se um dos primeiros grandes centros urbanos da humanidade.",
+    description: "Na região da Mesopotâmia, a cidade de Uruk cresceu e desenvolveu estruturas administrativas, templos, comércio e organização social complexa.",
+    importance: "O desenvolvimento de Uruk representa uma transformação fundamental na história da urbanização e da organização das sociedades humanas.",
+    context: "O crescimento agrícola, a irrigação e a especialização do trabalho permitiram o surgimento de grandes centros populacionais."
+  },
+  {
+    date: "c. 3400–3200 a.C.",
+    sort: -3300,
+    title: "Desenvolvimento da escrita cuneiforme",
+    category: "Cultura",
+    location: "Mesopotâmia",
+    image: "https://commons.wikimedia.org/wiki/Special:FilePath/Cuneiform_script2.jpg",
+    summary: "Surgimento dos primeiros sistemas de escrita conhecidos.",
+    description: "Os habitantes da Mesopotâmia desenvolveram sistemas de registro usando sinais gravados em tabuletas de argila. Esses registros estavam inicialmente ligados à administração e à contabilidade.",
+    importance: "A escrita possibilitou registrar informações, administrar cidades e transmitir conhecimentos entre gerações.",
+    context: "O crescimento das cidades e das atividades comerciais exigia métodos mais eficientes de controle e registro."
+  },
+  {
+    date: "c. 3100 a.C.",
+    sort: -3100,
+    title: "Unificação do Egito Antigo",
+    category: "Política",
+    location: "Vale do Nilo, Egito",
+    image: "https://commons.wikimedia.org/wiki/Special:FilePath/Narmer_Palette.jpg",
+    summary: "Consolidação de um Estado unificado no vale do Nilo.",
+    description: "O Alto e o Baixo Egito foram unificados em um processo tradicionalmente associado ao governante Narmer.",
+    importance: "A unificação estabeleceu as bases do Estado faraônico e de uma civilização que influenciaria profundamente a história do Mediterrâneo e do nordeste africano.",
+    context: "Comunidades agrícolas do vale do Nilo desenvolveram estruturas políticas e administrativas progressivamente mais complexas."
+  },
+  {
+    date: "c. 2600 a.C.",
+    sort: -2600,
+    title: "Construção das grandes pirâmides de Gizé",
+    category: "Cultura",
+    location: "Egito",
+    image: "https://commons.wikimedia.org/wiki/Special:FilePath/Giza-pyramids.JPG",
+    summary: "Construção de monumentos funerários monumentais para os faraós.",
+    description: "Durante o Reino Antigo do Egito, foram construídas as pirâmides de Quéops, Quéfren e Miquerinos, em Gizé.",
+    importance: "As pirâmides demonstram a capacidade de organização administrativa, técnica e econômica da sociedade egípcia.",
+    context: "O poder centralizado dos faraós permitia mobilizar trabalhadores, recursos e conhecimentos especializados."
+  },
+  {
+    date: "c. 1754 a.C.",
+    sort: -1754,
+    title: "Código de Hamurábi",
+    category: "Política",
+    location: "Babilônia, Mesopotâmia",
+    image: "https://commons.wikimedia.org/wiki/Special:FilePath/Code-de-Hammurabi-1.jpg",
+    summary: "Registro de um dos mais conhecidos conjuntos de leis da Antiguidade.",
+    description: "O rei Hamurábi da Babilônia promoveu um conjunto de decisões jurídicas inscritas em uma estela de pedra.",
+    importance: "O código é uma fonte fundamental para estudar justiça, sociedade, propriedade e autoridade política na antiga Mesopotâmia.",
+    context: "A Babilônia consolidava seu poder político sobre diferentes cidades e populações da região."
+  },
+  {
+    date: "776 a.C.",
+    sort: -776,
+    title: "Primeiros Jogos Olímpicos registrados",
+    category: "Cultura",
+    location: "Olímpia, Grécia",
+    image: "https://commons.wikimedia.org/wiki/Special:FilePath/Stadium_at_Olympia.jpg",
+    summary: "Primeira edição tradicionalmente registrada dos Jogos Olímpicos antigos.",
+    description: "Os jogos eram realizados em Olímpia, na Grécia, como parte de festivais religiosos dedicados a Zeus.",
+    importance: "Os Jogos Olímpicos tornaram-se uma das tradições culturais mais duradouras do mundo antigo.",
+    context: "As competições faziam parte da vida religiosa e social das cidades gregas."
+  },
+  {
+    date: "753 a.C.",
+    sort: -753,
+    title: "Fundação lendária de Roma",
+    category: "Política",
+    location: "Península Itálica",
+    image: "https://commons.wikimedia.org/wiki/Special:FilePath/Capitoline_she-wolf_Musei_Capitolini_MC1181.jpg",
+    summary: "Data tradicionalmente associada à fundação de Roma.",
+    description: "Segundo a tradição romana, Rômulo fundou Roma após o episódio lendário envolvendo ele e seu irmão Remo.",
+    importance: "Roma se tornaria uma das cidades mais influentes da história, dando origem a uma república e posteriormente a um vasto império.",
+    context: "A arqueologia indica que a região já era ocupada por comunidades antes da data tradicional de fundação."
+  },
+  {
+    date: "27 a.C.",
+    sort: -27,
+    title: "Início do Império Romano",
+    category: "Política",
+    location: "Roma, atual Itália",
+    image: "https://commons.wikimedia.org/wiki/Special:FilePath/Augustus_of_Prima_Porta.jpg",
+    summary: "Otávio recebe o título de Augusto e inaugura o regime imperial.",
+    description: "Após as guerras civis romanas, Otávio consolidou seu poder e recebeu o título de Augusto do Senado.",
+    importance: "O novo regime transformou a estrutura política romana e iniciou um período de enorme expansão e influência cultural.",
+    context: "A República Romana havia enfrentado décadas de disputas políticas e conflitos militares."
+  },
+  {
+    date: "476 d.C.",
+    sort: 476,
+    title: "Queda do Império Romano do Ocidente",
+    category: "Política",
+    location: "Ravena, atual Itália",
+    image: "https://commons.wikimedia.org/wiki/Special:FilePath/Romulus_Augustus_and_Odoacer.jpg",
+    summary: "Deposição do último imperador romano do Ocidente.",
+    description: "Odoacro depôs Rômulo Augústulo, acontecimento tradicionalmente utilizado como marco do fim do Império Romano do Ocidente.",
+    importance: "O episódio simboliza uma grande transformação política na Europa ocidental e é frequentemente usado como referência para o fim da Antiguidade.",
+    context: "O império já estava enfraquecido por crises políticas, econômicas e militares."
+  },
+  
+  {
+    date: "551 a.C.",
+    sort: -551,
+    title: "Nascimento de Confúcio",
+    category: "Cultura",
+    location: "Estado de Lu, atual China",
+    image: "https://upload.wikimedia.org/wikipedia/commons/f/f2/%E5%AD%94%E5%AD%90%E7%87%95%E5%B1%85%E5%83%8F.jpg",
+    summary: "Nascimento de um dos pensadores mais influentes da história chinesa.",
+    description: "Confúcio foi filósofo, educador e pensador chinês. Seus ensinamentos abordavam ética, educação, relações sociais e governo.",
+    importance: "Suas ideias influenciaram profundamente a China e outras sociedades do leste asiático.",
+    context: "Seus ensinamentos foram transmitidos por seus discípulos e reunidos em obras como os Analectos. As datas tradicionais de sua vida são 551 a.C. a 479 a.C."
+  },
+  {
+    date: "539 a.C.",
+    sort: -539,
+    title: "Conquista da Babilônia por Ciro, o Grande",
+    category: "Guerras",
+    location: "Babilônia, atual Iraque",
+    image: "https://commons.wikimedia.org/wiki/Special:FilePath/Cyrus_Cylinder_2.jpg",
+    summary: "O Império Persa conquista a capital do Império Neobabilônico.",
+    description: "Ciro II, conhecido como Ciro, o Grande, conquistou a Babilônia e incorporou seus territórios ao Império Aquemênida.",
+    importance: "A conquista encerrou o domínio do Império Neobabilônico e ampliou o poder persa.",
+    context: "O Cilindro de Ciro é uma inscrição associada ao governo do conquistador e à tomada da Babilônia."
+  },
+  {
+    date: "508–507 a.C.",
+    sort: -507,
+    title: "Reformas de Clístenes em Atenas",
+    category: "Política",
+    location: "Atenas, Grécia",
+    image: "https://cdn.thecollector.com/wp-content/uploads/2025/03/Cleisthenes-Ohio-Christoforidis-Wikipedia.jpg?dpr=2&quality=100&width=921",
+    summary: "Reformas políticas reorganizam a participação dos cidadãos atenienses.",
+    description: "Clístenes reorganizou a estrutura política de Atenas, criando novas divisões cívicas e fortalecendo instituições de participação dos cidadãos.",
+    importance: "Suas reformas são consideradas um marco importante no desenvolvimento da democracia ateniense.",
+    context: "A participação política era restrita aos homens livres considerados cidadãos. Mulheres, pessoas escravizadas e estrangeiros não tinham os mesmos direitos."
+  },
+  {
+    date: "490 a.C.",
+    sort: -490,
+    title: "Batalha de Maratona",
+    category: "Guerras",
+    location: "Maratona, Grécia",
+    image: "https://gladiusetstilus.files.wordpress.com/2020/08/maraton.jpg?w=1652",
+    summary: "Atenas e seus aliados derrotam uma força militar persa.",
+    description: "As forças atenienses, apoiadas pelos plateenses, enfrentaram e derrotaram os persas na planície de Maratona.",
+    importance: "A vitória fortaleceu Atenas e tornou-se um dos episódios mais conhecidos das Guerras Greco-Persas.",
+    context: "O confronto ocorreu durante a expansão persa pelo mundo grego. Novas campanhas persas aconteceriam nos anos seguintes."
+  },
+  {
+    date: "334 a.C.",
+    sort: -334,
+    title: "Início da campanha de Alexandre, o Grande, contra a Pérsia",
+    category: "Guerras",
+    location: "Ásia Menor, atual Turquia",
+    image: "https://commons.wikimedia.org/wiki/Special:FilePath/Alexander_Mosaic_%286000_x_3730%29.jpg",
+    summary: "Alexandre atravessa o Helesponto e inicia sua campanha contra o Império Persa.",
+    description: "Em 334 a.C., Alexandre iniciou a invasão do Império Aquemênida. Uma de suas primeiras grandes vitórias ocorreu na Batalha do Grânico.",
+    importance: "Sua campanha derrubou o domínio persa e contribuiu para a expansão da cultura helenística por regiões da Ásia e do norte da África.",
+    context: "Alexandre havia assumido o trono da Macedônia após a morte de seu pai, Filipe II, e liderou uma expedição formada por macedônios e aliados gregos."
+  },
+  {
+    date: "c. 321 a.C.",
+    sort: -321,
+    title: "Fundação do Império Maurya",
+    category: "Política",
+    location: "Magadha, atual Índia",
+    image: "https://smarthistory.org/wp-content/uploads/2022/07/Sarnath_capital-scaled.jpg",
+    summary: "Chandragupta Maurya estabelece um dos grandes impérios da história indiana.",
+    description: "Chandragupta Maurya fundou uma dinastia que expandiu seu domínio por grande parte do subcontinente indiano.",
+    importance: "O Império Maurya foi um dos primeiros grandes impérios a unificar extensas regiões da Índia sob uma administração centralizada.",
+    context: "A formação do império ocorreu em um período de transformações políticas no norte da Índia, após as campanhas de Alexandre na região."
+  },
+  {
+    date: "c. 268 a.C.",
+    sort: -268,
+    title: "Ascensão de Ashoka ao poder",
+    category: "Política",
+    location: "Império Maurya, atual Índia",
+    image: "https://smarthistory.org/wp-content/uploads/2022/07/Sarnath_capital-scaled.jpg",
+    summary: "Ashoka assume o governo de um dos maiores impérios da Antiguidade.",
+    description: "Ashoka tornou-se governante do Império Maurya. Após a conquista de Kalinga, tradicionalmente situada por volta de 261 a.C., passou a expressar em seus editos preocupação com o sofrimento causado pela guerra.",
+    importance: "Promoveu princípios associados ao budismo e deixou inscrições em rochas e pilares que registram suas ideias e decisões políticas.",
+    context: "A conquista de Kalinga foi um episódio marcante de seu reinado e aparece relacionada à transformação de sua postura diante da violência."
+  },
+  {
+    date: "264 a.C.",
+    sort: -264,
+    title: "Início da Primeira Guerra Púnica",
+    category: "Guerras",
+    location: "Sicília e Mediterrâneo Ocidental",
+    image: "https://commons.wikimedia.org/wiki/Special:FilePath/Hannibal_crossing_the_Alps.jpg",
+    summary: "Roma e Cartago iniciam uma disputa pelo controle do Mediterrâneo Ocidental.",
+    description: "O conflito começou em 264 a.C., principalmente pela disputa de influência sobre a Sicília e as rotas marítimas da região.",
+    importance: "A vitória romana, em 241 a.C., marcou o início da expansão de Roma para além da península Itálica.",
+    context: "A Primeira Guerra Púnica foi a primeira de três grandes guerras travadas entre Roma e Cartago."
+  },
+  {
+    date: "221 a.C.",
+    sort: -221,
+    title: "Unificação da China pela dinastia Qin",
+    category: "Política",
+    location: "China",
+    image: "https://www.chinesehistorydigest.com/images/historic-sights/terracotta-warriors-museum/hall-pit1-terracotta-warriors-1280.jpg",
+    summary: "Qin Shi Huang unifica os Estados em guerra e torna-se o primeiro imperador da China.",
+    description: "O Estado de Qin derrotou seus rivais e estabeleceu um governo centralizado sobre os territórios chineses.",
+    importance: "A unificação fortaleceu a administração central, padronizou sistemas de escrita, medidas e moeda.",
+    context: "Embora a dinastia Qin tenha durado pouco tempo, suas reformas administrativas deixaram marcas duradouras na história chinesa."
+  },
+  {
+    date: "44 a.C.",
+    sort: -44,
+    title: "Assassinato de Júlio César",
+    category: "Política",
+    location: "Roma, atual Itália",
+    image: "https://www.khm.at/pics/50570/ANSA_I_1493_51522.jpg", 
+    summary: "Júlio César é assassinado por um grupo de senadores romanos.",
+    description: "Em 15 de março de 44 a.C., César foi morto durante uma reunião do Senado por conspiradores contrários à concentração de poder em suas mãos.",
+    importance: "Sua morte desencadeou novas guerras civis e acelerou o fim da República Romana.",
+    context: "César havia acumulado poderes extraordinários e recebido o título de ditador perpétuo, provocando oposição entre setores da elite romana."
+  },
+];
+
+let activeCategory = "Todos";
+
+
+function render() {
+  const timeline = document.getElementById("timeline");
+  const query = document.getElementById("search").value.toLowerCase();
+
+  const filtered = events
+    .filter(e => activeCategory === "Todos" || e.category === activeCategory)
+    .filter(e => (
+      e.title + " " + e.summary + " " + e.location + " " + e.category
+    ).toLowerCase().includes(query))
+    .sort((a, b) => a.sort - b.sort);
+
+  timeline.innerHTML = "";
+
+  filtered.forEach((event, index) => {
+    const day = document.createElement("div");
+    day.className = "day";
+
+    const left = document.createElement("div");
+    left.className = "side left";
+
+    const axis = document.createElement("div");
+    axis.className = "axis";
+
+    const date = document.createElement("div");
+    date.className = "date";
+    date.textContent = event.date;
+
+    const dot = document.createElement("div");
+    dot.className = "dot";
+
+    axis.append(date, dot);
+
+    const right = document.createElement("div");
+    right.className = "side right";
+
+    const card = document.createElement("article");
+    card.className = "event";
+
+    const img = document.createElement("img");
+    img.src = event.image;
+    img.alt = event.title;
+    img.loading = "lazy";
+
+    const body = document.createElement("div");
+    body.className = "event-content";
+
+    const category = document.createElement("div");
+    category.className = "category";
+    category.textContent = event.category;
+
+    const title = document.createElement("h2");
+    title.textContent = event.title;
+
+    const summary = document.createElement("p");
+    summary.textContent = event.summary;
+
+    const open = document.createElement("div");
+    open.className = "open";
+    open.textContent = "VER DETALHES →";
+
+    body.append(category, title, summary, open);
+    card.append(img, body);
+
+    card.addEventListener("click", () => openEvent(event));
+
+    if (index % 2 === 0) {
+      left.appendChild(card);
+    } else {
+      right.appendChild(card);
+    }
+
+    day.append(left, axis, right);
+    timeline.appendChild(day);
+  });
+
+  document.getElementById("empty").style.display =
+    filtered.length ? "none" : "block";
+}
+  
+function render() {
+  const timeline = document.getElementById("timeline");
+  const query = document.getElementById("search").value.toLowerCase();
+
+  const filtered = events
+    .filter(e => activeCategory === "Todos" || e.category === activeCategory)
+    .filter(e => (
+      e.title + " " + e.summary + " " + e.location + " " + e.category
+    ).toLowerCase().includes(query))
+    .sort((a, b) => a.sort - b.sort);
+
+  timeline.innerHTML = "";
+
+  filtered.forEach(event => {
+    const row = document.createElement("div");
+    row.className = "timeline-row";
+
+    const flag = document.createElement("div");
+    flag.className = "flag";
+
+    const category = document.createElement("div");
+    category.className = "flag-category";
+    category.textContent = event.category;
+
+    const title = document.createElement("h2");
+    title.textContent = event.title;
+
+    const summary = document.createElement("p");
+    summary.textContent = event.summary;
+
+    flag.append(category, title, summary);
+
+    const date = document.createElement("div");
+    date.className = "date-circle";
+    date.textContent = event.date;
+
+    const illustration = document.createElement("img");
+    illustration.className = "illustration";
+    illustration.src = event.image;
+    illustration.alt = "Representação histórica: " + event.title;
+    illustration.loading = "lazy";
+
+    row.append(flag, date, illustration);
+
+    row.addEventListener("click", () => openEvent(event));
+    row.style.cursor = "pointer";
+
+    timeline.appendChild(row);
+  });
+
+  document.getElementById("empty").style.display =
+    filtered.length ? "none" : "block";
+}
+
+
+
+function openEvent(event) {
+  document.getElementById("modalImage").src = event.image;
+  document.getElementById("modalImage").alt = event.title;
+  document.getElementById("modalCategory").textContent = event.category;
+  document.getElementById("modalTitle").textContent = event.title;
+  document.getElementById("modalDate").textContent = event.date;
+  document.getElementById("modalDescription").textContent = event.description;
+  document.getElementById("modalImportance").textContent = event.importance;
+  document.getElementById("modalContext").textContent = event.context;
+  document.getElementById("modalLocation").textContent = event.location;
+
+  document.getElementById("modal").classList.add("open");
+  document.body.style.overflow = "hidden";
+}
+
+function closeModal() {
+  document.getElementById("modal").classList.remove("open");
+  document.body.style.overflow = "";
+}
+
+document.getElementById("search").addEventListener("input", render);
+
+document.querySelectorAll(".filter").forEach(button => {
+  button.addEventListener("click", () => {
+    activeCategory = button.dataset.category;
+
+    document.querySelectorAll(".filter").forEach(b =>
+      b.classList.remove("active")
+    );
+
+    button.classList.add("active");
+    render();
+  });
+});
+
+document.getElementById("closeModal").addEventListener("click", closeModal);
+
+document.getElementById("modal").addEventListener("click", e => {
+  if (e.target.id === "modal") closeModal();
+});
+
+document.addEventListener("keydown", e => {
+  if (e.key === "Escape") closeModal();
+});
+
+render();
+
+function showPage(page) {
+  document.getElementById("homePage").style.display = "none";
+  document.getElementById("appHeader").style.display = "block";
+  document.getElementById("appMain").style.display = "block";
+  const isHistory = page === "historia";
+
+  document.getElementById("historiaPage").style.display =
+    isHistory ? "block" : "none";
+
+  document.getElementById("geografiaPage").style.display =
+    isHistory ? "none" : "block";
+
+  document.querySelector(".search").style.display =
+    isHistory ? "block" : "none";
+
+  document.getElementById("filters").style.display =
+    isHistory ? "flex" : "none";
+}
+  function backToHome() {
+  document.getElementById("homePage").style.display = "flex";
+  document.getElementById("appHeader").style.display = "none";
+  document.getElementById("appMain").style.display = "none";
+}
+
+  
+  async function createWorldMap() {
+  const mapElement = document.getElementById("worldMap");
+
+  try {
+    const [worldResponse, countriesResponse] = await Promise.all([
+      fetch("https://cdn.jsdelivr.net/npm/world-atlas@2/countries-50m.json"),
+      fetch("https://raw.githubusercontent.com/mledoze/countries/master/countries.json")
+    ]);
+
+    if (!worldResponse.ok || !countriesResponse.ok) {
+      throw new Error("Não foi possível carregar os dados.");
+    }
+
+    const world = await worldResponse.json();
+    const countriesData = await countriesResponse.json();
+
+    const countriesById = new Map(
+      countriesData
+        .filter(country => country.ccn3)
+        .map(country => [String(Number(country.ccn3)), country])
+    );
+
+    mapElement.innerHTML = "";
+
+    const width = 1600;
+    const height = 850;
+
+    const svg = d3.select(mapElement)
+      .append("svg")
+      .attr("viewBox", `0 0 ${width} ${height}`)
+      .attr("width", "100%")
+      .attr("height", "auto");
+
+const mapGroup = svg.append("g");
+
+    const features = topojson.feature(
+      world,
+      world.objects.countries
+    ).features;
+    
+
+
+
+
+    const projection = d3.geoNaturalEarth1()
+      .fitExtent([[15, 15], [width - 15, height - 15]], {
+        type: "FeatureCollection",
+        features: features
+      });
+
+    const path = d3.geoPath(projection);
+
+    
+const defs = svg.append("defs");
+
+const climateGradient = defs.append("linearGradient")
+  .attr("id", "climateGradient")
+  .attr("gradientUnits", "userSpaceOnUse")
+  .attr("x1", 0)
+  .attr("y1", 15)
+  .attr("x2", 0)
+  .attr("y2", height - 15);
+
+const climateStops = [
+  [90, "#FFFFFF"],
+  [75, "#BBD5EA"],
+  [60, "#75B9C9"],
+  [45, "#78B86A"],
+  [30, "#F2D16B"],
+  [15, "#E98A45"],
+  [0, "#D94D3F"],
+  [-15, "#E98A45"],
+  [-30, "#F2D16B"],
+  [-45, "#78B86A"],
+  [-60, "#75B9C9"],
+  [-75, "#BBD5EA"],
+  [-90, "#FFFFFF"]
+];
+
+climateStops.forEach(([latitude, color]) => {
+  const y = projection([0, latitude])[1];
+
+  climateGradient.append("stop")
+    .attr("offset", `${((y - 15) / (height - 30)) * 100}%`)
+    .attr("stop-color", color);
+});
+
+function getCountryColor(feature) {
+  const id = String(Number(feature.id));
+
+  // Antártida: branca
+  if (id === "10") return "#FFFFFF";
+
+  const country = countriesById.get(id);
+
+  if (!country) return "#B8C5CC";
+
+  const palettes = {
+    "América do Norte": [
+      "#244E75", "#376A91", "#5686AA", "#7FA9C4", "#A9C9DC"
+    ],
+    "América Central": [
+      "#176B69", "#268B85", "#48A69D", "#75C0B7", "#A3D8D1"
+    ],
+    "América do Sul": [
+      "#326B45", "#49885A", "#6AA477", "#91BE96", "#B7D5B9"
+    ],
+    "Europa": [
+      "#574477", "#705C91", "#8D7BAA", "#AC9DC1", "#CDC3D9"
+    ],
+    "Ásia": [
+      "#A65327", "#C16C37", "#D58B56", "#E2AC7D", "#EFCBA9"
+    ],
+    "África": [
+      "#8A6B24", "#A88736", "#C1A34F", "#D6BD7B", "#E9D8AA"
+    ],
+    "Oceania": [
+      "#874D63", "#A56479", "#BE8193", "#D4A4B0", "#E7C5CD"
+    ]
+  };
+
+  let continent;
+
+  if (country.region === "Americas") {
+    const subregion = country.subregion;
+
+    if (subregion === "Northern America" || subregion === "North America") {
+      continent = "América do Norte";
+    } else if (subregion === "Central America" || subregion === "Caribbean") {
+      continent = "América Central";
+    } else if (subregion === "South America") {
+      continent = "América do Sul";
+    }
+  } else if (country.region === "Europe") {
+    continent = "Europa";
+  } else if (country.region === "Asia") {
+    continent = "Ásia";
+  } else if (country.region === "Africa") {
+    continent = "África";
+  } else if (country.region === "Oceania") {
+    continent = "Oceania";
+  }
+
+  if (!continent) return "#B8C5CC";
+
+  const palette = palettes[continent];
+  const shadeIndex = Number(feature.id) % palette.length;
+
+  return palette[shadeIndex];
+}
+    
+mapGroup.selectAll(".country")
+  .data(features)
+  .enter()
+  .append("path")
+  .attr("class", "country")
+  .attr("d", path)
+  .attr("fill", feature => getCountryColor(feature))
+  .attr("stroke", "#64501D")
+  .attr("stroke-width", 0.7)
+  .style("cursor", "pointer")
+  .on("click", function(event, feature) {
+    const id = String(Number(feature.id));
+    const country = countriesById.get(id);
+
+    if (!country) return;
+
+    mapGroup.selectAll(".country")
+      .attr("stroke", "#64501D")
+      .attr("stroke-width", 0.7);
+
+    d3.select(this)
+      .attr("stroke", "#F5B82E")
+      .attr("stroke-width", 3);
+
+    showCountryInfo(country);
+  });
+    // COLORIR A PARTE ASIÁTICA DA RÚSSIA
+const russiaFeature = features.find(
+  feature => String(Number(feature.id)) === "643"
+);
+
+if (russiaFeature) {
+  const boundary = [
+    [40, 44],
+    [45, 45],
+    [49, 47],
+    [51, 49],
+    [53, 51],
+    [55, 53],
+    [57, 55],
+    [59, 58],
+    [60, 61],
+    [61, 64],
+    [63, 67],
+    [66, 70],
+    [70, 73]
+  ];
+
+  const points = boundary.map(coord => projection(coord));
+  const last = points[points.length - 1];
+  const first = points[0];
+
+  const clipShape =
+    d3.line()(points) +
+    `L ${width + 50} ${last[1]}` +
+    `L ${width + 50} -50` +
+    `L ${last[0]} -50 Z`;
+
+  defs.append("clipPath")
+    .attr("id", "russiaAsiaClip")
+    .attr("clipPathUnits", "userSpaceOnUse")
+    .append("path")
+    .attr("d", clipShape);
+
+  mapGroup.append("path")
+    .datum(russiaFeature)
+    .attr("d", path)
+    .attr("fill", "#E2AC7D")
+    .attr("stroke", "#64501D")
+    .attr("stroke-width", 0.7)
+    .attr("clip-path", "url(#russiaAsiaClip)")
+    .style("pointer-events", "none");
+}
+    
+
+const mapLabels = [
+  { name: "AMÉRICA", lon: -45, lat: 35, size: 19 },
+  { name: "DO NORTE", lon: -45, lat: 31, size: 19 },
+  { name: "AMÉRICA", lon: -100, lat: 7, size: 19 },
+  { name: "CENTRAL", lon: -100, lat: 3, size: 19 },
+  { name: "AMÉRICA", lon: -22, lat: -25, size: 19 },
+  { name: "DO SUL", lon: -22, lat: -29, size: 19 },
+  { name: "EUROPA", lon: -23, lat: 48, size: 19 },
+  { name: "ÁFRICA", lon: -5, lat: -5, size: 19 },
+  { name: "ÁSIA", lon: 145, lat: 22, size: 19 },
+  { name: "OCEANIA", lon: 90, lat: -25, size: 19 },
+  { name: "OCEANO PACÍFICO", lon: -150, lat: 0, size: 13 },
+  { name: "OCEANO ATLÂNTICO", lon: -30, lat: 0, size: 13 },
+  { name: "OCEANO ÍNDICO", lon: 80, lat: -10, size: 13 },
+  { name: "OCEANO ÁRTICO", lon: 0, lat: 75, size: 13 }
+];
+
+mapGroup.selectAll(".map-label")
+  .data(mapLabels)
+  .enter()
+  .append("text")
+  .attr("class", "map-label")
+  .attr("x", d => projection([d.lon, d.lat])[0])
+  .attr("y", d => projection([d.lon, d.lat])[1])
+  .attr("text-anchor", "middle")
+  .attr("font-size", d => d.size)
+  .attr("font-family", "Arial, sans-serif")
+  .attr("font-weight", "900")
+  .attr("letter-spacing", 2)
+  .attr("fill", d => {
+    if (d.lat === 35 || d.lat === 31) return "#568B35";
+    if (d.lat === 7 || d.lat === 3) return "#E5B52A";
+    if (d.lat === -25 || d.lat === -29) return "#E87532";
+    if (d.name === "EUROPA") return "#A51F35";
+    if (d.name === "ÁFRICA") return "#8036A8";
+    if (d.name === "ÁSIA") return "#245C32";
+    return "#52666A";
+  })
+  .attr("stroke", d => {
+    if (
+      d.lat === 35 || d.lat === 31 ||
+      d.lat === 7 || d.lat === 3 ||
+      d.lat === -25 || d.lat === -29 ||
+      d.name === "EUROPA" ||
+      d.name === "ÁFRICA" ||
+      d.name === "ÁSIA" 
+    ) return "#FFFFFF";
+    return "none";
+  })
+  .attr("stroke-width", 2)
+  .attr("paint-order", "stroke")
+  .attr("opacity", 0.8)
+  .style("pointer-events", "none")
+  .text(d => d.name);
+
+    // NOMES DOS PAÍSES
+const countryLabels = mapGroup.selectAll(".country-name")
+  .data(features.filter(feature => {
+    const country = countriesById.get(String(Number(feature.id)));
+    return country && country.name;
+  }))
+  .enter()
+  .append("text")
+  .attr("class", "country-name")
+  .attr("x", d => path.centroid(d)[0])
+  .attr("y", d => path.centroid(d)[1])
+  .attr("text-anchor", "middle")
+  .attr("dominant-baseline", "middle")
+  .attr("font-family", "Arial, sans-serif")
+  .attr("font-size", 12)
+  .attr("font-weight", "bold")
+  .attr("fill", "#343746")
+  .attr("stroke", "#FFFFFF")
+  .attr("stroke-width", 3)
+  .attr("paint-order", "stroke")
+  .style("pointer-events", "all")
+  .style("cursor", "pointer")
+  .style("display", "none")
+  .each(function(d) {
+  const country = countriesById.get(String(Number(d.id)));
+  const name = country.translations?.por?.common ||
+               country.name.common;
+
+  const lineBreaks = {
+  "África do Sul": ["África", "do Sul"],
+  "Arábia Saudita": ["Arábia", "Saudita"],
+  "Coreia do Norte": ["Coreia do", "Norte"],
+  "Coreia do Sul": ["Coreia do", "Sul"],
+  "Costa do Marfim": ["Costa do", "Marfim"],
+  "Nova Zelândia": ["Nova", "Zelândia"],
+  "Papua-Nova Guiné": ["Papua-Nova", "Guiné"],
+  "República Centro-Africana": ["República", "Centro-Africana"],
+  "República Democrática do Congo": ["República Democrática", "do Congo"],
+  "República do Congo": ["República", "do Congo"],
+  "Sri Lanka": ["Sri", "Lanka"],
+  "Estados Unidos": ["Estados", "Unidos"],
+  "Reino Unido": ["Reino", "Unido"],
+  "Emirados Árabes Unidos": ["Emirados Árabes", "Unidos"],
+  "Guiné-Bissau": ["Guiné", "Bissau"],
+  "Guiné Equatorial": ["Guiné", "Equatorial"],
+  "Burkina Faso": ["Burkina", "Faso"],
+  "Serra Leoa": ["Serra", "Leoa"],
+  "Trinidad e Tobago": ["Trinidad e", "Tobago"],
+  "Antígua e Barbuda": ["Antígua e", "Barbuda"],
+  "São Tomé e Príncipe": ["São Tomé e", "Príncipe"]
+};
+
+const lines = lineBreaks[name] || [name];
+
+  const label = d3.select(this);
+
+  lines.forEach((line, i) => {
+    label.append("tspan")
+      .attr("x", path.centroid(d)[0])
+      .attr("dy", i === 0
+        ? `${-(lines.length - 1) * 0.55}em`
+        : "1.1em")
+      .text(line);
+  });
+})
+  .on("click", (event, feature) => {
+    event.stopPropagation();
+
+    mapGroup.selectAll(".country")
+      .filter(d => d.id === feature.id)
+      .dispatch("click");
+  });
+    const equatorY = projection([0, 0])[1];
+
+mapGroup.append("line")
+  .attr("class", "equator-line")
+  .attr("x1", projection([-180, 0])[0])
+  .attr("x2", projection([180, 0])[0])
+  .attr("y1", equatorY)
+  .attr("y2", equatorY)
+  .attr("stroke", "#FFFFFF")
+  .attr("stroke-width", 2)
+  .attr("stroke-dasharray", "10 7")
+  .style("pointer-events", "none");
+
+mapGroup.append("text")
+  .attr("x", projection([-5, 0])[0])
+  .attr("y", equatorY - 9)
+  .attr("fill", "#FFFFFF")
+  .attr("font-size", 15)
+  .attr("font-weight", "bold")
+  .attr("text-anchor", "end")
+  .style("pointer-events", "none")
+  .text("EQUADOR");
+    
+const zoom = d3.zoom()
+  .scaleExtent([1, 12])
+  .on("zoom", event => {
+    mapGroup.attr("transform", event.transform);
+
+    const scale = event.transform.k;
+
+    countryLabels.style("display", d => {
+      const area = path.area(d);
+
+      return area * scale * scale > 5000
+        ? "block"
+        : "none";
+    });
+  });
+svg.call(zoom);
+    const legendBar = document.createElement("div");
+legendBar.className = "climate-legend-bar";
+
+legendBar.innerHTML = `
+  <div class="climate-legend-labels">
+    <span><i style="background:#5686AA"></i>América do Norte</span>
+    <span><i style="background:#48A69D"></i>América Central</span>
+    <span><i style="background:#6AA477"></i>América do Sul</span>
+    <span><i style="background:#8D7BAA"></i>Europa</span>
+    <span><i style="background:#D58B56"></i>Ásia</span>
+    <span><i style="background:#C1A34F"></i>África</span>
+    <span><i style="background:#BE8193"></i>Oceania</span>
+  </div>
+`;
+
+mapElement.appendChild(legendBar);
+mapElement.appendChild(legendBar);
+
+
+
+  } catch (error) {
+    mapElement.innerHTML =
+      '<p>Não foi possível carregar o mapa. Verifique sua conexão e atualize a página.</p>';
+
+    console.error(error);
+  }
+}
+
+function showCountryInfo(country) {
+  const info = document.getElementById("countryInfo");
+
+  const name =
+    country.translations?.por?.common || country.name.common;
+
+  const languages = country.languages
+    ? Object.values(country.languages).join(", ")
+    : "Não informado";
+
+  const currencies = country.currencies
+    ? Object.values(country.currencies)
+        .map(currency => `${currency.name} (${currency.symbol || ""})`)
+        .join(", ")
+    : "Não informado";
+
+  const capital = country.capital
+    ? country.capital.join(", ")
+    : "Não informado";
+
+  info.innerHTML = `
+    <div class="country-card">
+      <div class="country-heading">
+        <img src="${country.flags.png}" alt="Bandeira de ${name}">
+        <h2>${name}</h2>
+      </div>
+
+      <p><strong>Capital:</strong> ${capital}</p>
+      <p><strong>Continente:</strong> ${country.region || "Não informado"}</p>
+      <p><strong>Idiomas:</strong> ${languages}</p>
+      <p><strong>Moeda:</strong> ${currencies}</p>
+      <p><strong>População:</strong> ${
+        country.population.toLocaleString("pt-BR")
+      }</p>
+
+      <h3>Cultura</h3>
+      <p>Informações culturais serão adicionadas ao perfil deste país.</p>
+
+      <h3>Gastronomia</h3>
+      <p>Pratos típicos e tradições gastronômicas serão adicionados.</p>
+    </div>
+  `;
+
+  info.scrollIntoView({ behavior: "smooth", block: "nearest" });
+}
+
+createWorldMap();
+</script>
+
+</body>
+</html>
