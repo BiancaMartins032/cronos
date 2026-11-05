@@ -736,7 +736,7 @@ if (campoBuscaLivro) {
 
 async function pesquisarLivros(pesquisa) {
   try {
-    const url = `https://openlibrary.org/search.json?q=${encodeURIComponent(pesquisa)}&language=por&limit=20&fields=key,title,author_name,cover_i,language`;
+    const url = `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(pesquisa)}&langRestrict=pt&maxResults=20&printType=books`;
 
     const resposta = await fetch(url);
     if (!resposta.ok) throw new Error("Falha na pesquisa");
@@ -744,94 +744,94 @@ async function pesquisarLivros(pesquisa) {
     const dados = await resposta.json();
     resultadosLivros.innerHTML = "";
 
-    if (!dados.docs || dados.docs.length === 0) {
-      resultadosLivros.textContent = "Nenhum livro encontrado.";
+    const livrosPortugues = (dados.items || []).filter(item =>
+      item.volumeInfo &&
+      item.volumeInfo.language === "pt"
+    );
+
+    if (!livrosPortugues.length) {
+      resultadosLivros.textContent =
+        "Nenhum livro em português encontrado. Tente outro título ou autor.";
       return;
     }
 
-    dados.docs.forEach(livro => {
-  const card = document.createElement("div");
-  card.className = "book-result";
+    livrosPortugues.forEach(item => {
+      const livro = item.volumeInfo;
+      const card = document.createElement("div");
+      card.className = "book-result";
 
-  const capa = document.createElement("img");
+      const capa = document.createElement("img");
+      capa.src = livro.imageLinks?.thumbnail || "";
+      capa.alt = "Capa de " + (livro.title || "livro");
 
-  if (livro.cover_i) {
-    capa.src = `https://covers.openlibrary.org/b/id/${livro.cover_i}-M.jpg`;
-  } else {
-    capa.style.display = "none";
-  }
-
-  capa.alt = "Capa de " + livro.title;
-  capa.style.cursor = "pointer";
-
-  const informacoes = document.createElement("div");
-  informacoes.className = "book-result-info";
-
-  const titulo = document.createElement("strong");
-  titulo.textContent = livro.title || "Título desconhecido";
-  titulo.style.cursor = "pointer";
-
-  const autor = document.createElement("small");
-  autor.textContent = livro.author_name
-    ? livro.author_name.join(", ")
-    : "Autor não informado";
-
-  function abrirDetalhes() {
-    document.getElementById("modalCapaLivro").src = livro.cover_i
-      ? `https://covers.openlibrary.org/b/id/${livro.cover_i}-M.jpg`
-      : "";
-
-    document.getElementById("modalTituloLivro").textContent =
-      livro.title || "Título desconhecido";
-
-    document.getElementById("modalAutorLivro").textContent =
-      livro.author_name
-        ? livro.author_name.join(", ")
-        : "Autor não informado";
-
-    document.getElementById("modalStatusLivro").value = "Quero ler";
-
-    document.getElementById("modalLivro").classList.add("active");
-
-    document.getElementById("salvarLivroColecao").onclick = function () {
-      const livrosSalvos = JSON.parse(
-        localStorage.getItem("mn_livros") || "[]"
-      );
-
-      if (livrosSalvos.some(item => item.obraId === livro.key)) {
-        alert("Este livro já está na sua coleção.");
-        return;
+      if (!capa.src || capa.src === window.location.href) {
+        capa.style.display = "none";
       }
 
-      livrosSalvos.push({
-        id: Date.now(),
-        obraId: livro.key,
-        titulo: livro.title || "Título desconhecido",
-        autor: livro.author_name
-          ? livro.author_name.join(", ")
-          : "",
-        capa: livro.cover_i
-          ? `https://covers.openlibrary.org/b/id/${livro.cover_i}-M.jpg`
-          : "",
-        status: document.getElementById("modalStatusLivro").value
-      });
+      const informacoes = document.createElement("div");
+      informacoes.className = "book-result-info";
 
-      localStorage.setItem("mn_livros", JSON.stringify(livrosSalvos));
+      const titulo = document.createElement("strong");
+      titulo.textContent = livro.title || "Título desconhecido";
 
-      document.getElementById("modalLivro").classList.remove("active");
+      const autor = document.createElement("small");
+      autor.textContent = livro.authors
+        ? livro.authors.join(", ")
+        : "Autor não informado";
 
-      renderLivros();
-      alert("Livro adicionado à sua coleção!");
-    };
-  }
+      function abrirDetalhes() {
+        const modalCapa = document.getElementById("modalCapaLivro");
+        modalCapa.src = livro.imageLinks?.thumbnail || "";
+        modalCapa.style.display = livro.imageLinks?.thumbnail ? "block" : "none";
 
-  capa.addEventListener("click", abrirDetalhes);
-  titulo.addEventListener("click", abrirDetalhes);
+        document.getElementById("modalTituloLivro").textContent =
+          livro.title || "Título desconhecido";
 
-  informacoes.append(titulo, autor);
-  card.append(capa, informacoes);
-  resultadosLivros.appendChild(card);
-});
+        document.getElementById("modalAutorLivro").textContent =
+          livro.authors ? livro.authors.join(", ") : "Autor não informado";
+
+        document.getElementById("modalStatusLivro").value = "Quero ler";
+
+        document.getElementById("modalLivro").classList.add("active");
+
+        document.getElementById("salvarLivroColecao").onclick = function () {
+          const livrosSalvos = JSON.parse(
+            localStorage.getItem("mn_livros") || "[]"
+          );
+
+          if (livrosSalvos.some(salvo => salvo.obraId === item.id)) {
+            alert("Este livro já está na sua coleção.");
+            return;
+          }
+
+          livrosSalvos.push({
+            id: Date.now(),
+            obraId: item.id,
+            titulo: livro.title || "Título desconhecido",
+            autor: livro.authors ? livro.authors.join(", ") : "",
+            capa: livro.imageLinks?.thumbnail || "",
+            paginasTotal: livro.pageCount || 0,
+            paginasLidas: 0,
+            status: document.getElementById("modalStatusLivro").value
+          });
+
+          localStorage.setItem("mn_livros", JSON.stringify(livrosSalvos));
+
+          document.getElementById("modalLivro").classList.remove("active");
+
+          renderLivros();
+          alert("Livro adicionado à sua coleção!");
+        };
+      }
+
+      capa.addEventListener("click", abrirDetalhes);
+      titulo.addEventListener("click", abrirDetalhes);
+
+      informacoes.append(titulo, autor);
+      card.append(capa, informacoes);
+      resultadosLivros.appendChild(card);
+    });
+
   } catch (erro) {
     resultadosLivros.textContent =
       "Não foi possível pesquisar. Verifique sua conexão e tente novamente.";
