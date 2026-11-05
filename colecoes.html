@@ -735,15 +735,21 @@ if (campoBuscaLivro) {
 }
 
 async function pesquisarLivros(pesquisa) {
-  try {
-    resultadosLivros.textContent = "Procurando edições em português...";
+  const versao = (pesquisarLivros.versao || 0) + 1;
+  pesquisarLivros.versao = versao;
 
-    const url = `https://openlibrary.org/search.json?q=${encodeURIComponent(pesquisa)}&language=por&limit=12&fields=key,title,author_name,language`;
+  try {
+    resultadosLivros.textContent = "Procurando livros em português...";
+
+    const url = `https://openlibrary.org/search.json?q=${encodeURIComponent(pesquisa)}&language=por&limit=8&fields=key,title,author_name,cover_i,language,number_of_pages_median`;
 
     const resposta = await fetch(url);
+
     if (!resposta.ok) throw new Error("Falha na pesquisa");
 
     const dados = await resposta.json();
+
+    if (versao !== pesquisarLivros.versao) return;
 
     const obras = (dados.docs || []).filter(livro =>
       livro.language?.some(idioma =>
@@ -751,55 +757,59 @@ async function pesquisarLivros(pesquisa) {
       )
     );
 
-    const edicoes = await Promise.all(
-      obras.map(async obra => {
-        try {
-          const respostaEdicoes = await fetch(
-            `https://openlibrary.org${obra.key}/editions.json?limit=50`
-          );
+    const encontrados = [];
 
-          if (!respostaEdicoes.ok) return null;
+    // Consultar as edições uma por vez
+    for (const obra of obras) {
+      if (versao !== pesquisarLivros.versao) return;
 
+      let edicaoPortugues = null;
+
+      try {
+        const respostaEdicoes = await fetch(
+          `https://openlibrary.org${obra.key}/editions.json?limit=20`
+        );
+
+        if (respostaEdicoes.ok) {
           const dadosEdicoes = await respostaEdicoes.json();
 
-          const edicao = (dadosEdicoes.entries || []).find(item =>
-            item.languages?.some(idioma =>
+          edicaoPortugues = (dadosEdicoes.entries || []).find(edicao =>
+            edicao.languages?.some(idioma =>
               idioma.key === "/languages/por" ||
               idioma.key === "/languages/pt"
             )
           );
-
-          if (!edicao) return null;
-
-          const isbn = edicao.isbn_13?.[0] || edicao.isbn_10?.[0];
-
-          const capa = edicao.covers?.[0]
-            ? `https://covers.openlibrary.org/b/id/${edicao.covers[0]}-M.jpg`
-            : isbn
-              ? `https://covers.openlibrary.org/b/isbn/${isbn}-M.jpg`
-              : "";
-
-          return {
-            obraId: edicao.key,
-            titulo: edicao.title || obra.title,
-            autor: obra.author_name?.join(", ") || "Autor não informado",
-            capa,
-            paginasTotal: edicao.number_of_pages || 0
-          };
-
-        } catch (erro) {
-          return null;
         }
-      })
-    );
+      } catch (erro) {
+        // Uma falha nesta edição não cancela toda a pesquisa.
+      }
+
+      const isbn = edicaoPortugues?.isbn_13?.[0] ||
+                   edicaoPortugues?.isbn_10?.[0];
+
+      const idCapa = edicaoPortugues?.covers?.[0] || obra.cover_i;
+
+      encontrados.push({
+        obraId: edicaoPortugues?.key || obra.key,
+        titulo: edicaoPortugues?.title || obra.title,
+        autor: obra.author_name?.join(", ") || "Autor não informado",
+        capa: idCapa
+          ? `https://covers.openlibrary.org/b/id/${idCapa}-M.jpg`
+          : isbn
+            ? `https://covers.openlibrary.org/b/isbn/${isbn}-M.jpg`
+            : "",
+        paginasTotal: edicaoPortugues?.number_of_pages ||
+                      obra.number_of_pages_median || 0
+      });
+    }
+
+    if (versao !== pesquisarLivros.versao) return;
 
     resultadosLivros.innerHTML = "";
 
-    const encontrados = edicoes.filter(Boolean);
-
     if (!encontrados.length) {
       resultadosLivros.textContent =
-        "Não encontramos edições em português para essa pesquisa.";
+        "Nenhuma edição em português encontrada. Tente outro título.";
       return;
     }
 
@@ -876,8 +886,10 @@ async function pesquisarLivros(pesquisa) {
     });
 
   } catch (erro) {
+    if (versao !== pesquisarLivros.versao) return;
+
     resultadosLivros.textContent =
-      "Não foi possível pesquisar. Verifique sua conexão e tente novamente.";
+      "Não foi possível pesquisar. Tente novamente em alguns instantes.";
   }
 }
 renderLivros();
