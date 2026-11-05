@@ -526,6 +526,55 @@ main {
   flex: 1;
   min-width: 0;
 }
+  #livros-lendo.media-list {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: stretch !important;
+  gap: 12px;
+}
+
+#livros-lendo .reading-book-row {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center;
+  width: 100%;
+  box-sizing: border-box;
+  gap: 16px;
+  padding: 12px;
+}
+
+#livros-lendo .reading-progress-cover {
+  width: 75px;
+  flex: 0 0 75px;
+}
+
+#livros-lendo .reading-progress-details {
+  flex: 1;
+  min-width: 0;
+}
+
+#livros-lendo .progress-info {
+  display: flex !important;
+  justify-content: space-between;
+  width: 100%;
+  margin-bottom: 8px;
+}
+
+#livros-lendo .progress-track {
+  display: block !important;
+  width: 100% !important;
+  height: 8px;
+  background: var(--surface2);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+#livros-lendo .progress-fill {
+  display: block !important;
+  height: 100%;
+  background: var(--purple);
+  border-radius: 10px;
+}
 </style>
 </head>
 
@@ -843,6 +892,10 @@ function renderLivros() {
     container.innerHTML = "";
 
     const encontrados = livros.filter(livro => livro.status === status);
+
+if (status === "Lendo") {
+  encontrados.sort((a, b) => Number(b.id) - Number(a.id));
+}
 
     if (!encontrados.length) {
       const vazio = document.createElement("div");
