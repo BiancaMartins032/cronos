@@ -789,18 +789,19 @@ async function pesquisarLivros(pesquisa) {
 
       const idCapa = edicaoPortugues?.covers?.[0] || obra.cover_i;
 
-      encontrados.push({
-        obraId: edicaoPortugues?.key || obra.key,
-        titulo: edicaoPortugues?.title || obra.title,
-        autor: obra.author_name?.join(", ") || "Autor não informado",
-        capa: idCapa
-          ? `https://covers.openlibrary.org/b/id/${idCapa}-M.jpg`
-          : isbn
-            ? `https://covers.openlibrary.org/b/isbn/${isbn}-M.jpg`
-            : "",
-        paginasTotal: edicaoPortugues?.number_of_pages ||
-                      obra.number_of_pages_median || 0
-      });
+      if (!edicaoPortugues) continue;
+
+const idCapa = edicaoPortugues.covers?.[0];
+
+if (!idCapa) continue;
+
+encontrados.push({
+  obraId: edicaoPortugues.key,
+  titulo: edicaoPortugues.title || obra.title,
+  autor: obra.author_name?.join(", ") || "Autor não informado",
+  capa: `https://covers.openlibrary.org/b/id/${idCapa}-M.jpg`,
+  paginasTotal: edicaoPortugues.number_of_pages || 0
+});
     }
 
     if (versao !== pesquisarLivros.versao) return;
