@@ -496,6 +496,36 @@ main {
   flex: 1;
   min-width: 0;
 }
+  .reading-book-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  padding: 12px;
+  box-sizing: border-box;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  cursor: pointer;
+}
+
+.reading-book-row .reading-progress-cover {
+  width: 75px;
+  flex-shrink: 0;
+}
+
+.reading-book-row .reading-progress-cover img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 2 / 3;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.reading-book-row .reading-progress-details {
+  flex: 1;
+  min-width: 0;
+}
 </style>
 </head>
 
@@ -783,6 +813,7 @@ window.addEventListener("pageshow", renderMediaCollection);
     });
   }
 });
+
 function renderLivros() {
   let livros = [];
 
@@ -798,11 +829,12 @@ function renderLivros() {
     "Quero ler": "livros-desejados",
     "Quero adquirir": "livros-adquirir"
   };
+
   const progressoContainer = document.getElementById("progresso-livros-lendo");
 
-if (progressoContainer) {
-  progressoContainer.innerHTML = "";
-}
+  if (progressoContainer) {
+    progressoContainer.innerHTML = "";
+  }
 
   Object.entries(grupos).forEach(([status, containerId]) => {
     const container = document.getElementById(containerId);
@@ -821,54 +853,9 @@ if (progressoContainer) {
     }
 
     encontrados.forEach(livro => {
+      if (!livro.capa) return;
 
-  if (status === "Lendo" && progressoContainer) {
-    const total = Number(livro.paginasTotal) || 0;
-    const lidas = Number(livro.paginasLidas) || 0;
-
-    const percentual = total > 0
-      ? Math.min(100, Math.round((lidas / total) * 100))
-      : 0;
-
-    const item = document.createElement("div");
-    item.className = "reading-progress-item";
-
-    const titulo = document.createElement("div");
-    titulo.className = "reading-progress-title";
-    titulo.textContent = livro.titulo;
-
-    const info = document.createElement("div");
-    info.className = "progress-info";
-    info.innerHTML = `
-      <span>${lidas} de ${total} páginas</span>
-      <strong>${percentual}%</strong>
-    `;
-
-    const barra = document.createElement("div");
-    barra.className = "progress-track";
-
-    const preenchimento = document.createElement("div");
-    preenchimento.className = "progress-fill";
-    preenchimento.style.width = percentual + "%";
-
-    barra.appendChild(preenchimento);
-    item.append(titulo, info, barra);
-    progressoContainer.appendChild(item);
-  }
-
-  if (!livro.capa) return;
-
-      const card = document.createElement("div");
-      card.className = "book-cover-card";
-
-      const capa = document.createElement("img");
-      capa.src = livro.capa;
-      capa.alt = "Capa de " + livro.titulo;
-      capa.loading = "lazy";
-
-      card.appendChild(capa);
-      
-      card.addEventListener("click", () => {
+      const abrirModal = () => {
         document.getElementById("modalCapaLivro").src = livro.capa;
         document.getElementById("modalCapaLivro").style.display = "block";
 
@@ -878,13 +865,13 @@ if (progressoContainer) {
 
         document.getElementById("modalStatusLivro").value = livro.status;
         document.getElementById("modalTotalPaginas").value =
-        livro.paginasTotal || "";
+          livro.paginasTotal || "";
 
         document.getElementById("modalPaginasLidas").value =
-        livro.paginasLidas || "";
+          livro.paginasLidas || "";
 
         document.getElementById("progressoLeituraCampos").style.display =
-        livro.status === "Lendo" ? "block" : "none";
+          livro.status === "Lendo" ? "block" : "none";
 
         const botaoSalvar = document.getElementById("salvarLivroColecao");
         botaoSalvar.textContent = "Salvar alterações";
@@ -894,42 +881,112 @@ if (progressoContainer) {
             localStorage.getItem("mn_livros") || "[]"
           );
 
-          const indice = livrosAtualizados.findIndex(item => item.id === livro.id);
+          const indice = livrosAtualizados.findIndex(
+            item => item.id === livro.id
+          );
 
           if (indice !== -1) {
-  const status = document.getElementById("modalStatusLivro").value;
-  const total = Number(document.getElementById("modalTotalPaginas").value);
-  const lidas = Number(document.getElementById("modalPaginasLidas").value);
+            const novoStatus =
+              document.getElementById("modalStatusLivro").value;
 
-  if (status === "Lendo") {
-    if (total <= 0 || lidas < 0 || lidas > total) {
-      alert("Informe um total de páginas válido e uma quantidade lida entre 0 e o total.");
-      return;
-    }
+            const total =
+              Number(document.getElementById("modalTotalPaginas").value);
 
-    livrosAtualizados[indice].paginasTotal = total;
-    livrosAtualizados[indice].paginasLidas = lidas;
-  }
+            const lidas =
+              Number(document.getElementById("modalPaginasLidas").value);
 
-  livrosAtualizados[indice].status = status;
+            if (novoStatus === "Lendo") {
+              if (total <= 0 || lidas < 0 || lidas > total) {
+                alert("Informe um total de páginas válido e uma quantidade lida entre 0 e o total.");
+                return;
+              }
 
-  localStorage.setItem(
-    "mn_livros",
-    JSON.stringify(livrosAtualizados)
-  );
-}
+              livrosAtualizados[indice].paginasTotal = total;
+              livrosAtualizados[indice].paginasLidas = lidas;
+            }
+
+            livrosAtualizados[indice].status = novoStatus;
+
+            localStorage.setItem(
+              "mn_livros",
+              JSON.stringify(livrosAtualizados)
+            );
+          }
 
           document.getElementById("modalLivro").classList.remove("active");
           renderLivros();
         };
 
         document.getElementById("modalLivro").classList.add("active");
-      });
+      };
 
-      container.appendChild(card);
+      if (status === "Lendo") {
+        const total = Number(livro.paginasTotal) || 0;
+        const lidas = Number(livro.paginasLidas) || 0;
+
+        const percentual = total > 0
+          ? Math.min(100, Math.round((lidas / total) * 100))
+          : 0;
+
+        const linha = document.createElement("div");
+        linha.className = "reading-book-row";
+        linha.addEventListener("click", abrirModal);
+
+        const areaCapa = document.createElement("div");
+        areaCapa.className = "reading-progress-cover";
+
+        const capa = document.createElement("img");
+        capa.src = livro.capa;
+        capa.alt = "Capa de " + livro.titulo;
+        capa.loading = "lazy";
+
+        areaCapa.appendChild(capa);
+
+        const detalhes = document.createElement("div");
+        detalhes.className = "reading-progress-details";
+
+        const titulo = document.createElement("div");
+        titulo.className = "reading-progress-title";
+        titulo.textContent = livro.titulo;
+
+        const info = document.createElement("div");
+        info.className = "progress-info";
+        info.innerHTML = `
+          <span>${lidas} de ${total} páginas</span>
+          <strong>${percentual}%</strong>
+        `;
+
+        const barra = document.createElement("div");
+        barra.className = "progress-track";
+
+        const preenchimento = document.createElement("div");
+        preenchimento.className = "progress-fill";
+        preenchimento.style.width = percentual + "%";
+
+        barra.appendChild(preenchimento);
+        detalhes.append(titulo, info, barra);
+        linha.append(areaCapa, detalhes);
+
+        container.appendChild(linha);
+
+      } else {
+        const card = document.createElement("div");
+        card.className = "book-cover-card";
+
+        const capa = document.createElement("img");
+        capa.src = livro.capa;
+        capa.alt = "Capa de " + livro.titulo;
+        capa.loading = "lazy";
+
+        card.appendChild(capa);
+        card.addEventListener("click", abrirModal);
+
+        container.appendChild(card);
+      }
     });
   });
 }
+
 
 if (formLivro) {
   formLivro.addEventListener("submit", function(event) {
