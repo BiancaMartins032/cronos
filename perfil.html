@@ -210,6 +210,19 @@ label {display:block;font-size:13px;margin:15px 0 7px}
 }
 .bottom-nav span {display:block;font-size:21px;margin-bottom:4px}
 .bottom-nav .active {color:#B99BFF}
+  .view-all {
+  display:block;
+  width:100%;
+  margin-top:24px;
+  padding:8px 0 2px;
+  background:transparent;
+  border:0;
+  color:var(--purple);
+  text-align:center;
+  font-size:12px;
+  font-weight:bold;
+  cursor:pointer;
+}
 </style>
 </head>
 
@@ -306,43 +319,8 @@ label {display:block;font-size:13px;margin:15px 0 7px}
     </div>
   </section>
 
- <section class="card">
-  <h2 class="section-title">Conquistas</h2>
-
-  <div class="collection-grid">
-
-    <div class="collection">
-      <svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"/>
-        <path d="M7 6H4v2a4 4 0 0 0 4 4M17 6h3v2a4 4 0 0 1-4 4"/>
-      </svg>
-      <strong>Leitor dedicado</strong>
-    </div>
-
-    <div class="collection">
-      <svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="12" cy="12" r="9"/>
-        <path d="M3 12h18M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18"/>
-      </svg>
-      <strong>Explorador</strong>
-    </div>
-
-    <div class="collection">
-      <svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"/>
-        <path d="M7 6H4v2a4 4 0 0 0 4 4M17 6h3v2a4 4 0 0 1-4 4"/>
-      </svg>
-      <strong>Competidor</strong>
-    </div>
-
-  </div>
-  <button type="button" class="view-all" onclick="toggleCollections()">
-  VER TODAS AS COLEÇÕES →
-</button>
-</section>
-
   <section class="card">
-    <h2 class="section-title">Resumo das coleções</h2>
+    <h2 class="section-title">Minhas coleções</h2>
     <div class="collection-grid">
 
       <div class="collection">
@@ -372,7 +350,11 @@ label {display:block;font-size:13px;margin:15px 0 7px}
         <small>18 jogos</small>
       </div>
 
-    </div>
+       </div>
+
+    <button type="button" class="view-all" onclick="toggleCollections()">
+      VER TODAS AS COLEÇÕES →
+    </button>
   </section>
 </div>
 
