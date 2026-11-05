@@ -197,50 +197,43 @@ main {
 
   <!-- LIVROS -->
   <section id="livros" class="collection-page active">
+    <div class="section">
+  <h2>Adicionar livro</h2>
+
+  <form id="formLivro">
+    <input id="livroTitulo" type="text" placeholder="Título do livro" required>
+    <input id="livroAutor" type="text" placeholder="Autor">
+
+    <select id="livroStatus">
+      <option value="Quero ler">Quero ler</option>
+      <option value="Lendo">Estou lendo</option>
+      <option value="Lido">Já li</option>
+      <option value="Quero adquirir">Quero adquirir</option>
+    </select>
+
+    <button type="submit">Adicionar à coleção</button>
+  </form>
+</div>
 
     <div class="section">
-      <h2>Lendo atualmente</h2>
+  <h2>Atualmente lendo</h2>
+  <div id="livros-lendo" class="media-list"></div>
+</div>
 
-      <div class="item">
-        <div class="item-top">
-          <div>
-            <strong>O Hobbit</strong>
-            <small>J. R. R. Tolkien</small>
-          </div>
-          <span class="status">Em leitura</span>
-        </div>
+<div class="section">
+  <h2>Já li</h2>
+  <div id="livros-lidos" class="media-list"></div>
+</div>
 
-        <div class="progress-info">
-          <span>Progresso da leitura</span>
-          <strong>65%</strong>
-        </div>
-        <div class="progress">
-          <div class="progress-fill" style="width:65%"></div>
-        </div>
-      </div>
-    </div>
+<div class="section">
+  <h2>Quero ler</h2>
+  <div id="livros-desejados" class="media-list"></div>
+</div>
 
-    <div class="section">
-      <h2>Livros que já li</h2>
-      <div class="item">
-        <strong>Frankenstein</strong>
-        <small>Mary Shelley</small>
-      </div>
-      <div class="item">
-        <strong>A Metamorfose</strong>
-        <small>Franz Kafka</small>
-      </div>
-    </div>
-
-    <div class="section">
-      <h2>Quero ler</h2>
-      <div class="empty">Os livros que você deseja ler aparecerão aqui.</div>
-    </div>
-
-    <div class="section">
-      <h2>Quero adquirir</h2>
-      <div class="empty">Adicione os livros que deseja comprar, trocar ou conseguir.</div>
-    </div>
+<div class="section">
+  <h2>Quero adquirir</h2>
+  <div id="livros-adquirir" class="media-list"></div>
+</div>
 
   </section>
 
@@ -442,6 +435,77 @@ function showCollection(collectionId, button) {
 
 renderMediaCollection();
 window.addEventListener("pageshow", renderMediaCollection);
+  const formLivro = document.getElementById("formLivro");
+
+function renderLivros() {
+  let livros = [];
+
+  try {
+    livros = JSON.parse(localStorage.getItem("mn_livros") || "[]");
+  } catch (error) {
+    livros = [];
+  }
+
+  const grupos = {
+    "Lendo": "livros-lendo",
+    "Lido": "livros-lidos",
+    "Quero ler": "livros-desejados",
+    "Quero adquirir": "livros-adquirir"
+  };
+
+  Object.entries(grupos).forEach(([status, containerId]) => {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+
+    container.innerHTML = "";
+
+    const encontrados = livros.filter(livro => livro.status === status);
+
+    if (!encontrados.length) {
+      const vazio = document.createElement("div");
+      vazio.className = "empty";
+      vazio.textContent = "Nenhum livro cadastrado nesta categoria.";
+      container.appendChild(vazio);
+      return;
+    }
+
+    encontrados.forEach(livro => {
+      const item = document.createElement("div");
+      item.className = "item";
+
+      const titulo = document.createElement("strong");
+      titulo.textContent = livro.titulo;
+
+      const autor = document.createElement("small");
+      autor.textContent = livro.autor || "Autor não informado";
+
+      item.append(titulo, autor);
+      container.appendChild(item);
+    });
+  });
+}
+
+if (formLivro) {
+  formLivro.addEventListener("submit", function(event) {
+    event.preventDefault();
+
+    const livros = JSON.parse(localStorage.getItem("mn_livros") || "[]");
+
+    livros.push({
+      id: Date.now(),
+      titulo: document.getElementById("livroTitulo").value.trim(),
+      autor: document.getElementById("livroAutor").value.trim(),
+      status: document.getElementById("livroStatus").value
+    });
+
+    localStorage.setItem("mn_livros", JSON.stringify(livros));
+
+    formLivro.reset();
+    renderLivros();
+  });
+}
+
+renderLivros();
 </script>
 
 </body>
