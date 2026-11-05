@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Minhas coleções — Multiverso Nerd</title>
+
+<style>
+:root {
+  --bg: #100E1C;
+  --surface: #1B182B;
+  --surface2: #242039;
+  --purple: #9167E8;
+  --blue: #5267D8;
+  --text: #F1EFF8;
+  --muted: #A5A0B8;
+  --border: #302B45;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0 0 40px;
+  background: var(--bg);
+  color: var(--text);
+  font-family: Arial, sans-serif;
+}
+
+header {
+  padding: 22px 20px 16px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.back {
+  display: inline-block;
+  color: var(--muted);
+  text-decoration: none;
+  font-size: 13px;
+  margin-bottom: 20px;
+}
+
+header h1 {
+  margin: 0;
+  font-size: 25px;
+}
+
+header p {
+  color: var(--muted);
+  font-size: 13px;
+  margin: 7px 0 0;
+}
+
+.tabs {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 16px 16px 12px;
+  scrollbar-width: thin;
+}
+
+.tab {
+  flex: 0 0 auto;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 11px 15px;
+  background: var(--surface);
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.tab.active {
+  color: white;
+  border-color: var(--purple);
+  background: linear-gradient(120deg, #6846B8, #4053BD);
+}
+
+main {
+  max-width: 850px;
+  margin: 0 auto;
+  padding: 12px 16px 30px;
+}
+
+.collection-page {
+  display: none;
+}
+
+.collection-page.active {
+  display: block;
+}
+
+.section {
+  margin-bottom: 22px;
+}
+
+.section h2 {
+  font-size: 16px;
+  margin: 0 0 12px;
+}
+
+.item {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 15px;
+  padding: 15px;
+  margin-bottom: 10px;
+}
+
+.item-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.item strong {
+  font-size: 14px;
+}
+
+.item small {
+  display: block;
+  color: var(--muted);
+  margin-top: 5px;
+  font-size: 12px;
+}
+
+.status {
+  color: #C5AEFF;
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.progress-info {
+  display: flex;
+  justify-content: space-between;
+  color: var(--muted);
+  font-size: 11px;
+  margin-top: 15px;
+}
+
+.progress {
+  height: 7px;
+  background: var(--surface2);
+  border-radius: 10px;
+  overflow: hidden;
+  margin-top: 7px;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--purple), var(--blue));
+  border-radius: 10px;
+}
+
+.empty {
+  background: var(--surface);
+  border: 1px dashed var(--border);
+  border-radius: 15px;
+  padding: 22px 16px;
+  color: var(--muted);
+  font-size: 13px;
+  text-align: center;
+  line-height: 1.6;
+}
+
+@media (min-width: 650px) {
+  .tabs {
+    justify-content: center;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <a class="back" href="perfil.html">← Voltar ao perfil</a>
+  <h1>Minhas coleções</h1>
+  <p>Organize suas descobertas e acompanhe sua jornada.</p>
+</header>
+
+<nav class="tabs">
+  <button class="tab active" onclick="showCollection('livros', this)">Livros</button>
+  <button class="tab" onclick="showCollection('jogos', this)">Jogos</button>
+  <button class="tab" onclick="showCollection('filmes', this)">Filmes</button>
+  <button class="tab" onclick="showCollection('series', this)">Séries</button>
+  <button class="tab" onclick="showCollection('historia', this)">História</button>
+  <button class="tab" onclick="showCollection('geografia', this)">Geografia</button>
+</nav>
+
+<main>
+
+  <!-- LIVROS -->
+  <section id="livros" class="collection-page active">
+
+    <div class="section">
+      <h2>Lendo atualmente</h2>
+
+      <div class="item">
+        <div class="item-top">
+          <div>
+            <strong>O Hobbit</strong>
+            <small>J. R. R. Tolkien</small>
+          </div>
+          <span class="status">Em leitura</span>
+        </div>
+
+        <div class="progress-info">
+          <span>Progresso da leitura</span>
+          <strong>65%</strong>
+        </div>
+        <div class="progress">
+          <div class="progress-fill" style="width:65%"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>Livros que já li</h2>
+      <div class="item">
+        <strong>Frankenstein</strong>
+        <small>Mary Shelley</small>
+      </div>
+      <div class="item">
+        <strong>A Metamorfose</strong>
+        <small>Franz Kafka</small>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>Quero ler</h2>
+      <div class="empty">Os livros que você deseja ler aparecerão aqui.</div>
+    </div>
+
+    <div class="section">
+      <h2>Quero adquirir</h2>
+      <div class="empty">Adicione os livros que deseja comprar, trocar ou conseguir.</div>
+    </div>
+
+  </section>
+
+  <!-- JOGOS -->
+  <section id="jogos" class="collection-page">
+
+    <div class="section">
+      <h2>Jogando atualmente</h2>
+      <div class="empty">Os jogos que você está jogando aparecerão aqui.</div>
+    </div>
+
+    <div class="section">
+      <h2>Jogos concluídos</h2>
+      <div class="empty">Aqui ficarão os jogos que você já concluiu.</div>
+    </div>
+
+    <div class="section">
+      <h2>Quero jogar</h2>
+      <div class="empty">Sua lista de jogos desejados aparecerá aqui.</div>
+    </div>
+
+    <div class="section">
+      <h2>Quero adquirir</h2>
+      <div class="empty">Jogos que deseja comprar ou conseguir.</div>
+    </div>
+
+  </section>
+
+  <!-- FILMES -->
+  <section id="filmes" class="collection-page">
+
+    <div class="section">
+      <h2>Assistidos</h2>
+      <div class="empty">Os filmes que você já assistiu aparecerão aqui.</div>
+    </div>
+
+    <div class="section">
+      <h2>Quero assistir</h2>
+      <div class="empty">Filmes que você deseja assistir.</div>
+    </div>
+
+    <div class="section">
+      <h2>Favoritos</h2>
+      <div class="empty">Seus filmes favoritos aparecerão aqui.</div>
+    </div>
+
+  </section>
+
+  <!-- SÉRIES -->
+  <section id="series" class="collection-page">
+
+    <div class="section">
+      <h2>Assistindo atualmente</h2>
+      <div class="empty">As séries que você está acompanhando aparecerão aqui.</div>
+    </div>
+
+    <div class="section">
+      <h2>Concluídas</h2>
+      <div class="empty">Séries que você já terminou.</div>
+    </div>
+
+    <div class="section">
+      <h2>Quero assistir</h2>
+      <div class="empty">Sua lista de séries desejadas aparecerá aqui.</div>
+    </div>
+
+    <div class="section">
+      <h2>Favoritas</h2>
+      <div class="empty">Suas séries favoritas aparecerão aqui.</div>
+    </div>
+
+  </section>
+
+  <!-- HISTÓRIA -->
+  <section id="historia" class="collection-page">
+
+    <div class="section">
+      <h2>Estudando atualmente</h2>
+      <div class="empty">Períodos e acontecimentos que você está estudando.</div>
+    </div>
+
+    <div class="section">
+      <h2>Já estudei</h2>
+      <div class="empty">Acontecimentos, personagens e períodos que você já explorou.</div>
+    </div>
+
+    <div class="section">
+      <h2>Quero estudar</h2>
+      <div class="empty">Assuntos históricos que deseja conhecer.</div>
+    </div>
+
+    <div class="section">
+      <h2>Favoritos</h2>
+      <div class="empty">Seus conteúdos históricos favoritos.</div>
+    </div>
+
+  </section>
+
+  <!-- GEOGRAFIA -->
+  <section id="geografia" class="collection-page">
+
+    <div class="section">
+      <h2>Lugares que conheço</h2>
+      <div class="empty">Países, cidades e lugares que você já conhece.</div>
+    </div>
+
+    <div class="section">
+      <h2>Quero conhecer</h2>
+      <div class="empty">Lugares que deseja visitar ou explorar.</div>
+    </div>
+
+    <div class="section">
+      <h2>Quero estudar</h2>
+      <div class="empty">Países, regiões e temas geográficos que deseja estudar.</div>
+    </div>
+
+    <div class="section">
+      <h2>Favoritos</h2>
+      <div class="empty">Seus lugares e conteúdos geográficos favoritos.</div>
+    </div>
+
+  </section>
+
+</main>
+
+<script>
+function showCollection(collectionId, button) {
+  document.querySelectorAll(".collection-page").forEach(page => {
+    page.classList.remove("active");
+  });
+
+  document.querySelectorAll(".tab").forEach(tab => {
+    tab.classList.remove("active");
+  });
+
+  document.getElementById(collectionId).classList.add("active");
+  button.classList.add("active");
+}
+</script>
+
+</body>
+</html>
