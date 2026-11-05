@@ -929,16 +929,27 @@ encontrados.push({
             return;
           }
 
-          livrosSalvos.push({
-            id: Date.now(),
-            obraId: livro.obraId,
-            titulo: livro.titulo,
-            autor: livro.autor,
-            capa: livro.capa,
-            paginasTotal: livro.paginasTotal,
-            paginasLidas: 0,
-            status: document.getElementById("modalStatusLivro").value
-          });
+          const status = document.getElementById("modalStatusLivro").value;
+const total = Number(document.getElementById("modalTotalPaginas").value);
+const lidas = Number(document.getElementById("modalPaginasLidas").value);
+
+if (status === "Lendo") {
+  if (total <= 0 || lidas < 0 || lidas > total) {
+    alert("Informe um total de páginas válido e uma quantidade lida entre 0 e o total.");
+    return;
+  }
+}
+
+livrosSalvos.push({
+  id: Date.now(),
+  obraId: livro.obraId,
+  titulo: livro.titulo,
+  autor: livro.autor,
+  capa: livro.capa,
+  paginasTotal: status === "Lendo" ? total : livro.paginasTotal,
+  paginasLidas: status === "Lendo" ? lidas : 0,
+  status: status
+});
 
           localStorage.setItem("mn_livros", JSON.stringify(livrosSalvos));
 
