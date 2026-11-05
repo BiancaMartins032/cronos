@@ -224,6 +224,92 @@ main {
   gap: 7px;
   min-width: 0;
 }
+  .book-modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(10, 8, 20, 0.82);
+  padding: 20px;
+  align-items: center;
+  justify-content: center;
+}
+
+.book-modal.active {
+  display: flex;
+}
+
+.book-modal-content {
+  position: relative;
+  width: 100%;
+  max-width: 380px;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 24px;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: var(--surface);
+  color: var(--text);
+  text-align: center;
+}
+
+.book-modal-content > img {
+  display: block;
+  width: 100px;
+  height: 145px;
+  object-fit: cover;
+  margin: 8px auto 16px;
+  border-radius: 8px;
+}
+
+.book-modal-content h2 {
+  font-size: 19px;
+  margin: 8px 0;
+}
+
+.book-modal-content p {
+  color: var(--muted);
+  margin-bottom: 22px;
+}
+
+.book-modal-content label {
+  display: block;
+  text-align: left;
+  margin-bottom: 10px;
+  font-size: 14px;
+}
+
+#modalStatusLivro {
+  width: 100%;
+  padding: 13px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--surface2);
+  color: var(--text);
+  margin-bottom: 16px;
+}
+
+#salvarLivroColecao {
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: 10px;
+  background: var(--purple);
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.close-modal {
+  position: absolute;
+  top: 10px;
+  right: 14px;
+  border: none;
+  background: transparent;
+  color: var(--text);
+  font-size: 28px;
+  cursor: pointer;
+}
 </style>
 </head>
 
@@ -600,72 +686,88 @@ async function pesquisarLivros(pesquisa) {
     }
 
     dados.docs.forEach(livro => {
-      const card = document.createElement("div");
-      card.className = "book-result";
+  const card = document.createElement("div");
+  card.className = "book-result";
 
-      if (livro.cover_i) {
-        const capa = document.createElement("img");
-        capa.src = `https://covers.openlibrary.org/b/id/${livro.cover_i}-M.jpg`;
-        capa.alt = "Capa de " + livro.title;
-        card.appendChild(capa);
-      }
+  const capa = document.createElement("img");
 
-      const informacoes = document.createElement("div");
-      informacoes.className = "book-result-info";
+  if (livro.cover_i) {
+    capa.src = `https://covers.openlibrary.org/b/id/${livro.cover_i}-M.jpg`;
+  } else {
+    capa.style.display = "none";
+  }
 
-      const titulo = document.createElement("strong");
-      titulo.textContent = livro.title || "Título desconhecido";
+  capa.alt = "Capa de " + livro.title;
+  capa.style.cursor = "pointer";
 
-      const autor = document.createElement("small");
-      autor.textContent = livro.author_name
+  const informacoes = document.createElement("div");
+  informacoes.className = "book-result-info";
+
+  const titulo = document.createElement("strong");
+  titulo.textContent = livro.title || "Título desconhecido";
+  titulo.style.cursor = "pointer";
+
+  const autor = document.createElement("small");
+  autor.textContent = livro.author_name
+    ? livro.author_name.join(", ")
+    : "Autor não informado";
+
+  function abrirDetalhes() {
+    document.getElementById("modalCapaLivro").src = livro.cover_i
+      ? `https://covers.openlibrary.org/b/id/${livro.cover_i}-M.jpg`
+      : "";
+
+    document.getElementById("modalTituloLivro").textContent =
+      livro.title || "Título desconhecido";
+
+    document.getElementById("modalAutorLivro").textContent =
+      livro.author_name
         ? livro.author_name.join(", ")
         : "Autor não informado";
 
-      const botao = document.createElement("button");
-      botao.type = "button";
-      botao.textContent = "Adicionar à coleção";
+    document.getElementById("modalStatusLivro").value = "Quero ler";
 
-      botao.addEventListener("click", () => {
-        const livrosSalvos = JSON.parse(
-          localStorage.getItem("mn_livros") || "[]"
-        );
+    document.getElementById("modalLivro").classList.add("active");
 
-        const jaExiste = livrosSalvos.some(item =>
-          item.obraId === livro.key
-        );
+    document.getElementById("salvarLivroColecao").onclick = function () {
+      const livrosSalvos = JSON.parse(
+        localStorage.getItem("mn_livros") || "[]"
+      );
 
-        if (jaExiste) {
-          botao.textContent = "Já está na coleção";
-          return;
-        }
+      if (livrosSalvos.some(item => item.obraId === livro.key)) {
+        alert("Este livro já está na sua coleção.");
+        return;
+      }
 
-        livrosSalvos.push({
-          id: Date.now(),
-          obraId: livro.key,
-          titulo: livro.title || "Título desconhecido",
-          autor: livro.author_name
-            ? livro.author_name.join(", ")
-            : "",
-          capa: livro.cover_i
-            ? `https://covers.openlibrary.org/b/id/${livro.cover_i}-M.jpg`
-            : "",
-          status: "Quero ler"
-        });
-
-        localStorage.setItem(
-          "mn_livros",
-          JSON.stringify(livrosSalvos)
-        );
-
-        renderLivros();
-        botao.textContent = "Adicionado!";
+      livrosSalvos.push({
+        id: Date.now(),
+        obraId: livro.key,
+        titulo: livro.title || "Título desconhecido",
+        autor: livro.author_name
+          ? livro.author_name.join(", ")
+          : "",
+        capa: livro.cover_i
+          ? `https://covers.openlibrary.org/b/id/${livro.cover_i}-M.jpg`
+          : "",
+        status: document.getElementById("modalStatusLivro").value
       });
 
-      informacoes.append(titulo, autor, botao);
-      card.appendChild(informacoes);
-      resultadosLivros.appendChild(card);
-    });
+      localStorage.setItem("mn_livros", JSON.stringify(livrosSalvos));
 
+      document.getElementById("modalLivro").classList.remove("active");
+
+      renderLivros();
+      alert("Livro adicionado à sua coleção!");
+    };
+  }
+
+  capa.addEventListener("click", abrirDetalhes);
+  titulo.addEventListener("click", abrirDetalhes);
+
+  informacoes.append(titulo, autor);
+  card.append(capa, informacoes);
+  resultadosLivros.appendChild(card);
+});
   } catch (erro) {
     resultadosLivros.textContent =
       "Não foi possível pesquisar. Verifique sua conexão e tente novamente.";
@@ -674,5 +776,30 @@ async function pesquisarLivros(pesquisa) {
 renderLivros();
 </script>
 
+  <div id="modalLivro" class="book-modal">
+  <div class="book-modal-content">
+    <button type="button" id="fecharModalLivro" class="close-modal">
+      ×
+    </button>
+
+    <img id="modalCapaLivro" src="" alt="Capa do livro">
+
+    <h2 id="modalTituloLivro"></h2>
+    <p id="modalAutorLivro"></p>
+
+    <label for="modalStatusLivro">O que você deseja fazer com este livro?</label>
+
+    <select id="modalStatusLivro">
+      <option value="Lendo">Estou lendo</option>
+      <option value="Lido">Já li</option>
+      <option value="Quero ler">Quero ler</option>
+      <option value="Quero adquirir">Quero adquirir</option>
+    </select>
+
+    <button type="button" id="salvarLivroColecao">
+      Adicionar à minha coleção
+    </button>
+  </div>
+</div>
 </body>
 </html>
