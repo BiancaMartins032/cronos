@@ -787,7 +787,7 @@ async function pesquisarLivros(pesquisa) {
       const isbn = edicaoPortugues?.isbn_13?.[0] ||
                    edicaoPortugues?.isbn_10?.[0];
 
-      const idCapa = edicaoPortugues?.covers?.[0] || obra.cover_i;
+      const idCapa = edicaoPortugues.covers?.[0];
 
       if (!edicaoPortugues) continue;
 
