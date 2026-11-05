@@ -723,6 +723,14 @@ function renderLivros() {
           livro.autor || "Autor não informado";
 
         document.getElementById("modalStatusLivro").value = livro.status;
+        document.getElementById("modalTotalPaginas").value =
+        livro.paginasTotal || "";
+
+        document.getElementById("modalPaginasLidas").value =
+        livro.paginasLidas || "";
+
+        document.getElementById("progressoLeituraCampos").style.display =
+        livro.status === "Lendo" ? "block" : "none";
 
         const botaoSalvar = document.getElementById("salvarLivroColecao");
         botaoSalvar.textContent = "Salvar alterações";
