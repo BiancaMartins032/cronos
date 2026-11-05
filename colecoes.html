@@ -736,66 +736,102 @@ if (campoBuscaLivro) {
 
 async function pesquisarLivros(pesquisa) {
   try {
-    const url = `https://openlibrary.org/search.json?q=${encodeURIComponent(pesquisa)}&language=por&limit=30&fields=key,title,author_name,cover_i,language,number_of_pages_median`;
+    resultadosLivros.textContent = "Procurando edições em português...";
+
+    const url = `https://openlibrary.org/search.json?q=${encodeURIComponent(pesquisa)}&language=por&limit=12&fields=key,title,author_name,language`;
 
     const resposta = await fetch(url);
     if (!resposta.ok) throw new Error("Falha na pesquisa");
 
     const dados = await resposta.json();
-    resultadosLivros.innerHTML = "";
 
-    const livrosPortugues = (dados.docs || []).filter(livro =>
-      Array.isArray(livro.language) &&
-      (livro.language.includes("por") || livro.language.includes("pt"))
+    const obras = (dados.docs || []).filter(livro =>
+      livro.language?.some(idioma =>
+        idioma === "por" || idioma === "pt"
+      )
     );
 
-    if (!livrosPortugues.length) {
+    const edicoes = await Promise.all(
+      obras.map(async obra => {
+        try {
+          const respostaEdicoes = await fetch(
+            `https://openlibrary.org${obra.key}/editions.json?limit=50`
+          );
+
+          if (!respostaEdicoes.ok) return null;
+
+          const dadosEdicoes = await respostaEdicoes.json();
+
+          const edicao = (dadosEdicoes.entries || []).find(item =>
+            item.languages?.some(idioma =>
+              idioma.key === "/languages/por" ||
+              idioma.key === "/languages/pt"
+            )
+          );
+
+          if (!edicao) return null;
+
+          const isbn = edicao.isbn_13?.[0] || edicao.isbn_10?.[0];
+
+          const capa = edicao.covers?.[0]
+            ? `https://covers.openlibrary.org/b/id/${edicao.covers[0]}-M.jpg`
+            : isbn
+              ? `https://covers.openlibrary.org/b/isbn/${isbn}-M.jpg`
+              : "";
+
+          return {
+            obraId: edicao.key,
+            titulo: edicao.title || obra.title,
+            autor: obra.author_name?.join(", ") || "Autor não informado",
+            capa,
+            paginasTotal: edicao.number_of_pages || 0
+          };
+
+        } catch (erro) {
+          return null;
+        }
+      })
+    );
+
+    resultadosLivros.innerHTML = "";
+
+    const encontrados = edicoes.filter(Boolean);
+
+    if (!encontrados.length) {
       resultadosLivros.textContent =
-        "Nenhum livro em português encontrado. Tente outro título ou autor.";
+        "Não encontramos edições em português para essa pesquisa.";
       return;
     }
 
-    livrosPortugues.forEach(livro => {
+    encontrados.forEach(livro => {
       const card = document.createElement("div");
       card.className = "book-result";
 
       const capa = document.createElement("img");
-      capa.src = livro.cover_i
-        ? `https://covers.openlibrary.org/b/id/${livro.cover_i}-M.jpg`
-        : "";
-      capa.alt = "Capa de " + livro.title;
+      capa.src = livro.capa || "";
+      capa.alt = "Capa de " + livro.titulo;
 
-      if (!livro.cover_i) capa.style.display = "none";
+      if (!livro.capa) capa.style.display = "none";
 
       const informacoes = document.createElement("div");
       informacoes.className = "book-result-info";
 
       const titulo = document.createElement("strong");
-      titulo.textContent = livro.title || "Título desconhecido";
-      titulo.style.cursor = "pointer";
+      titulo.textContent = livro.titulo;
 
       const autor = document.createElement("small");
-      autor.textContent = livro.author_name
-        ? livro.author_name.join(", ")
-        : "Autor não informado";
+      autor.textContent = livro.autor;
 
       function abrirDetalhes() {
         const modalCapa = document.getElementById("modalCapaLivro");
 
-        modalCapa.src = livro.cover_i
-          ? `https://covers.openlibrary.org/b/id/${livro.cover_i}-M.jpg`
-          : "";
-        modalCapa.style.display = livro.cover_i ? "block" : "none";
+        modalCapa.src = livro.capa || "";
+        modalCapa.style.display = livro.capa ? "block" : "none";
 
-        document.getElementById("modalTituloLivro").textContent =
-          livro.title || "Título desconhecido";
-
-        document.getElementById("modalAutorLivro").textContent =
-          livro.author_name
-            ? livro.author_name.join(", ")
-            : "Autor não informado";
-
+        document.getElementById("modalTituloLivro").textContent = livro.titulo;
+        document.getElementById("modalAutorLivro").textContent = livro.autor;
         document.getElementById("modalStatusLivro").value = "Quero ler";
+
         document.getElementById("modalLivro").classList.add("active");
 
         document.getElementById("salvarLivroColecao").onclick = function () {
@@ -803,22 +839,18 @@ async function pesquisarLivros(pesquisa) {
             localStorage.getItem("mn_livros") || "[]"
           );
 
-          if (livrosSalvos.some(item => item.obraId === livro.key)) {
+          if (livrosSalvos.some(item => item.obraId === livro.obraId)) {
             alert("Este livro já está na sua coleção.");
             return;
           }
 
           livrosSalvos.push({
             id: Date.now(),
-            obraId: livro.key,
-            titulo: livro.title || "Título desconhecido",
-            autor: livro.author_name
-              ? livro.author_name.join(", ")
-              : "",
-            capa: livro.cover_i
-              ? `https://covers.openlibrary.org/b/id/${livro.cover_i}-M.jpg`
-              : "",
-            paginasTotal: livro.number_of_pages_median || 0,
+            obraId: livro.obraId,
+            titulo: livro.titulo,
+            autor: livro.autor,
+            capa: livro.capa,
+            paginasTotal: livro.paginasTotal,
             paginasLidas: 0,
             status: document.getElementById("modalStatusLivro").value
           });
@@ -826,6 +858,10 @@ async function pesquisarLivros(pesquisa) {
           localStorage.setItem("mn_livros", JSON.stringify(livrosSalvos));
 
           document.getElementById("modalLivro").classList.remove("active");
+
+          campoBuscaLivro.value = "";
+          resultadosLivros.innerHTML = "";
+
           renderLivros();
           alert("Livro adicionado à sua coleção!");
         };
