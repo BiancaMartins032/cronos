@@ -270,24 +270,19 @@ main {
   </section>
 
   <!-- FILMES -->
-  <section id="filmes" class="collection-page">
+<section id="filmes" class="collection-page">
 
-    <div class="section">
-      <h2>Assistidos</h2>
-      <div class="empty">Os filmes que você já assistiu aparecerão aqui.</div>
-    </div>
+  <div class="section">
+    <h2>Assistidos</h2>
+    <div id="filmes-assistidos" class="media-list"></div>
+  </div>
 
-    <div class="section">
-      <h2>Quero assistir</h2>
-      <div class="empty">Filmes que você deseja assistir.</div>
-    </div>
+  <div class="section">
+    <h2>Quero assistir</h2>
+    <div id="filmes-desejados" class="media-list"></div>
+  </div>
 
-    <div class="section">
-      <h2>Favoritos</h2>
-      <div class="empty">Seus filmes favoritos aparecerão aqui.</div>
-    </div>
-
-  </section>
+</section>
 
   <!-- SÉRIES -->
   <section id="series" class="collection-page">
@@ -379,6 +374,74 @@ function showCollection(collectionId, button) {
   document.getElementById(collectionId).classList.add("active");
   button.classList.add("active");
 }
+  function renderMediaCollection() {
+  let movies = [];
+
+  try {
+    movies = JSON.parse(localStorage.getItem("cronosMovies") || "[]");
+  } catch (error) {
+    movies = [];
+  }
+
+  function renderGroup(containerId, type, status, emptyMessage) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+
+    const items = movies.filter(item =>
+      item.type === type && item.status === status
+    );
+
+    container.innerHTML = "";
+
+    if (items.length === 0) {
+      const empty = document.createElement("div");
+      empty.className = "empty";
+      empty.textContent = emptyMessage;
+      container.appendChild(empty);
+      return;
+    }
+
+    items.forEach(item => {
+      const card = document.createElement("div");
+      card.className = "item";
+
+      const title = document.createElement("strong");
+      title.textContent = item.name;
+
+      const info = document.createElement("small");
+      info.textContent = status;
+
+      card.appendChild(title);
+      card.appendChild(info);
+
+      if (status === "Já assisti" && item.rating > 0) {
+        const rating = document.createElement("small");
+        rating.textContent = "Sua avaliação: " + "★".repeat(item.rating);
+        card.appendChild(rating);
+      }
+
+      container.appendChild(card);
+    });
+  }
+
+  renderGroup("filmes-assistidos", "Filme", "Já assisti",
+    "Você ainda não registrou filmes assistidos.");
+
+  renderGroup("filmes-desejados", "Filme", "Quero assistir",
+    "Sua lista de filmes que deseja assistir está vazia.");
+
+  renderGroup("series-assistindo", "Série", "Assistindo",
+    "Você ainda não registrou séries em andamento.");
+
+  renderGroup("series-concluidas", "Série", "Já assisti",
+    "Você ainda não registrou séries concluídas.");
+
+  renderGroup("series-desejadas", "Série", "Quero assistir",
+    "Sua lista de séries que deseja assistir está vazia.");
+}
+
+renderMediaCollection();
+window.addEventListener("pageshow", renderMediaCollection);
 </script>
 
 </body>
