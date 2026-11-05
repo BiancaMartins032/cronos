@@ -654,6 +654,29 @@ function renderLivros() {
       capa.loading = "lazy";
 
       card.appendChild(capa);
+      if (status === "Lendo") {
+  const total = Number(livro.paginasTotal) || 0;
+  const lidas = Number(livro.paginasLidas) || 0;
+
+  const percentual = total > 0
+    ? Math.min(100, Math.round((lidas / total) * 100))
+    : 0;
+
+  const progresso = document.createElement("div");
+  progresso.className = "book-progress";
+
+  progresso.innerHTML = `
+    <div class="progress-info">
+      <span>${lidas} de ${total} páginas</span>
+      <strong>${percentual}%</strong>
+    </div>
+    <div class="progress-track">
+      <div class="progress-fill" style="width: ${percentual}%"></div>
+    </div>
+  `;
+
+  card.appendChild(progresso);
+}
 
       card.addEventListener("click", () => {
         document.getElementById("modalCapaLivro").src = livro.capa;
