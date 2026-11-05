@@ -676,14 +676,27 @@ function renderLivros() {
           const indice = livrosAtualizados.findIndex(item => item.id === livro.id);
 
           if (indice !== -1) {
-            livrosAtualizados[indice].status =
-              document.getElementById("modalStatusLivro").value;
+  const status = document.getElementById("modalStatusLivro").value;
+  const total = Number(document.getElementById("modalTotalPaginas").value);
+  const lidas = Number(document.getElementById("modalPaginasLidas").value);
 
-            localStorage.setItem(
-              "mn_livros",
-              JSON.stringify(livrosAtualizados)
-            );
-          }
+  if (status === "Lendo") {
+    if (total <= 0 || lidas < 0 || lidas > total) {
+      alert("Informe um total de páginas válido e uma quantidade lida entre 0 e o total.");
+      return;
+    }
+
+    livrosAtualizados[indice].paginasTotal = total;
+    livrosAtualizados[indice].paginasLidas = lidas;
+  }
+
+  livrosAtualizados[indice].status = status;
+
+  localStorage.setItem(
+    "mn_livros",
+    JSON.stringify(livrosAtualizados)
+  );
+}
 
           document.getElementById("modalLivro").classList.remove("active");
           renderLivros();
