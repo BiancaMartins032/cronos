@@ -371,6 +371,57 @@ main {
   border-radius: 10px;
   transition: width 0.3s ease;
 }
+  #progressoLeituraCampos {
+  display: none;
+  padding: 14px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+
+#progressoLeituraCampos label {
+  display: block;
+  margin: 12px 0 6px;
+  color: var(--text);
+  font-size: 13px;
+}
+
+#progressoLeituraCampos input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+}
+
+#progressoLeituraCampos input:focus {
+  outline: 1px solid var(--purple);
+}
+
+.book-progress {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px 4px;
+}
+
+.progress-track {
+  display: block;
+  width: 100%;
+  height: 7px;
+  background: var(--surface2);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: var(--purple);
+  border-radius: 10px;
+}
 </style>
 </head>
 
@@ -641,11 +692,19 @@ window.addEventListener("pageshow", renderMediaCollection);
   document.addEventListener("DOMContentLoaded", function () {
   const seletorStatusLivro = document.getElementById("modalStatusLivro");
   const camposProgresso = document.getElementById("progressoLeituraCampos");
+  const fecharModal = document.getElementById("fecharModalLivro");
+  const modal = document.getElementById("modalLivro");
 
   if (seletorStatusLivro && camposProgresso) {
     seletorStatusLivro.addEventListener("change", function () {
       camposProgresso.style.display =
         this.value === "Lendo" ? "block" : "none";
+    });
+  }
+
+  if (fecharModal && modal) {
+    fecharModal.addEventListener("click", function () {
+      modal.classList.remove("active");
     });
   }
 });
@@ -927,6 +986,9 @@ encontrados.push({
         document.getElementById("modalTituloLivro").textContent = livro.titulo;
         document.getElementById("modalAutorLivro").textContent = livro.autor;
         document.getElementById("modalStatusLivro").value = "Quero ler";
+        document.getElementById("modalTotalPaginas").value = "";
+        document.getElementById("modalPaginasLidas").value = "";
+        document.getElementById("progressoLeituraCampos").style.display = "none";
 
         document.getElementById("modalLivro").classList.add("active");
 
