@@ -1304,9 +1304,93 @@ renderLivros();
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="auth.js"></script>
 <script>
-  document.addEventListener("DOMContentLoaded", async () => {
-    await verificarAcesso();
-  });
+async function sincronizarColecaoLivrosInicial() {
+  const cliente = window.mnSupabaseClient;
+
+  try {
+    const { data: sessaoData, error: erroSessao } =
+      await cliente.auth.getSession();
+
+    if (erroSessao || !sessaoData.session) return;
+
+    const usuarioId = sessaoData.session.user.id;
+
+    const livrosLocais = JSON.parse(
+      localStorage.getItem("mn_livros") || "[]"
+    );
+
+    const chaveMigracao = "mn_livros_migrados_" + usuarioId;
+
+    if (!localStorage.getItem(chaveMigracao)) {
+      const registros = livrosLocais.map(livro => ({
+        user_id: usuarioId,
+        universe: "leitura",
+        item_id: String(livro.obraId || "manual-" + livro.id),
+        title: livro.titulo,
+        author: livro.autor || null,
+        cover: livro.capa || null,
+        status: livro.status,
+        data: {
+          obraId: livro.obraId || null,
+          localId: livro.id,
+          paginasTotal: livro.paginasTotal || 0,
+          paginasLidas: livro.paginasLidas || 0
+        }
+      }));
+
+      if (registros.length) {
+        const { error } = await cliente
+          .from("mn_collections")
+          .upsert(registros, {
+            onConflict: "user_id,universe,item_id",
+            ignoreDuplicates: true
+          });
+
+        if (error) throw error;
+      }
+
+      localStorage.setItem(chaveMigracao, "sim");
+    }
+
+    const { data, error } = await cliente
+      .from("mn_collections")
+      .select("*")
+      .eq("user_id", usuarioId)
+      .eq("universe", "leitura");
+
+    if (error) throw error;
+
+    const livrosAtualizados = data.map(registro => ({
+      id: registro.data?.localId || registro.id,
+      obraId: registro.data?.obraId || registro.item_id,
+      titulo: registro.title,
+      autor: registro.author || "",
+      capa: registro.cover || "",
+      status: registro.status,
+      paginasTotal: registro.data?.paginasTotal || 0,
+      paginasLidas: registro.data?.paginasLidas || 0
+    }));
+
+    localStorage.setItem(
+      "mn_livros",
+      JSON.stringify(livrosAtualizados)
+    );
+
+    renderLivros();
+
+  } catch (erro) {
+    console.error("Erro ao sincronizar livros:", erro);
+    alert("Não foi possível sincronizar sua coleção. Seus dados locais foram preservados.");
+  }
+}
+
+document.addEventListener("DOMContentLoaded", async () => {
+  const sessao = await verificarAcesso();
+
+  if (sessao) {
+    await sincronizarColecaoLivrosInicial();
+  }
+});
 </script>
 </body>
 </html>
