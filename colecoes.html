@@ -173,6 +173,36 @@ main {
     justify-content: center;
   }
 }
+  .search-books {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 16px;
+  height: 54px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  color: var(--muted);
+}
+
+.search-books input {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: var(--text);
+  font-size: 15px;
+}
+
+.search-books input::placeholder {
+  color: var(--muted);
+}
+
+#resultadosLivros {
+  margin-top: 16px;
+}
 </style>
 </head>
 
@@ -198,21 +228,25 @@ main {
   <!-- LIVROS -->
   <section id="livros" class="collection-page active">
     <div class="section">
-  <h2>Adicionar livro</h2>
+  <h2>Encontrar livros</h2>
 
-  <form id="formLivro">
-    <input id="livroTitulo" type="text" placeholder="Título do livro" required>
-    <input id="livroAutor" type="text" placeholder="Autor">
+  <div class="search-books">
+    <svg viewBox="0 0 24 24" width="22" height="22"
+         fill="none" stroke="currentColor"
+         stroke-width="1.8" stroke-linecap="round">
+      <circle cx="11" cy="11" r="7"></circle>
+      <path d="m16 16 4 4"></path>
+    </svg>
 
-    <select id="livroStatus">
-      <option value="Quero ler">Quero ler</option>
-      <option value="Lendo">Estou lendo</option>
-      <option value="Lido">Já li</option>
-      <option value="Quero adquirir">Quero adquirir</option>
-    </select>
+    <input
+      type="search"
+      id="buscarLivro"
+      placeholder="Pesquisar por título ou autor..."
+      autocomplete="off"
+    >
+  </div>
 
-    <button type="submit">Adicionar à coleção</button>
-  </form>
+  <div id="resultadosLivros"></div>
 </div>
 
     <div class="section">
@@ -505,6 +539,117 @@ if (formLivro) {
   });
 }
 
+  const campoBuscaLivro = document.getElementById("buscarLivro");
+const resultadosLivros = document.getElementById("resultadosLivros");
+
+let tempoBuscaLivro;
+
+if (campoBuscaLivro) {
+  campoBuscaLivro.addEventListener("input", function () {
+    clearTimeout(tempoBuscaLivro);
+
+    const pesquisa = campoBuscaLivro.value.trim();
+
+    if (pesquisa.length < 3) {
+      resultadosLivros.innerHTML = "";
+      return;
+    }
+
+    resultadosLivros.textContent = "Pesquisando livros...";
+
+    tempoBuscaLivro = setTimeout(() => {
+      pesquisarLivros(pesquisa);
+    }, 500);
+  });
+}
+
+async function pesquisarLivros(pesquisa) {
+  try {
+    const url = `https://openlibrary.org/search.json?q=${encodeURIComponent(pesquisa)}&limit=10&fields=key,title,author_name,cover_i`;
+
+    const resposta = await fetch(url);
+    if (!resposta.ok) throw new Error("Falha na pesquisa");
+
+    const dados = await resposta.json();
+    resultadosLivros.innerHTML = "";
+
+    if (!dados.docs || dados.docs.length === 0) {
+      resultadosLivros.textContent = "Nenhum livro encontrado.";
+      return;
+    }
+
+    dados.docs.forEach(livro => {
+      const card = document.createElement("div");
+      card.className = "book-result";
+
+      if (livro.cover_i) {
+        const capa = document.createElement("img");
+        capa.src = `https://covers.openlibrary.org/b/id/${livro.cover_i}-M.jpg`;
+        capa.alt = "Capa de " + livro.title;
+        card.appendChild(capa);
+      }
+
+      const informacoes = document.createElement("div");
+      informacoes.className = "book-result-info";
+
+      const titulo = document.createElement("strong");
+      titulo.textContent = livro.title || "Título desconhecido";
+
+      const autor = document.createElement("small");
+      autor.textContent = livro.author_name
+        ? livro.author_name.join(", ")
+        : "Autor não informado";
+
+      const botao = document.createElement("button");
+      botao.type = "button";
+      botao.textContent = "Adicionar à coleção";
+
+      botao.addEventListener("click", () => {
+        const livrosSalvos = JSON.parse(
+          localStorage.getItem("mn_livros") || "[]"
+        );
+
+        const jaExiste = livrosSalvos.some(item =>
+          item.obraId === livro.key
+        );
+
+        if (jaExiste) {
+          botao.textContent = "Já está na coleção";
+          return;
+        }
+
+        livrosSalvos.push({
+          id: Date.now(),
+          obraId: livro.key,
+          titulo: livro.title || "Título desconhecido",
+          autor: livro.author_name
+            ? livro.author_name.join(", ")
+            : "",
+          capa: livro.cover_i
+            ? `https://covers.openlibrary.org/b/id/${livro.cover_i}-M.jpg`
+            : "",
+          status: "Quero ler"
+        });
+
+        localStorage.setItem(
+          "mn_livros",
+          JSON.stringify(livrosSalvos)
+        );
+
+        renderLivros();
+        botao.textContent = "Adicionado!";
+      });
+
+      informacoes.append(titulo, autor, botao);
+      card.appendChild(informacoes);
+      resultadosLivros.appendChild(card);
+    });
+
+  } catch (erro) {
+    resultadosLivros.textContent =
+      "Não foi possível pesquisar. Verifique sua conexão e tente novamente.";
+  }
+}
 renderLivros();
 </script>
 
