@@ -602,6 +602,13 @@ function showCollection(collectionId, button) {
 renderMediaCollection();
 window.addEventListener("pageshow", renderMediaCollection);
   const formLivro = document.getElementById("formLivro");
+  const seletorStatusLivro = document.getElementById("modalStatusLivro");
+const camposProgresso = document.getElementById("progressoLeituraCampos");
+
+seletorStatusLivro.addEventListener("change", function () {
+  camposProgresso.style.display =
+    this.value === "Lendo" ? "block" : "none";
+});
 
 function renderLivros() {
   let livros = [];
@@ -891,7 +898,8 @@ encontrados.push({
 renderLivros();
 </script>
 
-  <div id="modalLivro" class="book-modal">
+
+<div id="modalLivro" class="book-modal">
   <div class="book-modal-content">
     <button type="button" id="fecharModalLivro" class="close-modal">
       ×
@@ -911,10 +919,29 @@ renderLivros();
       <option value="Quero adquirir">Quero adquirir</option>
     </select>
 
+    <div id="progressoLeituraCampos" style="display:none; margin-top:16px;">
+      <label for="modalTotalPaginas">Total de páginas do livro</label>
+      <input
+        type="number"
+        id="modalTotalPaginas"
+        min="1"
+        placeholder="Ex.: 350"
+      >
+
+      <label for="modalPaginasLidas">Quantas páginas você já leu?</label>
+      <input
+        type="number"
+        id="modalPaginasLidas"
+        min="0"
+        placeholder="Ex.: 75"
+      >
+    </div>
+
     <button type="button" id="salvarLivroColecao">
       Adicionar à minha coleção
     </button>
   </div>
 </div>
+
 </body>
 </html>
