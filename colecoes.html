@@ -586,7 +586,7 @@ if (campoBuscaLivro) {
 
 async function pesquisarLivros(pesquisa) {
   try {
-    const url = `https://openlibrary.org/search.json?q=${encodeURIComponent(pesquisa)}&limit=10&fields=key,title,author_name,cover_i`;
+    const url = `https://openlibrary.org/search.json?q=${encodeURIComponent(pesquisa)}&language=por&limit=20&fields=key,title,author_name,cover_i,language`;
 
     const resposta = await fetch(url);
     if (!resposta.ok) throw new Error("Falha na pesquisa");
