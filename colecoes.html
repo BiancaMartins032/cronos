@@ -471,6 +471,7 @@ main {
     <div class="section">
   <h2>Atualmente lendo</h2>
   <div id="livros-lendo" class="media-list"></div>
+  <div id="progresso-livros-lendo" class="reading-progress-list"></div>
 </div>
 
 <div class="section">
@@ -723,6 +724,11 @@ function renderLivros() {
     "Quero ler": "livros-desejados",
     "Quero adquirir": "livros-adquirir"
   };
+  const progressoContainer = document.getElementById("progresso-livros-lendo");
+
+if (progressoContainer) {
+  progressoContainer.innerHTML = "";
+}
 
   Object.entries(grupos).forEach(([status, containerId]) => {
     const container = document.getElementById(containerId);
@@ -741,7 +747,42 @@ function renderLivros() {
     }
 
     encontrados.forEach(livro => {
-      if (!livro.capa) return;
+
+  if (status === "Lendo" && progressoContainer) {
+    const total = Number(livro.paginasTotal) || 0;
+    const lidas = Number(livro.paginasLidas) || 0;
+
+    const percentual = total > 0
+      ? Math.min(100, Math.round((lidas / total) * 100))
+      : 0;
+
+    const item = document.createElement("div");
+    item.className = "reading-progress-item";
+
+    const titulo = document.createElement("div");
+    titulo.className = "reading-progress-title";
+    titulo.textContent = livro.titulo;
+
+    const info = document.createElement("div");
+    info.className = "progress-info";
+    info.innerHTML = `
+      <span>${lidas} de ${total} páginas</span>
+      <strong>${percentual}%</strong>
+    `;
+
+    const barra = document.createElement("div");
+    barra.className = "progress-track";
+
+    const preenchimento = document.createElement("div");
+    preenchimento.className = "progress-fill";
+    preenchimento.style.width = percentual + "%";
+
+    barra.appendChild(preenchimento);
+    item.append(titulo, info, barra);
+    progressoContainer.appendChild(item);
+  }
+
+  if (!livro.capa) return;
 
       const card = document.createElement("div");
       card.className = "book-cover-card";
@@ -752,30 +793,7 @@ function renderLivros() {
       capa.loading = "lazy";
 
       card.appendChild(capa);
-      if (status === "Lendo") {
-  const total = Number(livro.paginasTotal) || 0;
-  const lidas = Number(livro.paginasLidas) || 0;
-
-  const percentual = total > 0
-    ? Math.min(100, Math.round((lidas / total) * 100))
-    : 0;
-
-  const progresso = document.createElement("div");
-  progresso.className = "book-progress";
-
-  progresso.innerHTML = `
-    <div class="progress-info">
-      <span>${lidas} de ${total} páginas</span>
-      <strong>${percentual}%</strong>
-    </div>
-    <div class="progress-track">
-      <div class="progress-fill" style="width: ${percentual}%"></div>
-    </div>
-  `;
-
-  card.appendChild(progresso);
-}
-
+      
       card.addEventListener("click", () => {
         document.getElementById("modalCapaLivro").src = livro.capa;
         document.getElementById("modalCapaLivro").style.display = "block";
