@@ -558,15 +558,14 @@ function renderProfile() {
     localStorage.getItem("mn_profile_interests") || "[]"
   );
 
-  if (interests.length) {
-    document.getElementById("interestDisplay").innerHTML =
-      interests.map(item =>
-        `<span class="tag"></span>`.replace(
-          '<span class="tag"></span>',
-          '<span class="tag">' + escapeText(item) + '</span>'
-        )
-      ).join("");
-  }
+  const interestDisplay = document.getElementById("interestDisplay");
+
+if (interestDisplay) {
+  interestDisplay.innerHTML = interests.length
+    ? interests.map(item =>
+        `<span class="tag">${escapeText(item)}</span>`
+      ).join("")
+    : "Nenhum interesse selecionado.";
 }
 
 function escapeText(value) {
