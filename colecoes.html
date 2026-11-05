@@ -468,6 +468,34 @@ main {
   background: var(--purple);
   border-radius: 10px;
 }
+  .reading-progress-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.reading-progress-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.reading-progress-cover {
+  width: 75px;
+  flex-shrink: 0;
+}
+
+.reading-progress-cover img {
+  width: 100%;
+  aspect-ratio: 2 / 3;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.reading-progress-details {
+  flex: 1;
+  min-width: 0;
+}
 </style>
 </head>
 
