@@ -638,14 +638,17 @@ function showCollection(collectionId, button) {
 renderMediaCollection();
 window.addEventListener("pageshow", renderMediaCollection);
   const formLivro = document.getElementById("formLivro");
+  document.addEventListener("DOMContentLoaded", function () {
   const seletorStatusLivro = document.getElementById("modalStatusLivro");
-const camposProgresso = document.getElementById("progressoLeituraCampos");
+  const camposProgresso = document.getElementById("progressoLeituraCampos");
 
-seletorStatusLivro.addEventListener("change", function () {
-  camposProgresso.style.display =
-    this.value === "Lendo" ? "block" : "none";
+  if (seletorStatusLivro && camposProgresso) {
+    seletorStatusLivro.addEventListener("change", function () {
+      camposProgresso.style.display =
+        this.value === "Lendo" ? "block" : "none";
+    });
+  }
 });
-
 function renderLivros() {
   let livros = [];
 
