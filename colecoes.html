@@ -784,11 +784,6 @@ async function pesquisarLivros(pesquisa) {
         // Uma falha nesta edição não cancela toda a pesquisa.
       }
 
-      const isbn = edicaoPortugues?.isbn_13?.[0] ||
-                   edicaoPortugues?.isbn_10?.[0];
-
-      const idCapa = edicaoPortugues.covers?.[0];
-
       if (!edicaoPortugues) continue;
 
 const idCapa = edicaoPortugues.covers?.[0];
