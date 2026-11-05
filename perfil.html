@@ -194,6 +194,9 @@ label {display:block;font-size:13px;margin:15px 0 7px}
   display:block;
   margin-bottom:16px;
 }
+.tab-content[hidden] {
+  display:none !important;
+}
 .bottom-nav {
   position:fixed;bottom:0;left:0;right:0;
   z-index:10;background:#17132A;
@@ -292,16 +295,9 @@ label {display:block;font-size:13px;margin:15px 0 7px}
 
 <div id="tab-overview" class="tab-content active">
 
-  <section class="card">
-    <h2 class="section-title">Sobre mim</h2>
-    <p class="bio" id="bioDisplay">
-      Apaixonado por história antiga, mitologia, jogos de estratégia
-      e ficção científica. Sempre em busca de novos conhecimentos.
-    </p>
-  </section>
 
   <section class="card">
-    <h2 class="section-title">Minhas nerdices</h2>
+    <h2 class="section-title">Interesses</h2>
     <div class="interests" id="interestDisplay">
       <span class="tag">História</span>
       <span class="tag">Games</span>
@@ -340,6 +336,9 @@ label {display:block;font-size:13px;margin:15px 0 7px}
     </div>
 
   </div>
+  <button type="button" class="view-all" onclick="toggleCollections()">
+  VER TODAS AS COLEÇÕES →
+</button>
 </section>
 
   <section class="card">
@@ -377,7 +376,7 @@ label {display:block;font-size:13px;margin:15px 0 7px}
   </section>
 </div>
 
-<div id="tab-collections" class="tab-content">
+<div id="tab-collections" class="tab-content" hidden>
   <section class="card">
     <h2 class="section-title">Minhas coleções</h2>
     <p class="bio">Organize seus itens favoritos e acompanhe suas descobertas em cada universo.</p>
@@ -511,6 +510,10 @@ const defaultBio =
 
   document.getElementById("tab-" + tabName).classList.add("active");
   button.classList.add("active");
+}
+  function toggleCollections() {
+  const collections = document.getElementById("tab-collections");
+  collections.hidden = !collections.hidden;
 }
 function toggleEditor() {
   const editor = document.getElementById("editor");
