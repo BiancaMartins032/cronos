@@ -191,11 +191,8 @@ label {display:block;font-size:13px;margin:15px 0 7px}
 }
 
 .tab-content {
-  display:none;
-}
-
-.tab-content.active {
   display:block;
+  margin-bottom:16px;
 }
 .bottom-nav {
   position:fixed;bottom:0;left:0;right:0;
@@ -293,12 +290,6 @@ label {display:block;font-size:13px;margin:15px 0 7px}
   </button>
 </section>
 
-  <nav class="profile-tabs">
-  <button class="tab-button active" onclick="showProfileTab('overview', this)">Visão geral</button>
-  <button class="tab-button" onclick="showProfileTab('collections', this)">Coleções</button>
-  <button class="tab-button" onclick="showProfileTab('publications', this)">Publicações</button>
-  <button class="tab-button" onclick="showProfileTab('achievements', this)">Conquistas</button>
-</nav>
 <div id="tab-overview" class="tab-content active">
 
   <section class="card">
@@ -319,23 +310,37 @@ label {display:block;font-size:13px;margin:15px 0 7px}
     </div>
   </section>
 
-  <section class="card">
-    <h2 class="section-title">Especialidade nerd</h2>
-    <div class="icon-heading">
-      <svg viewBox="0 0 24 24" width="25" height="25" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="12" cy="12" r="9"/>
-        <path d="M12 3l2.2 6.8L21 12l-6.8 2.2L12 21l-2.2-6.8L3 12l6.8-2.2L12 3z"/>
+ <section class="card">
+  <h2 class="section-title">Conquistas</h2>
+
+  <div class="collection-grid">
+
+    <div class="collection">
+      <svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"/>
+        <path d="M7 6H4v2a4 4 0 0 0 4 4M17 6h3v2a4 4 0 0 1-4 4"/>
       </svg>
-      <strong>Explorador dos Mundos</strong>
+      <strong>Leitor dedicado</strong>
     </div>
-    <p class="bio">
-      Seu selo principal será definido pelo desempenho nas competições.
-    </p>
-    <div class="progress"><div></div></div>
-    <p style="font-size:11px;color:var(--muted)">
-      Exemplo demonstrativo de progresso.
-    </p>
-  </section>
+
+    <div class="collection">
+      <svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="9"/>
+        <path d="M3 12h18M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18"/>
+      </svg>
+      <strong>Explorador</strong>
+    </div>
+
+    <div class="collection">
+      <svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"/>
+        <path d="M7 6H4v2a4 4 0 0 0 4 4M17 6h3v2a4 4 0 0 1-4 4"/>
+      </svg>
+      <strong>Competidor</strong>
+    </div>
+
+  </div>
+</section>
 
   <section class="card">
     <h2 class="section-title">Resumo das coleções</h2>
