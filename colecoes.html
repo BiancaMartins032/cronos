@@ -616,6 +616,36 @@ main {
   color: var(--muted);
   line-height: 1.5;
 }
+  /* Resultados da pesquisa de jogos */
+.game-result {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  color: var(--text);
+  text-align: left;
+  cursor: pointer;
+}
+
+.game-result img {
+  width: 65px;
+  height: 85px;
+  flex-shrink: 0;
+  object-fit: contain;
+  border-radius: 6px;
+  background: transparent;
+}
+
+.game-result span {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
 </style>
 </head>
 
