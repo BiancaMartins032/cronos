@@ -597,6 +597,25 @@ main {
   background: var(--surface2);
   color: #d9534f;
 }
+  /* MODAL DOS JOGOS */
+#modalCapaJogo {
+  width: 160px;
+  height: 220px;
+  object-fit: contain;
+  border-radius: 10px;
+  display: block;
+  margin: 0 auto 18px;
+}
+
+#modalJogo .book-modal-content {
+  text-align: center;
+}
+
+#modalInfoJogo,
+#modalDescricaoJogo {
+  color: var(--muted);
+  line-height: 1.5;
+}
 </style>
 </head>
 
@@ -1408,6 +1427,132 @@ try {
       "Não foi possível pesquisar. Tente novamente em alguns instantes.";
   }
 }
+  // ===============================
+// JOGOS - BUSCA IGDB
+// ===============================
+
+let jogosEncontrados = [];
+let jogoSelecionado = null;
+let temporizadorBuscaJogo = null;
+
+const campoBuscaJogo = document.getElementById("buscarJogo");
+const resultadosJogos = document.getElementById("resultadosJogos");
+const modalJogo = document.getElementById("modalJogo");
+
+function normalizarCapaJogo(url) {
+  if (!url) return "";
+  const endereco = url.startsWith("//") ? "https:" + url : url;
+  return endereco.replace("t_thumb", "t_cover_big");
+}
+
+async function pesquisarJogos(pesquisa) {
+  if (!resultadosJogos) return;
+
+  if (pesquisa.length < 2) {
+    resultadosJogos.innerHTML = "";
+    return;
+  }
+
+  resultadosJogos.innerHTML = "<p>Buscando jogos...</p>";
+
+  try {
+    const resposta = await fetch(
+      `/api/games?search=${encodeURIComponent(pesquisa)}`
+    );
+
+    if (!resposta.ok) {
+      throw new Error("Erro ao consultar a API");
+    }
+
+    jogosEncontrados = await resposta.json();
+    resultadosJogos.innerHTML = "";
+
+    if (!jogosEncontrados.length) {
+      resultadosJogos.innerHTML = "<p>Nenhum jogo encontrado.</p>";
+      return;
+    }
+
+    jogosEncontrados.forEach(jogo => {
+      const card = document.createElement("button");
+      card.type = "button";
+      card.className = "game-result";
+
+      const capa = normalizarCapaJogo(jogo.cover?.url);
+      const imagem = document.createElement("img");
+      imagem.src = capa;
+      imagem.alt = "";
+      imagem.loading = "lazy";
+
+      const informacoes = document.createElement("span");
+      const titulo = document.createElement("strong");
+      titulo.textContent = jogo.name;
+
+      const ano = document.createElement("small");
+      ano.textContent = jogo.first_release_date
+        ? new Date(jogo.first_release_date * 1000).getFullYear()
+        : "Ano não informado";
+
+      informacoes.append(titulo, ano);
+
+      card.append(imagem, informacoes);
+      card.addEventListener("click", () => abrirModalJogo(jogo));
+
+      resultadosJogos.appendChild(card);
+    });
+
+  } catch (erro) {
+    console.error(erro);
+    resultadosJogos.innerHTML =
+      "<p>Não foi possível buscar os jogos. Tente novamente.</p>";
+  }
+}
+
+if (campoBuscaJogo) {
+  campoBuscaJogo.addEventListener("input", () => {
+    clearTimeout(temporizadorBuscaJogo);
+
+    const pesquisa = campoBuscaJogo.value.trim();
+
+    temporizadorBuscaJogo = setTimeout(() => {
+      pesquisarJogos(pesquisa);
+    }, 500);
+  });
+}
+
+function abrirModalJogo(jogo) {
+  jogoSelecionado = jogo;
+
+  const capa = normalizarCapaJogo(jogo.cover?.url);
+
+  document.getElementById("modalCapaJogo").src = capa;
+  document.getElementById("modalTituloJogo").textContent = jogo.name;
+
+  const ano = jogo.first_release_date
+    ? new Date(jogo.first_release_date * 1000).getFullYear()
+    : "Ano não informado";
+
+  const generos = (jogo.genres || [])
+    .map(genero => genero.name)
+    .join(", ");
+
+  const plataformas = (jogo.platforms || [])
+    .map(plataforma => plataforma.name)
+    .join(", ");
+
+  document.getElementById("modalInfoJogo").textContent =
+    `${ano}${generos ? " • " + generos : ""}` +
+    `${plataformas ? " • " + plataformas : ""}`;
+
+  document.getElementById("modalDescricaoJogo").textContent =
+    jogo.summary || "Descrição não disponível.";
+
+  document.getElementById("modalStatusJogo").value = "Quero jogar";
+  modalJogo.style.display = "flex";
+}
+
+document.getElementById("fecharModalJogo").addEventListener("click", () => {
+  modalJogo.style.display = "none";
+});
 renderLivros();
 </script>
 
