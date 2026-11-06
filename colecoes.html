@@ -1553,6 +1553,106 @@ function abrirModalJogo(jogo) {
 document.getElementById("fecharModalJogo").addEventListener("click", () => {
   modalJogo.style.display = "none";
 });
+  // ===============================
+// JOGOS - MINHA COLEÇÃO
+// ===============================
+
+function obterJogosSalvos() {
+  return JSON.parse(localStorage.getItem("mn_jogos") || "[]");
+}
+
+function salvarJogosLocais(jogos) {
+  localStorage.setItem("mn_jogos", JSON.stringify(jogos));
+}
+
+function renderJogos() {
+  const categorias = {
+    "Jogando": "jogos-jogando",
+    "Concluído": "jogos-concluidos",
+    "Quero jogar": "jogos-desejados",
+    "Quero adquirir": "jogos-adquirir"
+  };
+
+  Object.values(categorias).forEach(id => {
+    const elemento = document.getElementById(id);
+    if (elemento) elemento.innerHTML = "";
+  });
+
+  const jogos = obterJogosSalvos();
+
+  jogos.forEach(jogo => {
+    const destino = document.getElementById(categorias[jogo.status]);
+    if (!destino) return;
+
+    const card = document.createElement("button");
+    card.type = "button";
+    card.className = "game-collection-card";
+    card.style.cssText =
+      "display:inline-flex;flex-direction:column;width:130px;margin:8px;padding:8px;background:var(--surface);border:1px solid var(--border);border-radius:12px;color:var(--text);cursor:pointer;text-align:left;";
+
+    const imagem = document.createElement("img");
+    imagem.src = normalizarCapaJogo(jogo.cover);
+    imagem.alt = "";
+    imagem.style.cssText =
+      "width:100%;height:170px;object-fit:cover;border-radius:8px;";
+
+    const titulo = document.createElement("strong");
+    titulo.textContent = jogo.title;
+    titulo.style.cssText = "margin-top:8px;font-size:13px;";
+
+    card.append(imagem, titulo);
+    card.addEventListener("click", () => abrirModalJogo(jogo));
+
+    destino.appendChild(card);
+  });
+}
+
+document.getElementById("salvarJogoColecao").addEventListener("click", () => {
+  if (!jogoSelecionado) return;
+
+  const jogos = obterJogosSalvos();
+  const status = document.getElementById("modalStatusJogo").value;
+
+  const jogo = {
+    id: jogoSelecionado.id,
+    title: jogoSelecionado.name || jogoSelecionado.title,
+    cover: normalizarCapaJogo(
+      jogoSelecionado.cover?.url || jogoSelecionado.cover
+    ),
+    status,
+    data: jogoSelecionado
+  };
+
+  const indice = jogos.findIndex(item => item.id === jogo.id);
+
+  if (indice >= 0) {
+    jogos[indice] = jogo;
+  } else {
+    jogos.push(jogo);
+  }
+
+  salvarJogosLocais(jogos);
+  renderJogos();
+
+  modalJogo.style.display = "none";
+  jogoSelecionado = null;
+});
+
+document.getElementById("excluirJogoColecao").addEventListener("click", () => {
+  if (!jogoSelecionado) return;
+
+  const jogos = obterJogosSalvos().filter(
+    jogo => jogo.id !== jogoSelecionado.id
+  );
+
+  salvarJogosLocais(jogos);
+  renderJogos();
+
+  modalJogo.style.display = "none";
+  jogoSelecionado = null;
+});
+
+renderJogos();
 renderLivros();
 </script>
 
