@@ -89,13 +89,16 @@ if (nome === "batman arkham knight") {
     const completo = detalhes.Products?.[0];
 
     const imagens = completo?.LocalizedProperties?.[0]?.Images || [];
-    const poster = imagens.find(img => img.ImagePurpose === "Poster");
 
-    if (!poster?.Uri) return null;
+const imagemPrincipal = imagens.find(img =>
+  img.Uri?.includes("77b11b55-654c-4be3-8804-09728b3a6901")
+);
 
-    return poster.Uri.startsWith("//")
-      ? "https:" + poster.Uri
-      : poster.Uri;
+if (!imagemPrincipal?.Uri) return null;
+
+return imagemPrincipal.Uri.startsWith("//")
+  ? "https:" + imagemPrincipal.Uri
+  : imagemPrincipal.Uri;
 
   } catch (erro) {
     console.error("Erro ao buscar capa Xbox:", nomeJogo, erro);
