@@ -55,7 +55,7 @@ async function buscarCapaXbox(nomeJogo) {
     const nome = normalizarNome(nomeJogo);
 
 if (nome === "batman arkham knight") {
-  return "https://store-images.s-microsoft.com/image/apps.27638.69836087516172366.d802940c-fd8a-4174-8a68-e41a2475e1a1.f1f791fa-f0bf-4e6a-8e7d-98f86a97b5a1";
+  return "https://store-images.s-microsoft.com/image/apps.30637.69836087516172366.d802940c-fd8a-4174-8a68-e41a2475e1a1.77b11b55-654c-4be3-8804-09728b3a6901?h=270&q=90&w=480";
 }
 
     // Procura primeiro pelo jogo original, evitando DLCs e passes.
