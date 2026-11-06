@@ -1712,17 +1712,18 @@ function renderJogos() {
     card.type = "button";
     card.className = "game-collection-card";
     card.style.cssText =
-      "display:inline-flex;flex-direction:column;width:130px;margin:8px;padding:8px;background:var(--surface);border:1px solid var(--border);border-radius:12px;color:var(--text);cursor:pointer;text-align:left;";
+      "display:flex;flex-direction:column;width:110px;padding:0;margin:8px;background:transparent;border:none;color:var(--text);cursor:pointer;text-align:left;";
 
     const imagem = document.createElement("img");
     imagem.src = normalizarCapaJogo(jogo.cover);
     imagem.alt = "";
     imagem.style.cssText =
-      "width:100%;height:170px;object-fit:cover;border-radius:8px;";
+      "display:block;width:100%;aspect-ratio:2/3;height:auto;object-fit:cover;border-radius:9px;border:1px solid var(--border);";
 
     const titulo = document.createElement("strong");
     titulo.textContent = jogo.title;
-    titulo.style.cssText = "margin-top:8px;font-size:13px;";
+    titulo.style.cssText =
+      "margin-top:7px;font-size:13px;font-weight:600;";
 
     card.append(imagem, titulo);
     card.addEventListener("click", () => abrirModalJogo(jogo));
@@ -1760,10 +1761,15 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       salvarJogosLocais(jogos);
-      renderJogos();
+renderJogos();
 
-      modalJogo.style.display = "none";
-      jogoSelecionado = null;
+// Limpa a busca e os resultados
+campoBuscaJogo.value = "";
+resultadosJogos.innerHTML = "";
+jogosEncontrados = [];
+
+modalJogo.style.display = "none";
+jogoSelecionado = null;
     });
   }
 });
