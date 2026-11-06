@@ -35,6 +35,38 @@ export default {
       }
     }
 
+        // API do Xbox — histórico de jogos do perfil
+    if (url.pathname === "/api/xbox/games" && request.method === "GET") {
+      try {
+        if (!env.OPENXBL_API_KEY) {
+          return Response.json(
+            { error: "Chave da OpenXBL não configurada." },
+            { status: 500 }
+          );
+        }
+
+        const resposta = await fetch(
+          "https://api.xbl.io/v2/player/titleHistory",
+          {
+            headers: {
+              "X-Authorization": env.OPENXBL_API_KEY
+            }
+          }
+        );
+
+        const dados = await resposta.json();
+
+        return Response.json(dados, {
+          status: resposta.status
+        });
+
+      } catch (error) {
+        return Response.json(
+          { error: "Erro ao consultar o histórico de jogos Xbox." },
+          { status: 500 }
+        );
+      }
+    }
     // API de pesquisa de jogos
     if (url.pathname === "/api/games" && request.method === "GET") {
       try {
