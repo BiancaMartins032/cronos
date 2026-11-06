@@ -35,6 +35,48 @@ export default {
       }
     }
 
+        // API do Xbox — conquistas de um jogo
+    if (url.pathname === "/api/xbox/achievements" && request.method === "GET") {
+      try {
+        const xuid = url.searchParams.get("xuid") || "2535444037113029";
+        const titleId = url.searchParams.get("titleId");
+
+        if (!titleId) {
+          return Response.json(
+            { error: "Informe o ID do jogo (titleId)." },
+            { status: 400 }
+          );
+        }
+
+        if (!env.OPENXBL_API_KEY) {
+          return Response.json(
+            { error: "Chave da OpenXBL não configurada." },
+            { status: 500 }
+          );
+        }
+
+        const resposta = await fetch(
+          `https://api.xbl.io/v2/achievements/player/${encodeURIComponent(xuid)}/${encodeURIComponent(titleId)}`,
+          {
+            headers: {
+              "X-Authorization": env.OPENXBL_API_KEY
+            }
+          }
+        );
+
+        const dados = await resposta.json();
+
+        return Response.json(dados, {
+          status: resposta.status
+        });
+
+      } catch (error) {
+        return Response.json(
+          { error: "Erro ao consultar conquistas do jogo." },
+          { status: 500 }
+        );
+      }
+    }
         // API do Xbox — histórico de jogos do perfil
     if (url.pathname === "/api/xbox/games" && request.method === "GET") {
       try {
