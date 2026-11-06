@@ -207,10 +207,13 @@ export async function onRequestGet({ request, env }) {
       games.map(async (jogo, indice) => {
         let capaXbox = null;
 
-        // Consulta a Microsoft apenas para os 5 primeiros resultados.
-        if (indice < 5) {
-          capaXbox = await buscarCapaXbox(jogo.name);
-        }
+        // Consulta a Microsoft para os 5 primeiros e para correspondências exatas.
+if (
+  indice < 5 ||
+  normalizarNome(jogo.name) === normalizarNome(search)
+) {
+  capaXbox = await buscarCapaXbox(jogo.name);
+}
 
         return {
           ...jogo,
