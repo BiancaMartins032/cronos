@@ -1,4 +1,26 @@
 
+async function traduzirTexto(texto) {
+  if (!texto) return "";
+
+  try {
+    const url = new URL("https://api.mymemory.translated.net/get");
+    url.searchParams.set("q", texto.slice(0, 4500));
+    url.searchParams.set("langpair", "en|pt-BR");
+
+    const resposta = await fetch(url);
+    if (!resposta.ok) return texto;
+
+    const dados = await resposta.json();
+
+    return dados.responseStatus === 200
+      ? dados.responseData.translatedText
+      : texto;
+  } catch (erro) {
+    console.error("Erro na tradução:", erro);
+    return texto;
+  }
+}
+
 export async function onRequestGet({ request, env }) {
   try {
     const url = new URL(request.url);
@@ -13,7 +35,7 @@ export async function onRequestGet({ request, env }) {
 
     if (!env.TWITCH_CLIENT_ID || !env.TWITCH_CLIENT_SECRET) {
       return Response.json(
-        { error: "A conexão com o catálogo de jogos não está configurada." },
+        { error: "A conexão com o catálogo não está configurada." },
         { status: 500 }
       );
     }
@@ -35,13 +57,12 @@ export async function onRequestGet({ request, env }) {
 
     if (!tokenResponse.ok) {
       return Response.json(
-        { error: "Não foi possível conectar ao catálogo de jogos." },
+        { error: "Não foi possível conectar ao catálogo." },
         { status: 502 }
       );
     }
 
     const tokenData = await tokenResponse.json();
-
     const termo = search.replace(/["\\]/g, "");
 
     const consulta = `
@@ -58,7 +79,6 @@ export async function onRequestGet({ request, env }) {
         involved_companies.publisher,
         game_type,
         version_title,
-        alternative_names.name,
         total_rating,
         total_rating_count;
       limit 20;
@@ -78,8 +98,7 @@ export async function onRequestGet({ request, env }) {
     );
 
     if (!gamesResponse.ok) {
-      const detalhe = await gamesResponse.text();
-      console.error("Erro IGDB:", detalhe);
+      console.error("Erro IGDB:", await gamesResponse.text());
 
       return Response.json(
         { error: "Não foi possível consultar os jogos." },
@@ -89,7 +108,14 @@ export async function onRequestGet({ request, env }) {
 
     const games = await gamesResponse.json();
 
-    return Response.json(games, {
+    const jogosTraduzidos = await Promise.all(
+      games.map(async jogo => ({
+        ...jogo,
+        summary: await traduzirTexto(jogo.summary)
+      }))
+    );
+
+    return Response.json(jogosTraduzidos, {
       headers: {
         "Access-Control-Allow-Origin": "*",
         "Cache-Control": "public, max-age=300"
@@ -97,7 +123,7 @@ export async function onRequestGet({ request, env }) {
     });
 
   } catch (error) {
-    console.error("Erro na busca de jogos:", error);
+    console.error("Erro na busca:", error);
 
     return Response.json(
       { error: "Ocorreu um erro ao pesquisar os jogos." },
