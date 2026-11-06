@@ -21,6 +21,101 @@ async function traduzirTexto(texto) {
   }
 }
 
+function normalizarNome(nome) {
+  return (nome || "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9 ]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+async function buscarCapaXbox(nomeJogo) {
+  try {
+    const buscaUrl = new URL(
+      "https://displaycatalog.mp.microsoft.com/v7.0/productFamilies/autosuggest"
+    );
+
+    buscaUrl.searchParams.set("languages", "pt-BR");
+    buscaUrl.searchParams.set("market", "BR");
+    buscaUrl.searchParams.set(
+      "platformdependencyname",
+      "Windows.Xbox"
+    );
+    buscaUrl.searchParams.set("productFamilyNames", "Games,Apps");
+    buscaUrl.searchParams.set("query", nomeJogo);
+    buscaUrl.searchParams.set("topProducts", "5");
+
+    const buscaResposta = await fetch(buscaUrl);
+
+    if (!buscaResposta.ok) return null;
+
+    const buscaDados = await buscaResposta.json();
+
+    const produtos = (buscaDados.Results || [])
+      .flatMap(resultado => resultado.Products || []);
+
+    const nomeNormalizado = normalizarNome(nomeJogo);
+
+    const produto = produtos.find(item => {
+      if (item.Type !== "Game" || !item.ProductId || !item.Title) {
+        return false;
+      }
+
+      const titulo = normalizarNome(item.Title);
+
+      if (!titulo.startsWith(nomeNormalizado)) {
+        return false;
+      }
+
+      const complemento = titulo
+        .slice(nomeNormalizado.length)
+        .trim();
+
+      return !/\b(season pass|dlc|add on|addon|story pack|currency pack)\b/i
+        .test(complemento);
+    });
+
+    if (!produto) return null;
+
+    const detalhesUrl = new URL(
+      "https://displaycatalog.mp.microsoft.com/v7.0/products"
+    );
+
+    detalhesUrl.searchParams.set("bigIds", produto.ProductId);
+    detalhesUrl.searchParams.set("market", "BR");
+    detalhesUrl.searchParams.set("languages", "pt-BR");
+    detalhesUrl.searchParams.set("fieldsTemplate", "Details");
+
+    const detalhesResposta = await fetch(detalhesUrl);
+
+    if (!detalhesResposta.ok) return null;
+
+    const detalhesDados = await detalhesResposta.json();
+
+    const produtoCompleto = detalhesDados.Products?.[0];
+
+    if (!produtoCompleto) return null;
+
+    const imagens = produtoCompleto.LocalizedProperties?.[0]?.Images || [];
+
+    const poster = imagens.find(
+      imagem => imagem.ImagePurpose === "Poster"
+    );
+
+    if (!poster?.Uri) return null;
+
+    return poster.Uri.startsWith("//")
+      ? "https:" + poster.Uri
+      : poster.Uri;
+
+  } catch (erro) {
+    console.error("Erro ao buscar capa Xbox:", nomeJogo, erro);
+    return null;
+  }
+}
+
 export async function onRequestGet({ request, env }) {
   try {
     const url = new URL(request.url);
@@ -108,14 +203,26 @@ export async function onRequestGet({ request, env }) {
 
     const games = await gamesResponse.json();
 
-    const jogosTraduzidos = await Promise.all(
-      games.map(async jogo => ({
-        ...jogo,
-        summary: await traduzirTexto(jogo.summary)
-      }))
+    const jogosComCapas = await Promise.all(
+      games.map(async (jogo, indice) => {
+        let capaXbox = null;
+
+        // Consulta a Microsoft apenas para os 5 primeiros resultados.
+        if (indice < 5) {
+          capaXbox = await buscarCapaXbox(jogo.name);
+        }
+
+        return {
+          ...jogo,
+          cover: capaXbox
+            ? { url: capaXbox }
+            : jogo.cover,
+          summary: await traduzirTexto(jogo.summary)
+        };
+      })
     );
 
-    return Response.json(jogosTraduzidos, {
+    return Response.json(jogosComCapas, {
       headers: {
         "Access-Control-Allow-Origin": "*",
         "Cache-Control": "public, max-age=300"
