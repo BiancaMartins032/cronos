@@ -1558,6 +1558,7 @@ function normalizarCapaJogo(url) {
   return endereco.replace("t_thumb", "t_cover_big");
 }
 
+
 async function pesquisarJogos(pesquisa) {
   if (!resultadosJogos) return;
 
@@ -1566,7 +1567,7 @@ async function pesquisarJogos(pesquisa) {
     return;
   }
 
-  resultadosJogos.innerHTML = "<p>Buscando jogos...</p>";
+  resultadosJogos.innerHTML = "<p>Pesquisando jogos...</p>";
 
   try {
     const resposta = await fetch(
@@ -1574,14 +1575,15 @@ async function pesquisarJogos(pesquisa) {
     );
 
     if (!resposta.ok) {
-      throw new Error("Erro ao consultar a API");
+      throw new Error("Erro ao consultar o catálogo");
     }
 
     jogosEncontrados = await resposta.json();
     resultadosJogos.innerHTML = "";
 
     if (!jogosEncontrados.length) {
-      resultadosJogos.innerHTML = "<p>Nenhum jogo encontrado.</p>";
+      resultadosJogos.innerHTML =
+        "<p>Nenhum jogo encontrado. Tente outro nome.</p>";
       return;
     }
 
@@ -1591,23 +1593,77 @@ async function pesquisarJogos(pesquisa) {
       card.className = "game-result";
 
       const capa = normalizarCapaJogo(jogo.cover?.url);
+
       const imagem = document.createElement("img");
       imagem.src = capa;
       imagem.alt = "";
       imagem.loading = "lazy";
 
       const informacoes = document.createElement("span");
+
       const titulo = document.createElement("strong");
       titulo.textContent = jogo.name;
 
-      const ano = document.createElement("small");
-      ano.textContent = jogo.first_release_date
+      const ano = jogo.first_release_date
         ? new Date(jogo.first_release_date * 1000).getFullYear()
         : "Ano não informado";
 
-      informacoes.append(titulo, ano);
+      const empresas = jogo.involved_companies || [];
+
+      const desenvolvedora = empresas
+        .filter(item => item.developer)
+        .map(item => item.company?.name)
+        .filter(Boolean);
+
+      const publicadora = empresas
+        .filter(item => item.publisher)
+        .map(item => item.company?.name)
+        .filter(Boolean);
+
+      const plataformas = (jogo.platforms || [])
+        .map(item => item.name)
+        .filter(Boolean);
+
+      const genero = (jogo.genres || [])
+        .map(item => item.name)
+        .filter(Boolean);
+
+      const edicao = jogo.version_title || "";
+
+      const detalhes = [
+        "Lançamento: " + ano,
+        desenvolvedora.length
+          ? "Desenvolvedora: " + desenvolvedora.join(", ")
+          : "",
+        publicadora.length
+          ? "Publicadora: " + publicadora.join(", ")
+          : "",
+        plataformas.length
+          ? "Plataformas: " + plataformas.join(", ")
+          : "",
+        genero.length
+          ? "Gênero: " + genero.join(", ")
+          : "",
+        edicao ? "Edição: " + edicao : ""
+      ].filter(Boolean);
+
+      const resumo = document.createElement("small");
+      resumo.textContent = detalhes.join(" • ");
+
+      informacoes.append(titulo, resumo);
+
+      if (jogo.total_rating) {
+        const avaliacao = document.createElement("small");
+        avaliacao.textContent =
+          "Avaliação: " + Math.round(jogo.total_rating) +
+          "/100 (" + (jogo.total_rating_count || 0) +
+          " avaliações)";
+
+        informacoes.appendChild(avaliacao);
+      }
 
       card.append(imagem, informacoes);
+
       card.addEventListener("click", () => abrirModalJogo(jogo));
 
       resultadosJogos.appendChild(card);
@@ -1619,6 +1675,7 @@ async function pesquisarJogos(pesquisa) {
       "<p>Não foi possível buscar os jogos. Tente novamente.</p>";
   }
 }
+
 
   document.addEventListener("DOMContentLoaded", () => {
   campoBuscaJogo = document.getElementById("buscarJogo");
