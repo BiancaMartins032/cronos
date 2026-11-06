@@ -1,0 +1,451 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Conquistas | Multiverso Nerd</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 24px 16px;
+      min-height: 100vh;
+      background: #10111D;
+      color: #F4F2FF;
+      font-family: Arial, sans-serif;
+    }
+
+    .container {
+      max-width: 850px;
+      margin: auto;
+    }
+
+    .voltar {
+      border: 1px solid #393750;
+      background: #1B1A2B;
+      color: #C7C3E8;
+      padding: 10px 16px;
+      border-radius: 10px;
+      cursor: pointer;
+      margin-bottom: 25px;
+    }
+
+    .cabecalho {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      padding: 20px;
+      background: #1B1A2B;
+      border: 1px solid #393750;
+      border-radius: 18px;
+      margin-bottom: 28px;
+    }
+
+    .capa {
+      width: 105px;
+      aspect-ratio: 2 / 3;
+      object-fit: cover;
+      border-radius: 10px;
+      background: #29263F;
+    }
+
+    .informacoes {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .informacoes h1 {
+      font-size: 22px;
+      margin: 0 0 15px;
+    }
+
+    .porcentagem {
+      color: #A99BFF;
+      font-size: 27px;
+      font-weight: bold;
+    }
+
+    .barra-fundo {
+      height: 9px;
+      background: #343149;
+      border-radius: 20px;
+      overflow: hidden;
+      margin-top: 9px;
+    }
+
+    .barra-preenchida {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #5267D8, #A58BFF);
+      border-radius: 20px;
+    }
+
+    .resumo {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 28px;
+    }
+
+    .resumo-card {
+      flex: 1;
+      padding: 17px;
+      background: #1B1A2B;
+      border: 1px solid #393750;
+      border-radius: 14px;
+    }
+
+    .resumo-card strong {
+      display: block;
+      font-size: 23px;
+      margin-bottom: 5px;
+    }
+
+    .resumo-card span {
+      color: #AAA7BD;
+      font-size: 12px;
+    }
+
+    .titulo-secao {
+      font-size: 19px;
+      margin-bottom: 15px;
+    }
+
+    .filtros {
+      display: flex;
+      gap: 9px;
+      flex-wrap: wrap;
+      margin-bottom: 18px;
+    }
+
+    .filtro {
+      padding: 9px 15px;
+      border: 1px solid #393750;
+      border-radius: 20px;
+      background: #1B1A2B;
+      color: #C7C3E8;
+      cursor: pointer;
+    }
+
+    .filtro.ativo {
+      background: #5267D8;
+      color: white;
+      border-color: #5267D8;
+    }
+
+    .lista-conquistas {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .conquista {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      padding: 16px;
+      background: #1B1A2B;
+      border: 1px solid #393750;
+      border-radius: 14px;
+    }
+
+    .icone-conquista {
+      width: 52px;
+      height: 52px;
+      flex-shrink: 0;
+      border-radius: 12px;
+      background: #29263F;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      color: #A99BFF;
+      font-weight: bold;
+    }
+
+    .icone-conquista img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .detalhes {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .detalhes strong {
+      display: block;
+      font-size: 14px;
+      margin-bottom: 5px;
+    }
+
+    .detalhes p {
+      color: #AAA7BD;
+      font-size: 13px;
+      line-height: 1.5;
+      margin: 0;
+    }
+
+    .status {
+      font-size: 11px;
+      font-weight: bold;
+      padding: 7px 10px;
+      border-radius: 20px;
+      white-space: nowrap;
+    }
+
+    .status.concluida {
+      color: #7DE0B0;
+      background: #173B32;
+    }
+
+    .status.pendente {
+      color: #C2BDDA;
+      background: #302D43;
+    }
+
+    .mensagem {
+      text-align: center;
+      padding: 35px 20px;
+      background: #1B1A2B;
+      border: 1px solid #393750;
+      border-radius: 14px;
+      color: #AAA7BD;
+      line-height: 1.6;
+    }
+
+    @media (max-width: 500px) {
+      .cabecalho {
+        padding: 15px;
+        gap: 14px;
+      }
+
+      .capa {
+        width: 85px;
+      }
+
+      .informacoes h1 {
+        font-size: 17px;
+      }
+
+      .resumo {
+        gap: 8px;
+      }
+
+      .resumo-card {
+        padding: 12px;
+      }
+
+      .conquista {
+        gap: 10px;
+        padding: 12px;
+      }
+
+      .status {
+        font-size: 10px;
+        padding: 6px 8px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="container">
+
+    <button class="voltar" onclick="history.back()">
+      Voltar
+    </button>
+
+    <section class="cabecalho">
+      <img id="capaJogo" class="capa" src="" alt="Capa do jogo">
+
+      <div class="informacoes">
+        <h1 id="tituloJogo">Carregando jogo...</h1>
+        <div class="porcentagem" id="porcentagem">0%</div>
+        <div class="barra-fundo">
+          <div class="barra-preenchida" id="barraProgresso"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="resumo">
+      <div class="resumo-card">
+        <strong id="totalConcluidas">0</strong>
+        <span>Conquistas concluídas</span>
+      </div>
+
+      <div class="resumo-card">
+        <strong id="totalConquistas">0</strong>
+        <span>Total de conquistas</span>
+      </div>
+    </section>
+
+    <h2 class="titulo-secao">Conquistas do jogo</h2>
+
+    <div class="filtros">
+      <button class="filtro ativo" data-filtro="todas">Todas</button>
+      <button class="filtro" data-filtro="concluidas">Concluídas</button>
+      <button class="filtro" data-filtro="pendentes">Pendentes</button>
+    </div>
+
+    <section class="lista-conquistas" id="listaConquistas"></section>
+
+  </main>
+
+  <script>
+    const parametros = new URLSearchParams(window.location.search);
+    const jogoId = parametros.get("id");
+
+    const jogos = JSON.parse(
+      localStorage.getItem("mn_jogos") || "[]"
+    );
+
+    const jogo = jogos.find(
+      item => String(item.id) === String(jogoId)
+    );
+
+    const lista = document.getElementById("listaConquistas");
+
+    let filtroAtual = "todas";
+    let conquistas = [];
+
+    function carregarJogo() {
+      if (!jogo) {
+        document.getElementById("tituloJogo").textContent =
+          "Jogo não encontrado";
+        lista.innerHTML =
+          '<div class="mensagem">Não foi possível localizar este jogo na sua coleção.</div>';
+        return;
+      }
+
+      document.getElementById("tituloJogo").textContent = jogo.title;
+
+      document.getElementById("capaJogo").src =
+        jogo.cover || "";
+
+      conquistas = JSON.parse(
+        localStorage.getItem("mn_conquistas_" + jogo.id) || "[]"
+      );
+
+      atualizarConquistas();
+    }
+
+    function atualizarConquistas() {
+      const concluidas = conquistas.filter(
+        conquista => conquista.unlocked
+      ).length;
+
+      const total = conquistas.length;
+
+      const porcentagem = total > 0
+        ? Math.round((concluidas / total) * 100)
+        : 0;
+
+      document.getElementById("totalConcluidas").textContent =
+        concluidas;
+
+      document.getElementById("totalConquistas").textContent =
+        total;
+
+      document.getElementById("porcentagem").textContent =
+        porcentagem + "%";
+
+      document.getElementById("barraProgresso").style.width =
+        porcentagem + "%";
+
+      renderizarConquistas();
+    }
+
+    function renderizarConquistas() {
+      lista.innerHTML = "";
+
+      const filtradas = conquistas.filter(conquista => {
+        if (filtroAtual === "concluidas") return conquista.unlocked;
+        if (filtroAtual === "pendentes") return !conquista.unlocked;
+        return true;
+      });
+
+      if (!conquistas.length) {
+        lista.innerHTML = `
+          <div class="mensagem">
+            As conquistas deste jogo ainda não foram sincronizadas.
+            <br><br>
+            Quando a conexão com o Xbox estiver disponível,
+            elas aparecerão aqui com seus respectivos estados.
+          </div>
+        `;
+        return;
+      }
+
+      if (!filtradas.length) {
+        lista.innerHTML =
+          '<div class="mensagem">Nenhuma conquista nesta categoria.</div>';
+        return;
+      }
+
+      filtradas.forEach(conquista => {
+        const card = document.createElement("article");
+        card.className = "conquista";
+
+        const icone = document.createElement("div");
+        icone.className = "icone-conquista";
+
+        if (conquista.icon) {
+          const imagem = document.createElement("img");
+          imagem.src = conquista.icon;
+          imagem.alt = "";
+          icone.appendChild(imagem);
+        } else {
+          icone.textContent = "MN";
+        }
+
+        const detalhes = document.createElement("div");
+        detalhes.className = "detalhes";
+
+        const nome = document.createElement("strong");
+        nome.textContent = conquista.name || "Conquista";
+
+        const descricao = document.createElement("p");
+        descricao.textContent =
+          conquista.description || "Descrição não disponível.";
+
+        const pontos = document.createElement("p");
+        pontos.textContent =
+          (conquista.gamerscore ?? 0) + " pontos";
+
+        detalhes.append(nome, descricao, pontos);
+
+        const status = document.createElement("span");
+        status.className = "status " +
+          (conquista.unlocked ? "concluida" : "pendente");
+
+        status.textContent = conquista.unlocked
+          ? "Concluída"
+          : "Pendente";
+
+        card.append(icone, detalhes, status);
+        lista.appendChild(card);
+      });
+    }
+
+    document.querySelectorAll(".filtro").forEach(botao => {
+      botao.addEventListener("click", () => {
+        document.querySelectorAll(".filtro").forEach(item => {
+          item.classList.remove("ativo");
+        });
+
+        botao.classList.add("ativo");
+        filtroAtual = botao.dataset.filtro;
+        renderizarConquistas();
+      });
+    });
+
+    carregarJogo();
+  </script>
+</body>
+</html>
