@@ -1474,6 +1474,46 @@ renderLivros();
   </div>
 </div>
 
+  <!-- MODAL DOS JOGOS -->
+<div id="modalJogo" class="book-modal">
+  <div class="book-modal-content">
+
+    <button type="button" id="fecharModalJogo" class="close-modal">
+      ×
+    </button>
+
+    <img id="modalCapaJogo" src="" alt="Capa do jogo">
+
+    <h2 id="modalTituloJogo"></h2>
+    <p id="modalInfoJogo"></p>
+    <p id="modalDescricaoJogo"></p>
+
+    <label for="modalStatusJogo">
+      O que você deseja fazer com este jogo?
+    </label>
+
+    <select id="modalStatusJogo">
+      <option value="Jogando">Estou jogando</option>
+      <option value="Concluído">Já concluí</option>
+      <option value="Quero jogar">Quero jogar</option>
+      <option value="Quero adquirir">Quero adquirir</option>
+    </select>
+
+    <button type="button" id="salvarJogoColecao">
+      Adicionar à minha coleção
+    </button>
+
+    <button
+      type="button"
+      id="excluirJogoColecao"
+      style="display:none;"
+      title="Excluir da minha coleção"
+    >
+      Excluir jogo
+    </button>
+
+  </div>
+</div>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="auth.js"></script>
 <script>
