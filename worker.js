@@ -15,12 +15,14 @@ export default {
         }
 
         if (!env.TWITCH_CLIENT_ID || !env.TWITCH_CLIENT_SECRET) {
-          return Response.json(
-            { error: "Credenciais da IGDB não configuradas." },
-            { status: 500 }
-          );
-        }
-
+  return Response.json(
+    {
+      clientIdConfigurado: Boolean(env.TWITCH_CLIENT_ID),
+      clientSecretConfigurado: Boolean(env.TWITCH_CLIENT_SECRET)
+    },
+    { status: 500 }
+  );
+}
         // Autenticação na Twitch
         const tokenResponse = await fetch(
           "https://id.twitch.tv/oauth2/token",
