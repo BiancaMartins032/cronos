@@ -575,6 +575,28 @@ main {
   background: var(--purple);
   border-radius: 10px;
 }
+  #excluirLivroColecao {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  width: 40px;
+  height: 40px;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  z-index: 10;
+}
+
+#excluirLivroColecao:hover {
+  background: var(--surface2);
+  color: #d9534f;
+}
 </style>
 </head>
 
@@ -967,7 +989,7 @@ if (status === "Lendo") {
         const botaoSalvar = document.getElementById("salvarLivroColecao");
         botaoSalvar.textContent = "Salvar alterações";
         const botaoExcluir = document.getElementById("excluirLivroColecao");
-        botaoExcluir.style.display = "block";
+        botaoExcluir.style.display = "flex";
         botaoExcluir.onclick = async function () {
   if (!confirm("Deseja realmente retirar este livro da sua coleção?")) {
     return;
@@ -1416,8 +1438,23 @@ renderLivros();
     <button type="button" id="salvarLivroColecao">
       Adicionar à minha coleção
     </button>
-    <button type="button" id="excluirLivroColecao" style="display:none;">
-  Excluir da minha coleção
+    <button
+  type="button"
+  id="excluirLivroColecao"
+  aria-label="Excluir livro da coleção"
+  title="Excluir da minha coleção"
+  style="display:none;"
+>
+  <svg xmlns="http://www.w3.org/2000/svg"
+       width="21" height="21" viewBox="0 0 24 24"
+       fill="none" stroke="currentColor"
+       stroke-width="1.8" stroke-linecap="round"
+       stroke-linejoin="round">
+    <path d="M3 6h18"/>
+    <path d="M8 6V4h8v2"/>
+    <path d="M19 6l-1 14H6L5 6"/>
+    <path d="M10 11v5M14 11v5"/>
+  </svg>
 </button>
   </div>
 </div>
