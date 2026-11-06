@@ -1689,6 +1689,7 @@ function salvarJogosLocais(jogos) {
   localStorage.setItem("mn_jogos", JSON.stringify(jogos));
 }
 
+
 function renderJogos() {
   const categorias = {
     "Jogando": "jogos-jogando",
@@ -1697,20 +1698,21 @@ function renderJogos() {
     "Quero adquirir": "jogos-adquirir"
   };
 
-  Object.values(categorias).forEach(id => {
-    const elemento = document.getElementById(id);
-    if (elemento) elemento.innerHTML = "";
-  });
-
   const jogos = obterJogosSalvos();
 
+  // Atualiza automaticamente o status conforme as conquistas
   jogos.forEach(jogo => {
-    const destino = document.getElementById(categorias[jogo.status]);
-    if (!destino) return;
+    if (jogo.status !== "Jogando" && jogo.status !== "Concluído") return;
 
-    const conquistas = JSON.parse(
-      localStorage.getItem("mn_conquistas_" + jogo.id) || "[]"
-    );
+    let conquistas = [];
+
+    try {
+      conquistas = JSON.parse(
+        localStorage.getItem("mn_conquistas_" + jogo.id) || "[]"
+      );
+    } catch (erro) {
+      conquistas = [];
+    }
 
     const concluidas = conquistas.filter(c => c.unlocked).length;
 
@@ -1718,10 +1720,29 @@ function renderJogos() {
       ? Math.round((concluidas / conquistas.length) * 100)
       : 0;
 
+    if (porcentagem === 100) {
+      jogo.status = "Concluído";
+    } else {
+      jogo.status = "Jogando";
+    }
+  });
+
+  // Salva os status atualizados
+  salvarJogosLocais(jogos);
+
+  // Limpa as categorias antes de desenhar novamente
+  Object.values(categorias).forEach(id => {
+    const elemento = document.getElementById(id);
+    if (elemento) elemento.innerHTML = "";
+  });
+
+  jogos.forEach(jogo => {
+    const destino = document.getElementById(categorias[jogo.status]);
+    if (!destino) return;
+
     const card = document.createElement("div");
-    card.className = "game-collection-card";
     card.style.cssText =
-      "display:flex;align-items:center;gap:14px;width:100%;max-width:360px;margin:8px 0;padding:10px;background:var(--surface);border:1px solid var(--border);border-radius:12px;";
+      "display:flex;align-items:center;gap:12px;width:100%;max-width:360px;margin:8px 0;padding:10px;background:var(--surface);border:1px solid var(--border);border-radius:12px;";
 
     const botaoJogo = document.createElement("button");
     botaoJogo.type = "button";
@@ -1732,7 +1753,7 @@ function renderJogos() {
     imagem.src = normalizarCapaJogo(jogo.cover);
     imagem.alt = "";
     imagem.style.cssText =
-      "display:block;width:75px;flex:0 0 75px;aspect-ratio:2/3;height:auto;object-fit:cover;border-radius:9px;";
+      "display:block;width:65px;flex:0 0 65px;aspect-ratio:2/3;height:auto;object-fit:cover;border-radius:9px;";
 
     const titulo = document.createElement("strong");
     titulo.textContent = jogo.title;
@@ -1740,44 +1761,52 @@ function renderJogos() {
       "font-size:13px;line-height:1.4;";
 
     botaoJogo.append(imagem, titulo);
+    botaoJogo.addEventListener("click", () => abrirModalJogo(jogo));
 
-    botaoJogo.addEventListener("click", () => {
-      abrirModalJogo(jogo);
-    });
+    card.appendChild(botaoJogo);
 
-    const botaoProgresso = document.createElement("button");
-    botaoProgresso.type = "button";
-    botaoProgresso.style.cssText =
-      "flex:1;min-width:0;padding:8px 4px;border:none;background:transparent;color:var(--text);cursor:pointer;text-align:left;";
+    // Barra somente para jogos em andamento ou concluídos
+    if (jogo.status === "Jogando" || jogo.status === "Concluído") {
+      const conquistas = JSON.parse(
+        localStorage.getItem("mn_conquistas_" + jogo.id) || "[]"
+      );
 
-    const percentual = document.createElement("strong");
-    percentual.textContent = porcentagem + "%";
-    percentual.style.cssText =
-      "display:block;font-size:22px;color:var(--purple);margin-bottom:8px;";
+      const concluidas = conquistas.filter(c => c.unlocked).length;
 
-    const barraFundo = document.createElement("div");
-    barraFundo.style.cssText =
-      "width:100%;height:7px;background:var(--surface2);border-radius:10px;overflow:hidden;";
+      const porcentagem = conquistas.length
+        ? Math.round((concluidas / conquistas.length) * 100)
+        : 0;
 
-    const barraPreenchida = document.createElement("div");
-    barraPreenchida.style.cssText =
-      "width:" + porcentagem + "%;height:100%;background:var(--purple);border-radius:10px;";
+      const botaoProgresso = document.createElement("button");
+      botaoProgresso.type = "button";
+      botaoProgresso.setAttribute("aria-label", "Ver conquistas de " + jogo.title);
+      botaoProgresso.style.cssText =
+        "flex:1;min-width:0;padding:8px 4px;border:none;background:transparent;color:var(--text);cursor:pointer;text-align:left;";
 
-    barraFundo.appendChild(barraPreenchida);
+      const percentual = document.createElement("strong");
+      percentual.textContent = porcentagem + "%";
+      percentual.style.cssText =
+        "display:block;font-size:22px;color:var(--purple);margin-bottom:8px;";
 
-    const legenda = document.createElement("small");
-    legenda.textContent = "Ver conquistas";
-    legenda.style.cssText =
-      "display:block;margin-top:8px;font-size:10px;color:var(--muted);";
+      const barraFundo = document.createElement("div");
+      barraFundo.style.cssText =
+        "width:100%;height:7px;background:var(--surface2);border-radius:10px;overflow:hidden;";
 
-    botaoProgresso.append(percentual, barraFundo, legenda);
+      const barraPreenchida = document.createElement("div");
+      barraPreenchida.style.cssText =
+        "width:" + porcentagem + "%;height:100%;background:var(--purple);border-radius:10px;";
 
-    botaoProgresso.addEventListener("click", () => {
-      window.location.href =
-        "conquistas.html?id=" + encodeURIComponent(jogo.id);
-    });
+      barraFundo.appendChild(barraPreenchida);
+      botaoProgresso.append(percentual, barraFundo);
 
-    card.append(botaoJogo, botaoProgresso);
+      botaoProgresso.addEventListener("click", () => {
+        window.location.href =
+          "conquistas.html?id=" + encodeURIComponent(jogo.id);
+      });
+
+      card.appendChild(botaoProgresso);
+    }
+
     destino.appendChild(card);
   });
 }
