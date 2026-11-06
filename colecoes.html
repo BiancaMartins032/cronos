@@ -1797,7 +1797,12 @@ function renderJogos() {
         "width:" + porcentagem + "%;height:100%;background:var(--purple);border-radius:10px;";
 
       barraFundo.appendChild(barraPreenchida);
-      botaoProgresso.append(percentual, barraFundo);
+      const aviso = document.createElement("small");
+      aviso.textContent = "Clique para ver conquistas";
+      aviso.style.cssText =
+      "display:block;margin-top:7px;font-size:10px;color:var(--muted);";
+
+      botaoProgresso.append(percentual, barraFundo, aviso);
 
       botaoProgresso.addEventListener("click", () => {
         window.location.href =
