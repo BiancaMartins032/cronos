@@ -1468,9 +1468,9 @@ let jogosEncontrados = [];
 let jogoSelecionado = null;
 let temporizadorBuscaJogo = null;
 
-const campoBuscaJogo = document.getElementById("buscarJogo");
-const resultadosJogos = document.getElementById("resultadosJogos");
-const modalJogo = document.getElementById("modalJogo");
+let campoBuscaJogo = null;
+let resultadosJogos = null;
+let modalJogo = null;
 
 function normalizarCapaJogo(url) {
   if (!url) return "";
@@ -1540,18 +1540,23 @@ async function pesquisarJogos(pesquisa) {
   }
 }
 
-if (campoBuscaJogo) {
-  campoBuscaJogo.addEventListener("input", () => {
-    clearTimeout(temporizadorBuscaJogo);
+  document.addEventListener("DOMContentLoaded", () => {
+  campoBuscaJogo = document.getElementById("buscarJogo");
+  resultadosJogos = document.getElementById("resultadosJogos");
+  modalJogo = document.getElementById("modalJogo");
 
-    const pesquisa = campoBuscaJogo.value.trim();
+  if (campoBuscaJogo) {
+    campoBuscaJogo.addEventListener("input", () => {
+      clearTimeout(temporizadorBuscaJogo);
 
-    temporizadorBuscaJogo = setTimeout(() => {
-      pesquisarJogos(pesquisa);
-    }, 500);
-  });
-}
+      const pesquisa = campoBuscaJogo.value.trim();
 
+      temporizadorBuscaJogo = setTimeout(() => {
+        pesquisarJogos(pesquisa);
+      }, 500);
+    });
+  }
+});
 function abrirModalJogo(jogo) {
   jogoSelecionado = jogo;
 
@@ -1583,8 +1588,14 @@ function abrirModalJogo(jogo) {
   modalJogo.style.display = "flex";
 }
 
-document.getElementById("fecharModalJogo").addEventListener("click", () => {
-  modalJogo.style.display = "none";
+document.addEventListener("DOMContentLoaded", () => {
+  const botaoFecharModalJogo = document.getElementById("fecharModalJogo");
+
+  if (botaoFecharModalJogo) {
+    botaoFecharModalJogo.addEventListener("click", () => {
+      modalJogo.style.display = "none";
+    });
+  }
 });
   // ===============================
 // JOGOS - MINHA COLEÇÃO
@@ -1640,53 +1651,66 @@ function renderJogos() {
   });
 }
 
-document.getElementById("salvarJogoColecao").addEventListener("click", () => {
-  if (!jogoSelecionado) return;
+document.addEventListener("DOMContentLoaded", () => {
+  const botaoSalvarJogo = document.getElementById("salvarJogoColecao");
 
-  const jogos = obterJogosSalvos();
-  const status = document.getElementById("modalStatusJogo").value;
+  if (botaoSalvarJogo) {
+    botaoSalvarJogo.addEventListener("click", () => {
+      if (!jogoSelecionado) return;
 
-  const jogo = {
-    id: jogoSelecionado.id,
-    title: jogoSelecionado.name || jogoSelecionado.title,
-    cover: normalizarCapaJogo(
-      jogoSelecionado.cover?.url || jogoSelecionado.cover
-    ),
-    status,
-    data: jogoSelecionado
-  };
+      const jogos = obterJogosSalvos();
+      const status = document.getElementById("modalStatusJogo").value;
 
-  const indice = jogos.findIndex(item => item.id === jogo.id);
+      const jogo = {
+        id: jogoSelecionado.id,
+        title: jogoSelecionado.name || jogoSelecionado.title,
+        cover: normalizarCapaJogo(
+          jogoSelecionado.cover?.url || jogoSelecionado.cover
+        ),
+        status,
+        data: jogoSelecionado
+      };
 
-  if (indice >= 0) {
-    jogos[indice] = jogo;
-  } else {
-    jogos.push(jogo);
+      const indice = jogos.findIndex(item => item.id === jogo.id);
+
+      if (indice >= 0) {
+        jogos[indice] = jogo;
+      } else {
+        jogos.push(jogo);
+      }
+
+      salvarJogosLocais(jogos);
+      renderJogos();
+
+      modalJogo.style.display = "none";
+      jogoSelecionado = null;
+    });
   }
-
-  salvarJogosLocais(jogos);
-  renderJogos();
-
-  modalJogo.style.display = "none";
-  jogoSelecionado = null;
 });
 
-document.getElementById("excluirJogoColecao").addEventListener("click", () => {
-  if (!jogoSelecionado) return;
+document.addEventListener("DOMContentLoaded", () => {
+  const botaoExcluirJogo = document.getElementById("excluirJogoColecao");
 
-  const jogos = obterJogosSalvos().filter(
-    jogo => jogo.id !== jogoSelecionado.id
-  );
+  if (botaoExcluirJogo) {
+    botaoExcluirJogo.addEventListener("click", () => {
+      if (!jogoSelecionado) return;
 
-  salvarJogosLocais(jogos);
-  renderJogos();
+      const jogos = obterJogosSalvos().filter(
+        jogo => jogo.id !== jogoSelecionado.id
+      );
 
-  modalJogo.style.display = "none";
-  jogoSelecionado = null;
+      salvarJogosLocais(jogos);
+      renderJogos();
+
+      modalJogo.style.display = "none";
+      jogoSelecionado = null;
+    });
+  }
 });
-
-renderJogos();
-renderLivros();
+document.addEventListener("DOMContentLoaded", () => {
+  renderJogos();
+  renderLivros();
+});
 </script>
 
 
