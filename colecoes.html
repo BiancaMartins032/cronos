@@ -967,7 +967,7 @@ if (status === "Lendo") {
         const botaoSalvar = document.getElementById("salvarLivroColecao");
         botaoSalvar.textContent = "Salvar alterações";
 
-        botaoSalvar.onclick = function () {
+        botaoSalvar.onclick = async function () {
           const livrosAtualizados = JSON.parse(
             localStorage.getItem("mn_livros") || "[]"
           );
@@ -998,10 +998,19 @@ if (status === "Lendo") {
 
             livrosAtualizados[indice].status = novoStatus;
 
-            localStorage.setItem(
-              "mn_livros",
-              JSON.stringify(livrosAtualizados)
-            );
+try {
+  await salvarLivroNoSupabase(livrosAtualizados[indice]);
+
+  localStorage.setItem(
+    "mn_livros",
+    JSON.stringify(livrosAtualizados)
+  );
+
+} catch (erro) {
+  console.error("Erro ao atualizar livro:", erro);
+  alert("Não foi possível atualizar o livro no banco de dados. Tente novamente.");
+  return;
+}
           }
 
           document.getElementById("modalLivro").classList.remove("active");
