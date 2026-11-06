@@ -54,6 +54,10 @@ async function buscarCapaXbox(nomeJogo) {
 
     const nome = normalizarNome(nomeJogo);
 
+if (nome === "batman arkham knight") {
+  return "https://store-images.s-microsoft.com/image/apps.27638.69836087516172366.d802940c-fd8a-4174-8a68-e41a2475e1a1.f1f791fa-f0bf-4e6a-8e7d-98f86a97b5a1";
+}
+
     // Procura primeiro pelo jogo original, evitando DLCs e passes.
     let produto = produtos.find(item =>
       item.ProductId === "BSLX1RNXR6H7"
