@@ -966,6 +966,49 @@ if (status === "Lendo") {
 
         const botaoSalvar = document.getElementById("salvarLivroColecao");
         botaoSalvar.textContent = "Salvar alterações";
+        const botaoExcluir = document.getElementById("excluirLivroColecao");
+        botaoExcluir.style.display = "block";
+        botaoExcluir.onclick = async function () {
+  if (!confirm("Deseja realmente retirar este livro da sua coleção?")) {
+    return;
+  }
+
+  const cliente = window.mnSupabaseClient;
+
+  const { data: sessaoData } = await cliente.auth.getSession();
+  const usuarioId = sessaoData.session.user.id;
+
+  const itemId = String(livro.obraId || "manual-" + livro.id);
+
+  try {
+    const { error } = await cliente
+      .from("mn_collections")
+      .delete()
+      .eq("user_id", usuarioId)
+      .eq("universe", "leitura")
+      .eq("item_id", itemId);
+
+    if (error) throw error;
+
+    const livrosAtualizados = JSON.parse(
+      localStorage.getItem("mn_livros") || "[]"
+    );
+
+    const restantes = livrosAtualizados.filter(
+      item => item.id !== livro.id
+    );
+
+    localStorage.setItem("mn_livros", JSON.stringify(restantes));
+
+    document.getElementById("modalLivro").classList.remove("active");
+
+    renderLivros();
+
+  } catch (erro) {
+    console.error("Erro ao excluir livro:", erro);
+    alert("Não foi possível excluir o livro. Tente novamente.");
+  }
+};
 
         botaoSalvar.onclick = async function () {
           const livrosAtualizados = JSON.parse(
@@ -1253,6 +1296,7 @@ encontrados.push({
         document.getElementById("modalTotalPaginas").value = "";
         document.getElementById("modalPaginasLidas").value = "";
         document.getElementById("progressoLeituraCampos").style.display = "none";
+        document.getElementById("excluirLivroColecao").style.display = "none";
 
         document.getElementById("modalLivro").classList.add("active");
 
@@ -1372,6 +1416,9 @@ renderLivros();
     <button type="button" id="salvarLivroColecao">
       Adicionar à minha coleção
     </button>
+    <button type="button" id="excluirLivroColecao" style="display:none;">
+  Excluir da minha coleção
+</button>
   </div>
 </div>
 
