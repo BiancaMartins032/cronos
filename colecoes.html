@@ -863,6 +863,44 @@ window.addEventListener("pageshow", renderMediaCollection);
   }
 });
 
+  async function salvarLivroNoSupabase(livro) {
+  const cliente = window.mnSupabaseClient;
+
+  const { data, error: erroSessao } =
+    await cliente.auth.getSession();
+
+  if (erroSessao) throw erroSessao;
+
+  const sessao = data.session;
+
+  if (!sessao) {
+    throw new Error("Usuário não autenticado.");
+  }
+
+  const registro = {
+    user_id: sessao.user.id,
+    universe: "leitura",
+    item_id: String(livro.obraId || "manual-" + livro.id),
+    title: livro.titulo,
+    author: livro.autor || null,
+    cover: livro.capa || null,
+    status: livro.status,
+    data: {
+      obraId: livro.obraId || null,
+      localId: livro.id,
+      paginasTotal: livro.paginasTotal || 0,
+      paginasLidas: livro.paginasLidas || 0
+    }
+  };
+
+  const { error } = await cliente
+    .from("mn_collections")
+    .upsert(registro, {
+      onConflict: "user_id,universe,item_id"
+    });
+
+  if (error) throw error;
+}
 function renderLivros() {
   let livros = [];
 
@@ -1194,7 +1232,7 @@ encontrados.push({
 
         document.getElementById("modalLivro").classList.add("active");
 
-        document.getElementById("salvarLivroColecao").onclick = function () {
+        document.getElementById("salvarLivroColecao").onclick = async function () {
           const livrosSalvos = JSON.parse(
             localStorage.getItem("mn_livros") || "[]"
           );
@@ -1215,7 +1253,7 @@ if (status === "Lendo") {
   }
 }
 
-livrosSalvos.push({
+const novoLivro = {
   id: Date.now(),
   obraId: livro.obraId,
   titulo: livro.titulo,
@@ -1224,10 +1262,22 @@ livrosSalvos.push({
   paginasTotal: status === "Lendo" ? total : livro.paginasTotal,
   paginasLidas: status === "Lendo" ? lidas : 0,
   status: status
-});
+};
 
-          localStorage.setItem("mn_livros", JSON.stringify(livrosSalvos));
+try {
+  await salvarLivroNoSupabase(novoLivro);
 
+  livrosSalvos.push(novoLivro);
+
+  localStorage.setItem(
+    "mn_livros",
+    JSON.stringify(livrosSalvos)
+  );
+} catch (erro) {
+  console.error("Erro ao salvar livro:", erro);
+  alert("Não foi possível salvar no banco de dados. Tente novamente.");
+  return;
+}
           document.getElementById("modalLivro").classList.remove("active");
 
           campoBuscaLivro.value = "";
