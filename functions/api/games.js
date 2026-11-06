@@ -1,44 +1,90 @@
+
 export async function onRequestGet({ request, env }) {
   try {
     const url = new URL(request.url);
     const search = url.searchParams.get("search")?.trim();
 
     if (!search) {
-      return Response.json({ error: "Informe o nome de um jogo." }, { status: 400 });
+      return Response.json(
+        { error: "Digite o nome de um jogo para pesquisar." },
+        { status: 400 }
+      );
     }
 
     if (!env.TWITCH_CLIENT_ID || !env.TWITCH_CLIENT_SECRET) {
-      return Response.json({ error: "Credenciais da IGDB não configuradas." }, { status: 500 });
+      return Response.json(
+        { error: "A conexão com o catálogo de jogos não está configurada." },
+        { status: 500 }
+      );
     }
 
-    const tokenResponse = await fetch("https://id.twitch.tv/oauth2/token", {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: new URLSearchParams({
-        client_id: env.TWITCH_CLIENT_ID,
-        client_secret: env.TWITCH_CLIENT_SECRET,
-        grant_type: "client_credentials"
-      })
-    });
+    const tokenResponse = await fetch(
+      "https://id.twitch.tv/oauth2/token",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        body: new URLSearchParams({
+          client_id: env.TWITCH_CLIENT_ID,
+          client_secret: env.TWITCH_CLIENT_SECRET,
+          grant_type: "client_credentials"
+        })
+      }
+    );
 
     if (!tokenResponse.ok) {
-      return Response.json({ error: "Falha na autenticação com a Twitch." }, { status: 502 });
+      return Response.json(
+        { error: "Não foi possível conectar ao catálogo de jogos." },
+        { status: 502 }
+      );
     }
 
     const tokenData = await tokenResponse.json();
 
-    const gamesResponse = await fetch("https://api.igdb.com/v4/games", {
-      method: "POST",
-      headers: {
-        "Client-ID": env.TWITCH_CLIENT_ID,
-        "Authorization": `Bearer ${tokenData.access_token}`,
-        "Content-Type": "text/plain"
-      },
-      body: `search "${search.replace(/["\\]/g, "")}"; fields name,cover.url,first_release_date,summary,platforms.name,genres.name; limit 20;`
-    });
+    const termo = search.replace(/["\\]/g, "");
+
+    const consulta = `
+      search "${termo}";
+      fields
+        name,
+        cover.url,
+        first_release_date,
+        summary,
+        platforms.name,
+        genres.name,
+        involved_companies.company.name,
+        involved_companies.developer,
+        involved_companies.publisher,
+        game_type,
+        version_title,
+        alternative_names.name,
+        total_rating,
+        total_rating_count;
+      limit 20;
+    `;
+
+    const gamesResponse = await fetch(
+      "https://api.igdb.com/v4/games",
+      {
+        method: "POST",
+        headers: {
+          "Client-ID": env.TWITCH_CLIENT_ID,
+          "Authorization": `Bearer ${tokenData.access_token}`,
+          "Content-Type": "text/plain"
+        },
+        body: consulta
+      }
+    );
 
     if (!gamesResponse.ok) {
-      return Response.json({ error: "Falha ao consultar o catálogo de jogos." }, { status: 502 });
+      const detalhe = await gamesResponse.text();
+      console.error("Erro IGDB:", detalhe);
+
+      return Response.json(
+        { error: "Não foi possível consultar os jogos." },
+        { status: 502 }
+      );
     }
 
     const games = await gamesResponse.json();
@@ -51,6 +97,11 @@ export async function onRequestGet({ request, env }) {
     });
 
   } catch (error) {
-    return Response.json({ error: "Erro interno ao buscar jogos." }, { status: 500 });
+    console.error("Erro na busca de jogos:", error);
+
+    return Response.json(
+      { error: "Ocorreu um erro ao pesquisar os jogos." },
+      { status: 500 }
+    );
   }
 }
