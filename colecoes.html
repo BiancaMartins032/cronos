@@ -1080,22 +1080,37 @@ if (status === "Lendo") {
 
 
 if (formLivro) {
-  formLivro.addEventListener("submit", function(event) {
+  formLivro.addEventListener("submit", async function(event) {
     event.preventDefault();
 
-    const livros = JSON.parse(localStorage.getItem("mn_livros") || "[]");
+    const livros = JSON.parse(
+      localStorage.getItem("mn_livros") || "[]"
+    );
 
-    livros.push({
+    const novoLivro = {
       id: Date.now(),
       titulo: document.getElementById("livroTitulo").value.trim(),
       autor: document.getElementById("livroAutor").value.trim(),
       status: document.getElementById("livroStatus").value
-    });
+    };
 
-    localStorage.setItem("mn_livros", JSON.stringify(livros));
+    try {
+      await salvarLivroNoSupabase(novoLivro);
 
-    formLivro.reset();
-    renderLivros();
+      livros.push(novoLivro);
+
+      localStorage.setItem(
+        "mn_livros",
+        JSON.stringify(livros)
+      );
+
+      formLivro.reset();
+      renderLivros();
+
+    } catch (erro) {
+      console.error("Erro ao salvar livro manual:", erro);
+      alert("Não foi possível salvar o livro. Tente novamente.");
+    }
   });
 }
 
