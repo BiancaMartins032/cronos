@@ -7,7 +7,7 @@ export default {
         if (!env.OPENXBL_API_KEY) {
           return Response.json(
             { error: "Chave da OpenXBL não configurada." },
-            { status: 500 }
+            { status: 500 } 
           );
         }
 
