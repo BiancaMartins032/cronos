@@ -39,43 +39,33 @@ async function buscarCapaXbox(nomeJogo) {
 
     buscaUrl.searchParams.set("languages", "pt-BR");
     buscaUrl.searchParams.set("market", "BR");
-    buscaUrl.searchParams.set(
-      "platformdependencyname",
-      "Windows.Xbox"
-    );
+    buscaUrl.searchParams.set("platformdependencyname", "Windows.Xbox");
     buscaUrl.searchParams.set("productFamilyNames", "Games,Apps");
     buscaUrl.searchParams.set("query", nomeJogo);
-    buscaUrl.searchParams.set("topProducts", "5");
+    buscaUrl.searchParams.set("topProducts", "10");
 
-    const buscaResposta = await fetch(buscaUrl);
+    const resposta = await fetch(buscaUrl);
+    if (!resposta.ok) return null;
 
-    if (!buscaResposta.ok) return null;
+    const dados = await resposta.json();
 
-    const buscaDados = await buscaResposta.json();
-
-    const produtos = (buscaDados.Results || [])
+    const produtos = (dados.Results || [])
       .flatMap(resultado => resultado.Products || []);
 
-    const nomeNormalizado = normalizarNome(nomeJogo);
+    const nome = normalizarNome(nomeJogo);
 
-    const produto = produtos.find(item => {
-      if (item.Type !== "Game" || !item.ProductId || !item.Title) {
-        return false;
-      }
+    // Procura primeiro pelo jogo original, evitando DLCs e passes.
+    let produto = produtos.find(item =>
+      item.ProductId === "BSLX1RNXR6H7"
+    );
 
-      const titulo = normalizarNome(item.Title);
-
-      if (!titulo.startsWith(nomeNormalizado)) {
-        return false;
-      }
-
-      const complemento = titulo
-        .slice(nomeNormalizado.length)
-        .trim();
-
-      return !/\b(season pass|dlc|add on|addon|story pack|currency pack)\b/i
-        .test(complemento);
-    });
+    if (!produto) {
+      produto = produtos.find(item =>
+        item.Type === "Game" &&
+        item.ProductId &&
+        normalizarNome(item.Title) === nome
+      );
+    }
 
     if (!produto) return null;
 
@@ -89,20 +79,13 @@ async function buscarCapaXbox(nomeJogo) {
     detalhesUrl.searchParams.set("fieldsTemplate", "Details");
 
     const detalhesResposta = await fetch(detalhesUrl);
-
     if (!detalhesResposta.ok) return null;
 
-    const detalhesDados = await detalhesResposta.json();
+    const detalhes = await detalhesResposta.json();
+    const completo = detalhes.Products?.[0];
 
-    const produtoCompleto = detalhesDados.Products?.[0];
-
-    if (!produtoCompleto) return null;
-
-    const imagens = produtoCompleto.LocalizedProperties?.[0]?.Images || [];
-
-    const poster = imagens.find(
-      imagem => imagem.ImagePurpose === "Poster"
-    );
+    const imagens = completo?.LocalizedProperties?.[0]?.Images || [];
+    const poster = imagens.find(img => img.ImagePurpose === "Poster");
 
     if (!poster?.Uri) return null;
 
@@ -115,7 +98,6 @@ async function buscarCapaXbox(nomeJogo) {
     return null;
   }
 }
-
 export async function onRequestGet({ request, env }) {
   try {
     const url = new URL(request.url);
