@@ -310,6 +310,86 @@ main {
   font-size: 28px;
   cursor: pointer;
 }
+  /* MODAL DOS JOGOS */
+#modalJogo .book-modal-content {
+  max-width: 400px;
+  border-radius: 20px;
+  padding: 26px 22px;
+}
+
+#modalJogo #modalCapaJogo {
+  width: 120px;
+  height: 165px;
+  object-fit: cover;
+  border-radius: 10px;
+  margin: 8px auto 18px;
+}
+
+#modalJogo #modalTituloJogo {
+  color: var(--text);
+  font-size: 20px;
+  margin-bottom: 8px;
+}
+
+#modalJogo #modalInfoJogo {
+  font-size: 13px;
+  line-height: 1.5;
+  margin-bottom: 14px;
+}
+
+#modalJogo #modalDescricaoJogo {
+  font-size: 14px;
+  line-height: 1.6;
+  text-align: left;
+  margin-bottom: 22px;
+}
+
+#modalJogo label {
+  color: var(--text);
+  font-weight: 600;
+}
+
+#modalJogo #modalStatusJogo {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 13px 14px;
+  margin-bottom: 14px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface2);
+  color: var(--text);
+  font: inherit;
+  cursor: pointer;
+}
+
+#modalJogo #salvarJogoColecao {
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: 12px;
+  background: var(--purple);
+  color: white;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+#modalJogo #salvarJogoColecao:hover {
+  opacity: 0.88;
+}
+
+#modalJogo #excluirJogoColecao {
+  width: 100%;
+  padding: 12px;
+  margin-top: 10px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface2);
+  color: var(--muted);
+  font: inherit;
+  cursor: pointer;
+}
   #livros-lendo,
 #livros-lidos,
 #livros-desejados,
