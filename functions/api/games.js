@@ -1,25 +1,62 @@
 
+
 async function traduzirTexto(texto) {
   if (!texto) return "";
 
+  // Primeira tentativa: MyMemory
   try {
     const url = new URL("https://api.mymemory.translated.net/get");
     url.searchParams.set("q", texto.slice(0, 4500));
     url.searchParams.set("langpair", "en|pt-BR");
 
     const resposta = await fetch(url);
-    if (!resposta.ok) return texto;
 
-    const dados = await resposta.json();
+    if (resposta.ok) {
+      const dados = await resposta.json();
 
-    return dados.responseStatus === 200
-      ? dados.responseData.translatedText
-      : texto;
+      if (
+        dados.responseStatus === 200 &&
+        dados.responseData?.translatedText
+      ) {
+        return dados.responseData.translatedText;
+      }
+    }
   } catch (erro) {
-    console.error("Erro na tradução:", erro);
-    return texto;
+    console.error("MyMemory falhou:", erro);
   }
+
+  // Segunda tentativa: Google Tradutor
+  try {
+    const urlGoogle = new URL(
+      "https://translate.googleapis.com/translate_a/single"
+    );
+
+    urlGoogle.searchParams.set("client", "gtx");
+    urlGoogle.searchParams.set("sl", "en");
+    urlGoogle.searchParams.set("tl", "pt");
+    urlGoogle.searchParams.set("dt", "t");
+    urlGoogle.searchParams.set("q", texto.slice(0, 4500));
+
+    const respostaGoogle = await fetch(urlGoogle);
+
+    if (respostaGoogle.ok) {
+      const dadosGoogle = await respostaGoogle.json();
+
+      const traducao = dadosGoogle[0]
+        ?.map(parte => parte[0])
+        .filter(Boolean)
+        .join("");
+
+      if (traducao) return traducao;
+    }
+  } catch (erro) {
+    console.error("Google Tradutor falhou:", erro);
+  }
+
+  console.error("Não foi possível traduzir a descrição.");
+  return texto;
 }
+
 
 function normalizarNome(nome) {
   return (nome || "")
