@@ -1,5 +1,6 @@
 
 
+
 async function traduzirTexto(texto) {
   if (!texto) return "";
 
@@ -10,16 +11,28 @@ async function traduzirTexto(texto) {
     url.searchParams.set("langpair", "en|pt-BR");
 
     const resposta = await fetch(url);
+    const corpo = await resposta.text();
+
+    console.log("MyMemory HTTP:", resposta.status);
 
     if (resposta.ok) {
-      const dados = await resposta.json();
+      const dados = JSON.parse(corpo);
+
+      console.log("MyMemory status:", dados.responseStatus);
+      console.log(
+        "MyMemory mensagem:",
+        dados.responseDetails || "Sem mensagem de erro"
+      );
 
       if (
         dados.responseStatus === 200 &&
         dados.responseData?.translatedText
       ) {
+        console.log("Tradução realizada pelo MyMemory.");
         return dados.responseData.translatedText;
       }
+    } else {
+      console.log("MyMemory resposta:", corpo.slice(0, 500));
     }
   } catch (erro) {
     console.error("MyMemory falhou:", erro);
@@ -39,6 +52,8 @@ async function traduzirTexto(texto) {
 
     const respostaGoogle = await fetch(urlGoogle);
 
+    console.log("Google Tradutor HTTP:", respostaGoogle.status);
+
     if (respostaGoogle.ok) {
       const dadosGoogle = await respostaGoogle.json();
 
@@ -47,13 +62,23 @@ async function traduzirTexto(texto) {
         .filter(Boolean)
         .join("");
 
-      if (traducao) return traducao;
+      if (traducao) {
+        console.log("Tradução realizada pelo Google.");
+        return traducao;
+      }
+
+      console.log("Google não retornou texto traduzido.");
+    } else {
+      console.log(
+        "Google resposta:",
+        (await respostaGoogle.text()).slice(0, 500)
+      );
     }
   } catch (erro) {
     console.error("Google Tradutor falhou:", erro);
   }
 
-  console.error("Não foi possível traduzir a descrição.");
+  console.error("Os dois tradutores falharam. Texto original mantido.");
   return texto;
 }
 
