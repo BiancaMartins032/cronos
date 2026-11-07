@@ -1694,23 +1694,39 @@ async function pesquisarJogos(pesquisa) {
     });
   }
 });
+
 function abrirModalJogo(jogo) {
   jogoSelecionado = jogo;
 
-  const capa = normalizarCapaJogo(jogo.cover?.url);
+  // Recupera os dados originais da busca
+  const dados = jogo.data || jogo;
+
+  // Capa
+  const capa = normalizarCapaJogo(
+    jogo.cover?.url ||
+    jogo.cover ||
+    dados.cover?.url ||
+    dados.cover
+  );
 
   document.getElementById("modalCapaJogo").src = capa;
-  document.getElementById("modalTituloJogo").textContent = jogo.name;
 
-  const ano = jogo.first_release_date
-    ? new Date(jogo.first_release_date * 1000).getFullYear()
+  // Título
+  document.getElementById("modalTituloJogo").textContent =
+    jogo.title || dados.name || dados.title || "Jogo sem título";
+
+  // Ano
+  const ano = dados.first_release_date
+    ? new Date(dados.first_release_date * 1000).getFullYear()
     : "Ano não informado";
 
-  const generos = (jogo.genres || [])
+  // Gêneros
+  const generos = (dados.genres || [])
     .map(genero => genero.name)
     .join(", ");
 
-  const plataformas = (jogo.platforms || [])
+  // Plataformas
+  const plataformas = (dados.platforms || [])
     .map(plataforma => plataforma.name)
     .join(", ");
 
@@ -1718,12 +1734,15 @@ function abrirModalJogo(jogo) {
     `${ano}${generos ? " • " + generos : ""}` +
     `${plataformas ? " • " + plataformas : ""}`;
 
+  // Descrição
   document.getElementById("modalDescricaoJogo").textContent =
-    jogo.summary || "Descrição não disponível.";
+    dados.summary || "Descrição não disponível.";
 
-  document.getElementById("modalStatusJogo").value = "Quero jogar";
+  document.getElementById("modalStatusJogo").value = jogo.status || "Quero jogar";
+
   modalJogo.style.display = "flex";
 }
+
 
 document.addEventListener("DOMContentLoaded", () => {
   const botaoFecharModalJogo = document.getElementById("fecharModalJogo");
