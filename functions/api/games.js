@@ -201,6 +201,10 @@ if (
   normalizarNome(jogo.name) === normalizarNome(search)
 ) {
   capaXbox = await buscarCapaXbox(jogo.name);
+
+if (normalizarNome(jogo.name) === "batman arkham knight") {
+  jogo.testeCapaXbox = capaXbox;
+}
 }
 
         return {
