@@ -164,6 +164,7 @@ export async function onRequestGet({ request, env }) {
         version_title,
         total_rating,
         total_rating_count;
+      where game_type = 0;
       limit 20;
     `;
 
