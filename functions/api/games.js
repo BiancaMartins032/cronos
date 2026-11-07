@@ -53,6 +53,7 @@ async function buscarCapaXbox(nomeJogo) {
       .flatMap(resultado => resultado.Products || []);
 
     const nome = normalizarNome(nomeJogo);
+    console.log("TESTE CAPA:", nomeJogo, nome);
 
 if (nome === "batman arkham knight") {
   return "https://store-images.s-microsoft.com/image/apps.30637.69836087516172366.d802940c-fd8a-4174-8a68-e41a2475e1a1.77b11b55-654c-4be3-8804-09728b3a6901?h=270&q=90&w=480";
