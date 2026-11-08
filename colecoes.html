@@ -1287,6 +1287,28 @@ const containerResenha = document.getElementById("resenhaLivroContainer");
 
 if (campoResenha) {
   campoResenha.value = livro.resenha || "";
+  campoResenha.style.display = "none";
+}
+
+const textoResenha = document.getElementById("textoResenhaLivro");
+const visualizacaoResenha = document.getElementById("resenhaVisualizacao");
+const botaoEditarResenha = document.getElementById("editarResenhaLivro");
+
+if (textoResenha) {
+  textoResenha.textContent = livro.resenha || "";
+}
+
+if (visualizacaoResenha) {
+  visualizacaoResenha.style.display =
+    livro.resenha ? "block" : "none";
+}
+
+if (botaoEditarResenha) {
+  botaoEditarResenha.onclick = function () {
+    visualizacaoResenha.style.display = "none";
+    campoResenha.style.display = "block";
+    campoResenha.focus();
+  };
 }
 
 if (containerResenha) {
