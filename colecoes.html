@@ -1545,17 +1545,52 @@ function salvarEditorasFavoritas(lista) {
     botao.type = "button";
 
     if (item.imagem) {
-      const imagem = document.createElement("img");
-      imagem.src = item.imagem;
-      imagem.alt = item.nome;
-      botao.appendChild(imagem);
-    } else {
-      const inicial = document.createElement("div");
-      inicial.className = "favorito-inicial";
-      inicial.textContent = item.nome.charAt(0).toUpperCase();
-      botao.appendChild(inicial);
-    }
+  const imagem = document.createElement("img");
+  imagem.src = item.imagem;
+  imagem.alt = item.nome;
+  imagem.style.cursor = "pointer";
+  imagem.style.touchAction = "pan-y";
 
+  let temporizadorPressao;
+
+  imagem.addEventListener("pointerdown", () => {
+    if (item.tipo !== "autor") return;
+
+    temporizadorPressao = setTimeout(() => {
+      const confirmar = confirm(
+        "Deseja realmente excluir este autor dos seus favoritos?"
+      );
+
+      if (!confirmar) return;
+
+      const atualizados = obterAutoresFavoritos().filter(
+        autor => autor.nome.toLowerCase() !== item.nome.toLowerCase()
+      );
+
+      salvarAutoresFavoritos(atualizados);
+      renderFavoritosLiterarios();
+    }, 300);
+  });
+
+  imagem.addEventListener("pointerup", () => {
+    clearTimeout(temporizadorPressao);
+  });
+
+  imagem.addEventListener("pointerleave", () => {
+    clearTimeout(temporizadorPressao);
+  });
+
+  imagem.addEventListener("pointercancel", () => {
+    clearTimeout(temporizadorPressao);
+  });
+
+  botao.appendChild(imagem);
+} else {
+  const inicial = document.createElement("div");
+  inicial.className = "favorito-inicial";
+  inicial.textContent = item.nome.charAt(0).toUpperCase();
+  botao.appendChild(inicial);
+}
     const nome = document.createElement("span");
     nome.textContent = item.tipo === "autor"
     ? nomeConhecidoAutor(item.nome)
