@@ -1297,7 +1297,7 @@ try {
 
   const grupo = document.createElement("div");
   grupo.style.cssText =
-    "width:100%;min-width:0;display:flex;flex-direction:column;gap:6px;";
+    "width:100%;max-width:100%;min-width:0;display:flex;flex-direction:column;gap:6px;box-sizing:border-box;";
 
   grupo.addEventListener("click", abrirModal);
   grupo.style.cursor = "pointer";
@@ -1307,8 +1307,7 @@ try {
   capa.alt = "Capa de " + livro.titulo;
   capa.loading = "lazy";
   capa.style.cssText =
-    "display:block;width:100%;aspect-ratio:2/3;object-fit:cover;border:1px solid var(--border);border-radius:9px;";
-
+    "display:block;width:100%;max-width:100%;height:auto;aspect-ratio:2/3;object-fit:cover;border:1px solid var(--border);border-radius:9px;box-sizing:border-box;";
   grupo.appendChild(capa);
 
   const info = document.createElement("div");
