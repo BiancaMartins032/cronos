@@ -1049,6 +1049,24 @@ main {
   border-color: #9B79C8;
   color: #FFFFFF;
 }
+  .botao-ver-conquistas {
+  background: #E9DFF7;
+  border: 1px solid #D8C8EB;
+  border-radius: 8px;
+  padding: 7px 10px;
+  color: #76549F;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: center;
+  width: 100%;
+}
+
+.botao-ver-conquistas:active {
+  background: #9B79C8;
+  border-color: #9B79C8;
+  color: #FFFFFF;
+}
 </style>
 </head>
 
@@ -2671,6 +2689,18 @@ if (jogo.status === "Concluído") {
 
     grupo.appendChild(estrelas);
   }
+
+    const botaoConquistas = document.createElement("button");
+  botaoConquistas.type = "button";
+  botaoConquistas.textContent = "Ver conquistas";
+  botaoConquistas.className = "botao-ver-conquistas";
+
+  botaoConquistas.addEventListener("click", () => {
+    window.location.href =
+      "conquistas.html?id=" + encodeURIComponent(jogo.id);
+  });
+
+  grupo.appendChild(botaoConquistas);
 
   destino.appendChild(grupo);
   return;
