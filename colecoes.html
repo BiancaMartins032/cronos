@@ -618,12 +618,11 @@ main {
   min-width: 0;
 }
   #livros-lendo.media-list {
-  display: flex !important;
-  flex-direction: column !important;
-  align-items: stretch !important;
-  gap: 12px;
+  display: grid !important;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  align-items: start !important;
+  gap: 14px;
 }
-
 #livros-lendo .reading-book-row {
   display: flex !important;
   flex-direction: row !important;
