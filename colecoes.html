@@ -2478,7 +2478,17 @@ document.addEventListener("DOMContentLoaded", () => {
     <img id="modalCapaLivro" src="" alt="Capa do livro">
 
     <h2 id="modalTituloLivro"></h2>
-    <p id="modalAutorLivro"></p>
+<p id="modalAutorLivro"></p>
+
+<div id="favoritosLivroModal" style="display:flex; flex-direction:column; gap:8px; margin:12px 0;">
+  <button type="button" id="favoritarAutorLivro">
+    ☆ Favoritar autor
+  </button>
+
+  <button type="button" id="favoritarEditoraLivro">
+    ☆ Favoritar editora
+  </button>
+</div>
 
     <label for="modalStatusLivro">O que você deseja fazer com este livro?</label>
 
