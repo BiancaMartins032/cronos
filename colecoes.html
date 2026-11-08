@@ -1410,6 +1410,23 @@ function salvarEditorasFavoritas(lista) {
     JSON.stringify(lista)
   );
 }
+  function nomeConhecidoAutor(nome) {
+  const nomes = {
+    "stephen edwin king": "Stephen King",
+    "frank patrick herbert": "Frank Herbert",
+    "cecilia benevides de carvalho meireles": "Cecília Meireles",
+    "joanne kathleen rowling": "J. K. Rowling",
+    "joanne rowling": "J. K. Rowling"
+  };
+
+  const normalizar = texto => texto
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .trim();
+
+  return nomes[normalizar(nome)] || nome;
+}
   function renderFavoritosLiterarios() {
   const container = document.getElementById("favoritosLiterarios");
 
@@ -1449,7 +1466,9 @@ function salvarEditorasFavoritas(lista) {
     }
 
     const nome = document.createElement("span");
-    nome.textContent = item.nome;
+    nome.textContent = item.tipo === "autor"
+    ? nomeConhecidoAutor(item.nome)
+    : item.nome;
     botao.appendChild(nome);
 
     botao.addEventListener("click", () => {
@@ -1993,8 +2012,13 @@ if (campoBuscaLivro) {
 
 if (autorFavoritado) {
   botao.classList.add("autor-ja-favoritado");
+  botao.querySelector("span").textContent = "Autor favoritado";
 }
-botao.title = "Favoritar autor";
+
+botao.title = autorFavoritado
+  ? "Autor favoritado"
+  : "Favoritar autor";
+
 botao.classList.add("botao-favoritar-autor");
   botao.onclick = evento => {
     evento.stopPropagation();
