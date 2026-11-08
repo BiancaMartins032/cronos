@@ -1152,10 +1152,14 @@ document.addEventListener("DOMContentLoaded", function () {
           this.value === "Lendo" ? "block" : "none";
       }
 
-      if (avaliacaoContainer) {
-        avaliacaoContainer.style.display =
-          this.value === "Lido" ? "block" : "none";
-      }
+      const containerResenha = document.getElementById("resenhaLivroContainer");
+
+if (containerResenha) {
+  containerResenha.style.display =
+    this.value === "Lendo" || this.value === "Lido"
+      ? "block"
+      : "none";
+}
     });
   }
 
