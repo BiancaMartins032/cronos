@@ -137,59 +137,146 @@
       border-color: #5267D8;
     }
 
-    .lista-conquistas {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
+    
+.lista-conquistas {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
 
-    .conquista {
-      display: flex;
-      align-items: center;
-      gap: 15px;
-      padding: 16px;
-      background: #1B1A2B;
-      border: 1px solid #393750;
-      border-radius: 14px;
-    }
+.conquista {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 10px;
+  padding: 12px;
+  background: #1B1A2B;
+  border: 1px solid #393750;
+  border-radius: 14px;
+  min-width: 0;
+}
 
-    .icone-conquista {
-      width: 52px;
-      height: 52px;
-      flex-shrink: 0;
-      border-radius: 12px;
-      background: #29263F;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-      color: #A99BFF;
-      font-weight: bold;
-    }
+.icone-conquista {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  flex-shrink: 0;
+  border-radius: 10px;
+  background: #29263F;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
 
-    .icone-conquista img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
+.icone-conquista img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
 
-    .detalhes {
-      flex: 1;
-      min-width: 0;
-    }
+.detalhes {
+  width: 100%;
+  min-width: 0;
+}
 
-    .detalhes strong {
-      display: block;
-      font-size: 14px;
-      margin-bottom: 5px;
-    }
+.detalhes strong {
+  display: block;
+  color: #FFFFFF;
+  font-size: 14px;
+  line-height: 1.4;
+  margin-bottom: 9px;
+}
 
-    .detalhes p {
-      color: #AAA7BD;
-      font-size: 13px;
-      line-height: 1.5;
-      margin: 0;
-    }
+.detalhes p {
+  color: #FFFFFF;
+  font-size: 12px;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.pontuacao-linha {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: #FFFFFF;
+  margin-bottom: 10px;
+}
+
+.simbolo-diamante {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.simbolo-diamante svg {
+  width: 19px;
+  height: 19px;
+  stroke: #FFFFFF;
+  fill: none;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.simbolo-g {
+  width: 23px;
+  height: 23px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #FFFFFF;
+  color: #5267D8;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.valor-g {
+  color: #FFFFFF;
+  font-size: 13px;
+  font-weight: bold;
+}
+
+.porcentagem-raridade {
+  margin-left: auto;
+  color: #FFFFFF;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.progresso-conquista {
+  width: 100%;
+  height: 6px;
+  background: #343149;
+  border-radius: 20px;
+  overflow: hidden;
+  margin-top: 10px;
+}
+
+.barra-conquista {
+  height: 100%;
+  width: 0%;
+  background: #A58BFF;
+  border-radius: 20px;
+  transition: width 0.4s ease;
+}
+
+.informacoes-extras {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px 10px;
+  margin-top: 9px;
+}
+
+.informacoes-extras span {
+  color: #FFFFFF;
+  font-size: 10px;
+}
+
+#conquistaMitica {
+  grid-column: 1 / -1;
+}
+
 
     .status {
       font-size: 11px;
@@ -220,37 +307,69 @@
     }
 
     @media (max-width: 500px) {
-      .cabecalho {
-        padding: 15px;
-        gap: 14px;
-      }
+  .cabecalho {
+    padding: 15px;
+    gap: 14px;
+  }
 
-      .capa {
-        width: 85px;
-      }
+  .capa {
+    width: 85px;
+  }
 
-      .informacoes h1 {
-        font-size: 17px;
-      }
+  .informacoes h1 {
+    font-size: 17px;
+  }
 
-      .resumo {
-        gap: 8px;
-      }
+  .resumo {
+    gap: 8px;
+  }
 
-      .resumo-card {
-        padding: 12px;
-      }
+  .resumo-card {
+    padding: 12px;
+  }
 
-      .conquista {
-        gap: 10px;
-        padding: 12px;
-      }
+  .lista-conquistas {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 9px;
+  }
 
-      .status {
-        font-size: 10px;
-        padding: 6px 8px;
-      }
-    }
+  .conquista {
+    gap: 8px;
+    padding: 9px;
+  }
+
+  .detalhes strong {
+    font-size: 12px;
+  }
+
+  .detalhes p {
+    font-size: 11px;
+  }
+
+  .pontuacao-linha {
+    gap: 5px;
+  }
+
+  .porcentagem-raridade {
+    font-size: 10px;
+  }
+
+  .simbolo-diamante svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .simbolo-g {
+    width: 20px;
+    height: 20px;
+    font-size: 12px;
+  }
+
+  .status {
+    font-size: 10px;
+    padding: 6px 8px;
+  }
+}
   </style>
 </head>
 
@@ -348,8 +467,7 @@ function atualizarConquistaMitica() {
   detalhes.className = "detalhes";
 
   const nome = document.createElement("strong");
-  nome.textContent = "🏆 Conquista Mítica";
-
+  nome.textContent = "Conquista Mítica";
   const descricao = document.createElement("p");
   descricao.textContent =
     "Conclua todas as 69 conquistas originais de Batman: Arkham Knight.";
@@ -613,6 +731,7 @@ function atualizarConquistas() {
 renderizarConquistas();
 }
 
+
 function renderizarConquistas() {
   lista.innerHTML = "";
 
@@ -641,56 +760,77 @@ function renderizarConquistas() {
     const card = document.createElement("article");
     card.className = "conquista";
 
+    // Imagem da conquista
     const icone = document.createElement("div");
     icone.className = "icone-conquista";
 
     if (conquista.icon) {
       const imagem = document.createElement("img");
       imagem.src = conquista.icon;
-      imagem.alt = "";
+      imagem.alt = conquista.name;
       icone.appendChild(imagem);
-    } else {
-      icone.textContent = "MN";
     }
 
     const detalhes = document.createElement("div");
     detalhes.className = "detalhes";
 
+    // Nome
     const nome = document.createElement("strong");
     nome.textContent = conquista.name;
 
+    // Pontuação e porcentagem
+    const pontos = document.createElement("div");
+    pontos.className = "pontuacao-linha";
+
+    const diamante = document.createElement("span");
+    diamante.className = "simbolo-diamante";
+
+    diamante.innerHTML = `
+      <svg viewBox="0 0 24 24"
+           xmlns="http://www.w3.org/2000/svg">
+        <path d="M3 8l4-5h10l4 5-9 13L3 8z"/>
+        <path d="M3 8h18M7 3l5 18 5-18M7 3l-4 5"/>
+      </svg>
+    `;
+
+    const simboloG = document.createElement("span");
+    simboloG.className = "simbolo-g";
+    simboloG.textContent = "G";
+
+    const valorG = document.createElement("span");
+    valorG.className = "valor-g";
+    valorG.textContent = conquista.gamerscore;
+
+    const porcentagem = document.createElement("span");
+    porcentagem.className = "porcentagem-raridade";
+    porcentagem.textContent =
+      conquista.rarityPercentage.toLocaleString("pt-BR") + "%";
+
+    pontos.append(
+      diamante,
+      simboloG,
+      valorG,
+      porcentagem
+    );
+
+    // Descrição
     const descricao = document.createElement("p");
     descricao.textContent = conquista.description;
 
-    const pontos = document.createElement("p");
-    pontos.className = "pontuacao";
-    pontos.innerHTML =
-      '<span class="simbolo-g">G</span> ' +
-      conquista.gamerscore;
-
-    const raridade = document.createElement("p");
-    raridade.className = "raridade";
-
-    const categoriaRaridade =
-      conquista.rarity === "Rare" ? "Rara" :
-      conquista.rarity === "Common" ? "Comum" :
-      conquista.rarity;
-
-    raridade.textContent =
-      categoriaRaridade + " · " +
-      conquista.rarityPercentage.toLocaleString("pt-BR") +
-      "% dos jogadores";
-
+    // Progresso
     const progresso = document.createElement("div");
     progresso.className = "progresso-conquista";
 
     const barra = document.createElement("div");
     barra.className = "barra-conquista";
 
-    barra.style.width = conquista.unlocked ? "100%" : "0%";
+    const progressoAtual = conquista.unlocked ? 100 : 0;
+
+    barra.style.width = progressoAtual + "%";
 
     progresso.appendChild(barra);
 
+    // Status
     const status = document.createElement("span");
     status.className = "status " +
       (conquista.unlocked ? "concluida" : "pendente");
@@ -699,38 +839,41 @@ function renderizarConquistas() {
       ? "Desbloqueada"
       : "Bloqueada";
 
-    const data = document.createElement("p");
-    data.className = "data-desbloqueio";
-
+    // Data
+    const data = document.createElement("span");
     data.textContent = conquista.unlocked
-      ? "Desbloqueada em " + formatarData(conquista.timeUnlocked)
+      ? "Desbloqueada em " +
+        formatarData(conquista.timeUnlocked)
       : "Ainda não desbloqueada";
 
-    const categoria = document.createElement("p");
-    categoria.className = "categoria-conquista";
+    // Categoria
+    const categoria = document.createElement("span");
 
     categoria.textContent =
-  conquista.category === "original"
-    ? "Original"
-    : conquista.category === "complemento"
-      ? "Complemento"
-      : "Categoria ainda não identificada";
+      conquista.category === "original"
+        ? "Original"
+        : conquista.category === "complemento"
+          ? "Complemento"
+          : "Categoria não identificada";
+
+    const extras = document.createElement("div");
+    extras.className = "informacoes-extras";
+
+    extras.append(status, data, categoria);
 
     detalhes.append(
       nome,
-      descricao,
       pontos,
-      raridade,
+      descricao,
       progresso,
-      status,
-      data,
-      categoria
+      extras
     );
 
     card.append(icone, detalhes);
     lista.appendChild(card);
   });
 }
+
 
 document.querySelectorAll(".filtro").forEach(botao => {
   botao.addEventListener("click", () => {
