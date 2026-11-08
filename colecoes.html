@@ -1940,9 +1940,12 @@ if (campoBuscaLivro) {
 });
       
     }
-  } catch (erro) {
+    } catch (erro) {
     console.error("Erro ao pesquisar autores:", erro);
   }
+
+  return encontrou;
+}
 
 async function pesquisarLivros(pesquisa) {
   const versao = (pesquisarLivros.versao || 0) + 1;
