@@ -960,6 +960,10 @@ main {
   background: #F3C3CC;
   transform: scale(1.03);
 }
+  .botao-favoritar-autor.autor-ja-favoritado {
+  background: #8F263D;
+  color: #FFFFFF;
+}
 </style>
 </head>
 
@@ -1002,12 +1006,12 @@ main {
       autocomplete="off"
     >
   </div>
-      <section class="favoritos-literarios">
+      <div id="resultadosLivros"></div>
+
+<section class="favoritos-literarios">
   <h2>Meus favoritos</h2>
   <div id="favoritosLiterarios" class="favoritos-lista"></div>
 </section>
-
-  <div id="resultadosLivros"></div>
 </div>
 
     <div class="section">
@@ -1965,6 +1969,13 @@ if (campoBuscaLivro) {
     <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.5 1.1-1.1a5.5 5.5 0 0 0-.1-7.8z"/>
   </svg>
 `;
+        const autorFavoritado = obterAutoresFavoritos().some(
+  item => item.nome.toLowerCase() === autor.name.toLowerCase()
+);
+
+if (autorFavoritado) {
+  botao.classList.add("autor-ja-favoritado");
+}
 botao.title = "Favoritar autor";
 botao.classList.add("botao-favoritar-autor");
   botao.onclick = evento => {
