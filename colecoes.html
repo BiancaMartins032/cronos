@@ -773,6 +773,34 @@ main {
   #avaliacaoJogoContainer {
   display: none;
 }
+  #resenhaLivroContainer {
+  display: none;
+  margin: 18px 0;
+  text-align: left;
+}
+
+#resenhaLivro {
+  width: 100%;
+  min-height: 130px;
+  padding: 12px;
+  box-sizing: border-box;
+  resize: vertical;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface2);
+  color: var(--text);
+  font: inherit;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+#resenhaLivro:focus {
+  outline: 1px solid var(--purple);
+}
+
+#resenhaLivro::placeholder {
+  color: var(--muted);
+}
 </style>
 </head>
 
@@ -2189,6 +2217,15 @@ document.addEventListener("DOMContentLoaded", () => {
     <button type="button" data-nota="4" aria-label="4 estrelas">★</button>
     <button type="button" data-nota="5" aria-label="5 estrelas">★</button>
   </div>
+</div>
+
+<div id="resenhaLivroContainer">
+  <label for="resenhaLivro">Minha resenha</label>
+  <textarea
+    id="resenhaLivro"
+    maxlength="3000"
+    placeholder="O que você está achando do livro? Escreva sua opinião, impressões e momentos marcantes..."
+  ></textarea>
 </div>
 
 <button type="button" id="salvarLivroColecao">
