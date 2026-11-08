@@ -1755,7 +1755,8 @@ const novoLivro = {
   capa: livro.capa,
   paginasTotal: status === "Lendo" ? total : livro.paginasTotal,
   paginasLidas: status === "Lendo" ? lidas : 0,
-  status: status
+  status: status,
+resenha: document.getElementById("resenhaLivro").value.trim()
 };
 
 try {
