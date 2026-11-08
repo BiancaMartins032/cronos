@@ -1398,18 +1398,6 @@ function salvarEditorasFavoritas(lista) {
   });
 }
 
-  desenharFavoritos(
-    autoresContainer,
-    obterAutoresFavoritos(),
-    "autor"
-  );
-
-  desenharFavoritos(
-    editorasContainer,
-    obterEditorasFavoritas(),
-    "editora"
-  );
-}
   function alternarFavorito(tipo, nome) {
   if (!nome || nome === "Autor não informado" || nome === "Editora não informada") {
     alert("Não há informação suficiente para favoritar.");
