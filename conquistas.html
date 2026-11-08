@@ -332,17 +332,31 @@ function normalizarNome(nome) {
     .replace(/[^a-z0-9]/g, "");
 }
 
-function classificarConquista(nome) {
-  const nomeNormalizado = normalizarNome(nome);
 
-  if (nomesComplementos.some(dlc =>
-    normalizarNome(dlc) === nomeNormalizado
-  )) {
+function classificarConquista(id) {
+  const numero = Number(id);
+
+  if (
+    numero >= 1 &&
+    numero <= 71 &&
+    numero !== 10 &&
+    numero !== 13
+  ) {
+    return "original";
+  }
+
+  if (
+    numero >= 72 &&
+    numero <= 117 &&
+    numero !== 83 &&
+    numero !== 84
+  ) {
     return "complemento";
   }
 
   return "nao-identificada";
 }
+
 
 function mostrarMensagem(texto) {
   lista.innerHTML = "";
@@ -470,7 +484,7 @@ async function carregarJogo() {
         rarity: item.rarity?.currentCategory || "Common",
         rarityPercentage:
           Number(item.rarity?.currentPercentage || 0),
-        category: classificarConquista(item.name)
+        category: classificarConquista(item.id)
       };
     });
 
@@ -618,9 +632,11 @@ function renderizarConquistas() {
     categoria.className = "categoria-conquista";
 
     categoria.textContent =
-      conquista.category === "complemento"
-        ? "Complemento"
-        : "Categoria ainda não identificada";
+  conquista.category === "original"
+    ? "Original"
+    : conquista.category === "complemento"
+      ? "Complemento"
+      : "Categoria ainda não identificada";
 
     detalhes.append(
       nome,
