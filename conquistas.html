@@ -309,6 +309,83 @@ const lista = document.getElementById("listaConquistas");
 
 let filtroAtual = "todas";
 let conquistas = [];
+  
+function atualizarConquistaMitica() {
+  const originais = conquistas.filter(
+    c => c.category === "original"
+  );
+
+  const concluidas = originais.filter(
+    c => c.unlocked
+  ).length;
+
+  const total = 69;
+  const porcentagem = Math.round(
+    (concluidas / total) * 100
+  );
+
+  let secao = document.getElementById("conquistaMitica");
+
+  if (!secao) {
+    secao = document.createElement("section");
+    secao.id = "conquistaMitica";
+    secao.className = "conquista";
+    secao.style.marginBottom = "24px";
+
+    const tituloSecao = document.querySelector(".titulo-secao");
+
+    if (tituloSecao) {
+      tituloSecao.parentNode.insertBefore(
+        secao,
+        tituloSecao
+      );
+    }
+  }
+
+  secao.innerHTML = "";
+
+  const detalhes = document.createElement("div");
+  detalhes.className = "detalhes";
+
+  const nome = document.createElement("strong");
+  nome.textContent = "🏆 Conquista Mítica";
+
+  const descricao = document.createElement("p");
+  descricao.textContent =
+    "Conclua todas as 69 conquistas originais de Batman: Arkham Knight.";
+
+  const progressoTexto = document.createElement("p");
+  progressoTexto.textContent =
+    `${concluidas}/${total} conquistas originais · ${porcentagem}%`;
+
+  const progresso = document.createElement("div");
+  progresso.className = "progresso-conquista";
+
+  const barra = document.createElement("div");
+  barra.className = "barra-conquista";
+  barra.style.width = porcentagem + "%";
+
+  progresso.appendChild(barra);
+
+  const status = document.createElement("span");
+  status.className = "status " +
+    (concluidas === total ? "concluida" : "pendente");
+
+  status.textContent = concluidas === total
+    ? "Conquista Mítica desbloqueada!"
+    : "Ainda bloqueada";
+
+  detalhes.append(
+    nome,
+    descricao,
+    progressoTexto,
+    progresso,
+    status
+  );
+
+  secao.appendChild(detalhes);
+}
+
 
 // DLCs identificadas no Xbox.
 const nomesComplementos = [
@@ -532,7 +609,8 @@ function atualizarConquistas() {
   document.getElementById("barraProgresso").style.width =
     porcentagem + "%";
 
-  renderizarConquistas();
+  atualizarConquistaMitica();
+renderizarConquistas();
 }
 
 function renderizarConquistas() {
