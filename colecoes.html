@@ -1237,6 +1237,19 @@ if (status === "Lendo") {
 
         document.getElementById("modalStatusLivro").value = livro.status;
         avaliacaoLivroAtual = Number(livro.avaliacao || 0);
+        const campoResenha = document.getElementById("resenhaLivro");
+const containerResenha = document.getElementById("resenhaLivroContainer");
+
+if (campoResenha) {
+  campoResenha.value = livro.resenha || "";
+}
+
+if (containerResenha) {
+  containerResenha.style.display =
+    livro.status === "Lendo" || livro.status === "Lido"
+      ? "block"
+      : "none";
+}
 
 const containerAvaliacao = document.getElementById("avaliacaoLivroContainer");
 
