@@ -754,11 +754,9 @@ let conquistas = [];
         const formato =
           item.groupproperties?.DisplayFormat;
 
-        const valor = formato === "Integer"
-          ? Math.round(numero).toLocaleString("pt-BR")
-          : numero.toLocaleString("pt-BR", {
-              maximumFractionDigits: 2
-            });
+        const valor = numero.toLocaleString("pt-BR", {
+  maximumFractionDigits: 2
+});
 
         adicionarEstatistica(nome, valor);
       });
