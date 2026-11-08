@@ -908,6 +908,25 @@ main {
   text-align: center;
   font-size: 11px;
 }
+  .botao-favoritar-autor {
+  background: #F8D9DE;
+  color: #E8798D;
+  border: none;
+  border-radius: 50%;
+  width: 38px;
+  height: 38px;
+  font-size: 25px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.2s, background 0.2s;
+}
+
+.botao-favoritar-autor:hover {
+  background: #F3C3CC;
+  transform: scale(1.08);
+}
 </style>
 </head>
 
@@ -1904,7 +1923,16 @@ if (campoBuscaLivro) {
 
   const botao = document.createElement("button");
   botao.type = "button";
-  botao.textContent = "☆ Favoritar autor";
+  botao.innerHTML = `
+  <svg viewBox="0 0 24 24" width="21" height="21"
+       fill="none" stroke="currentColor"
+       stroke-width="2" stroke-linecap="round"
+       stroke-linejoin="round">
+    <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.5 1.1-1.1a5.5 5.5 0 0 0-.1-7.8z"/>
+  </svg>
+`;
+botao.title = "Favoritar autor";
+botao.classList.add("botao-favoritar-autor");
 
   botao.onclick = evento => {
     evento.stopPropagation();
@@ -1952,7 +1980,7 @@ async function pesquisarLivros(pesquisa) {
   pesquisarLivros.versao = versao;
 
   try {
-    resultadosLivros.textContent = "Procurando livros em português...";
+    resultadosLivros.textContent = "Pesquisando livros, autores e editoras...";
 
     const url = `https://openlibrary.org/search.json?q=${encodeURIComponent(pesquisa)}&language=por&limit=8&fields=key,title,author_name,cover_i,language,number_of_pages_median`;
 
