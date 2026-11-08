@@ -2021,14 +2021,27 @@ botao.title = autorFavoritado
 
 botao.classList.add("botao-favoritar-autor");
   botao.onclick = evento => {
-    evento.stopPropagation();
+  evento.stopPropagation();
 
-    alternarFavorito("autor", autor.name, imagem.src);
+  alternarFavorito("autor", autor.name, imagem.src);
 
-    document.getElementById("buscarLivro").value = "";
-    resultadosLivros.innerHTML = "";
-  };
+  const continuaFavoritado = obterAutoresFavoritos().some(
+    item => item.nome.toLowerCase() === autor.name.toLowerCase()
+  );
 
+  botao.classList.toggle(
+    "autor-ja-favoritado",
+    continuaFavoritado
+  );
+
+  botao.querySelector("span").textContent = continuaFavoritado
+    ? "Autor favoritado"
+    : "Favoritar autor";
+
+  botao.title = continuaFavoritado
+    ? "Autor favoritado"
+    : "Favoritar autor";
+};
   informacoes.append(nome, tipo, botao);
   card.append(imagem, informacoes);
 
