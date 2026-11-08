@@ -1621,15 +1621,11 @@ botao.addEventListener("click", evento => {
     "detalhes-literarios.html?" + parametro.toString();
 });
 
-      window.location.href =
-        "detalhes-literarios.html?" + parametro.toString();
-    });
-
-    container.appendChild(botao);
-  });
+container.appendChild(botao);
+});
 }
 
-  function alternarFavorito(tipo, nome, imagem = "") {
+function alternarFavorito(tipo, nome, imagem = "") {
   if (!nome || nome === "Autor não informado" || nome === "Editora não informada") {
     alert("Não há informação suficiente para favoritar.");
     return;
