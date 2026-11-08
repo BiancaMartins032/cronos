@@ -286,6 +286,25 @@ main {
   height: 15px;
   flex-shrink: 0;
 }
+  .botao-adicionar-livro {
+  background: #D9F0DF;
+  color: #287A43;
+  border: none;
+  border-radius: 9px;
+  padding: 9px 13px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.botao-adicionar-livro.livro-ja-adicionado {
+  background: #236B3A;
+  color: #FFFFFF;
+  cursor: default;
+}
   .book-modal {
   display: none;
   position: fixed;
@@ -2190,6 +2209,25 @@ encontrados.forEach(livro => {
 
       const autor = document.createElement("small");
       autor.textContent = livro.autor;
+  const botaoAdicionarLivro = document.createElement("button");
+botaoAdicionarLivro.type = "button";
+botaoAdicionarLivro.className = "botao-adicionar-livro";
+
+const livrosJaSalvos = JSON.parse(
+  localStorage.getItem("mn_livros") || "[]"
+);
+
+const livroJaAdicionado = livrosJaSalvos.some(
+  item => item.obraId === livro.obraId
+);
+
+if (livroJaAdicionado) {
+  botaoAdicionarLivro.textContent = "Livro adicionado";
+  botaoAdicionarLivro.classList.add("livro-ja-adicionado");
+  botaoAdicionarLivro.disabled = true;
+} else {
+  botaoAdicionarLivro.textContent = "Adicionar à sua lista";
+}
 
       function abrirDetalhes() {
         const modalCapa = document.getElementById("modalCapaLivro");
@@ -2267,19 +2305,27 @@ try {
 }
           document.getElementById("modalLivro").classList.remove("active");
 
-          campoBuscaLivro.value = "";
-          resultadosLivros.innerHTML = "";
+botaoAdicionarLivro.textContent = "Livro adicionado";
+botaoAdicionarLivro.classList.add("livro-ja-adicionado");
+botaoAdicionarLivro.disabled = true;
 
-          renderLivros();
-          alert("Livro adicionado à sua coleção!");
+renderLivros();
         };
       }
 
       capa.addEventListener("click", abrirDetalhes);
       titulo.addEventListener("click", abrirDetalhes);
 
-      informacoes.append(titulo, autor);
-      card.append(capa, informacoes);
+      botaoAdicionarLivro.onclick = evento => {
+  evento.stopPropagation();
+
+  if (!botaoAdicionarLivro.disabled) {
+    abrirDetalhes();
+  }
+};
+
+informacoes.append(titulo, autor, botaoAdicionarLivro);
+card.append(capa, informacoes);
       resultadosLivros.appendChild(card);
     });
 
