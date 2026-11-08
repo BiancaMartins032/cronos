@@ -1306,6 +1306,8 @@ document.querySelectorAll("#estrelasAvaliacaoLivro button").forEach(botao => {
             }
 
             livrosAtualizados[indice].status = novoStatus;
+            livrosAtualizados[indice].avaliacao =
+  novoStatus === "Lido" ? avaliacaoLivroAtual : 0;
 
 try {
   await salvarLivroNoSupabase(livrosAtualizados[indice]);
@@ -2343,7 +2345,8 @@ async function sincronizarColecaoLivrosInicial() {
       capa: registro.cover || "",
       status: registro.status,
       paginasTotal: registro.data?.paginasTotal || 0,
-      paginasLidas: registro.data?.paginasLidas || 0
+      paginasLidas: registro.data?.paginasLidas || 0,
+      avaliacao: registro.data?.avaliacao || 0
     }));
 
     localStorage.setItem(
