@@ -1636,64 +1636,22 @@ async function pesquisarJogos(pesquisa) {
       titulo.textContent = jogo.name;
 
       const ano = jogo.first_release_date
-        ? new Date(jogo.first_release_date * 1000).getFullYear()
-        : "Ano não informado";
+  ? new Date(jogo.first_release_date * 1000).getFullYear()
+  : "Ano não informado";
 
-      const empresas = jogo.involved_companies || [];
+const plataformas = (jogo.platforms || [])
+  .map(item => item.name)
+  .filter(Boolean);
 
-      const desenvolvedora = empresas
-        .filter(item => item.developer)
-        .map(item => item.company?.name)
-        .filter(Boolean);
+const resumo = document.createElement("small");
 
-      const publicadora = empresas
-        .filter(item => item.publisher)
-        .map(item => item.company?.name)
-        .filter(Boolean);
+resumo.textContent =
+  "Lançamento: " + ano +
+  (plataformas.length
+    ? " • Plataformas: " + plataformas.join(", ")
+    : "");
 
-      const plataformas = (jogo.platforms || [])
-        .map(item => item.name)
-        .filter(Boolean);
-
-      const genero = (jogo.genres || [])
-        .map(item => item.name)
-        .filter(Boolean);
-
-      const edicao = jogo.version_title || "";
-
-      const detalhes = [
-        "Lançamento: " + ano,
-        desenvolvedora.length
-          ? "Desenvolvedora: " + desenvolvedora.join(", ")
-          : "",
-        publicadora.length
-          ? "Publicadora: " + publicadora.join(", ")
-          : "",
-        plataformas.length
-          ? "Plataformas: " + plataformas.join(", ")
-          : "",
-        genero.length
-          ? "Gênero: " + genero.join(", ")
-          : "",
-        edicao ? "Edição: " + edicao : ""
-      ].filter(Boolean);
-
-      const resumo = document.createElement("small");
-      resumo.textContent = detalhes.join(" • ");
-
-      informacoes.append(titulo, resumo);
-
-      if (jogo.total_rating) {
-        const avaliacao = document.createElement("small");
-        avaliacao.textContent =
-          "Avaliação: " + Math.round(jogo.total_rating) +
-          "/100 (" + (jogo.total_rating_count || 0) +
-          " avaliações)";
-
-        informacoes.appendChild(avaliacao);
-      }
-
-      card.append(imagem, informacoes);
+informacoes.append(titulo, resumo);
 
       card.addEventListener("click", () => abrirModalJogo(jogo));
 
@@ -1871,7 +1829,12 @@ estrelas.textContent = "★".repeat(jogo.avaliacao || 0) +
 estrelas.style.cssText =
   "font-size:15px;letter-spacing:2px;color:#B69AFF;";
 
-informacoes.append(titulo, estrelas);
+informacoes.append(titulo);
+
+if (jogo.status === "Jogando" || jogo.status === "Concluído") {
+  informacoes.append(estrelas);
+}
+
 botaoJogo.append(imagem, informacoes);
     botaoJogo.addEventListener("click", () => abrirModalJogo(jogo));
 
