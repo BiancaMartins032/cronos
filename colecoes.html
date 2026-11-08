@@ -933,7 +933,7 @@ main {
   <!-- LIVROS -->
   <section id="livros" class="collection-page active">
     <div class="section">
-  <h2>Encontrar livros</h2>
+  <h2>Encontrar livros, autores ou editoras</h2>
 
   <div class="search-books">
     <svg viewBox="0 0 24 24" width="22" height="22"
@@ -1868,6 +1868,153 @@ if (campoBuscaLivro) {
   });
 }
 
+  async function pesquisarAutoresEEditoras(pesquisa, versao) {
+  let encontrou = false;
+
+  // Pesquisar autores
+  try {
+    const resposta = await fetch(
+      `https://openlibrary.org/search/authors.json?q=${encodeURIComponent(pesquisa)}&limit=5`
+    );
+
+    if (resposta.ok) {
+      const dados = await resposta.json();
+
+      if (versao !== pesquisarLivros.versao) return false;
+
+      (dados.docs || []).forEach(autor => {
+        if (!autor.name) return;
+
+        encontrou = true;
+
+        const card = document.createElement("div");
+        card.className = "book-result";
+
+        const imagem = document.createElement("img");
+        const idAutor = autor.key.split("/").pop();
+
+        imagem.src =
+          `https://covers.openlibrary.org/a/olid/${idAutor}-M.jpg`;
+
+        imagem.alt = autor.name;
+        imagem.onerror = () => imagem.style.display = "none";
+
+        const informacoes = document.createElement("div");
+        informacoes.className = "book-result-info";
+
+        const nome = document.createElement("strong");
+        nome.textContent = autor.name;
+
+        const tipo = document.createElement("small");
+        tipo.textContent = "Autor";
+
+        const botao = document.createElement("button");
+        botao.type = "button";
+        botao.textContent = "☆ Favoritar autor";
+
+        botao.onclick = evento => {
+          evento.stopPropagation();
+          alternarFavorito("autor", autor.name);
+          botao.textContent = obterAutoresFavoritos().some(
+            item => item.nome.toLowerCase() === autor.name.toLowerCase()
+          ) ? "★ Autor favorito" : "☆ Favoritar autor";
+        };
+
+        informacoes.append(nome, tipo, botao);
+        card.append(imagem, informacoes);
+
+        card.style.cursor = "pointer";
+        card.onclick = () => {
+          window.location.href =
+            "detalhes-literarios.html?" +
+            new URLSearchParams({
+              tipo: "autor",
+              nome: autor.name
+            });
+        };
+
+        resultadosLivros.appendChild(card);
+      });
+    }
+  } catch (erro) {
+    console.error("Erro ao pesquisar autores:", erro);
+  }
+
+  // Pesquisar editoras
+  try {
+    const resposta = await fetch(
+      `https://openlibrary.org/search.json?publisher=${encodeURIComponent(pesquisa)}&limit=30&fields=publisher`
+    );
+
+    if (resposta.ok) {
+      const dados = await resposta.json();
+      const editoras = new Set();
+
+      (dados.docs || []).forEach(livro => {
+        (livro.publisher || []).forEach(nome => {
+          if (
+            nome.toLowerCase().includes(pesquisa.toLowerCase())
+          ) {
+            editoras.add(nome);
+          }
+        });
+      });
+
+      [...editoras].sort((a, b) =>
+        a.localeCompare(b, "pt-BR")
+      ).slice(0, 5).forEach(nomeEditora => {
+        encontrou = true;
+
+        const card = document.createElement("div");
+        card.className = "book-result";
+
+        const inicial = document.createElement("div");
+        inicial.className = "favorito-inicial";
+        inicial.textContent = nomeEditora.charAt(0).toUpperCase();
+
+        const informacoes = document.createElement("div");
+        informacoes.className = "book-result-info";
+
+        const nome = document.createElement("strong");
+        nome.textContent = nomeEditora;
+
+        const tipo = document.createElement("small");
+        tipo.textContent = "Editora";
+
+        const botao = document.createElement("button");
+        botao.type = "button";
+        botao.textContent = "☆ Favoritar editora";
+
+        botao.onclick = evento => {
+          evento.stopPropagation();
+          alternarFavorito("editora", nomeEditora);
+          botao.textContent = obterEditorasFavoritas().some(
+            item => item.nome.toLowerCase() === nomeEditora.toLowerCase()
+          ) ? "★ Editora favorita" : "☆ Favoritar editora";
+        };
+
+        informacoes.append(nome, tipo, botao);
+        card.append(inicial, informacoes);
+
+        card.style.cursor = "pointer";
+        card.onclick = () => {
+          window.location.href =
+            "detalhes-literarios.html?" +
+            new URLSearchParams({
+              tipo: "editora",
+              nome: nomeEditora
+            });
+        };
+
+        resultadosLivros.appendChild(card);
+      });
+    }
+  } catch (erro) {
+    console.error("Erro ao pesquisar editoras:", erro);
+  }
+
+  return encontrou;
+}
 async function pesquisarLivros(pesquisa) {
   const versao = (pesquisarLivros.versao || 0) + 1;
   pesquisarLivros.versao = versao;
@@ -1936,15 +2083,20 @@ encontrados.push({
 
     if (versao !== pesquisarLivros.versao) return;
 
-    resultadosLivros.innerHTML = "";
+resultadosLivros.innerHTML = "";
 
-    if (!encontrados.length) {
-      resultadosLivros.textContent =
-        "Nenhuma edição em português encontrada. Tente outro título.";
-      return;
-    }
+const encontrouLiterarios =
+  await pesquisarAutoresEEditoras(pesquisa, versao);
 
-    encontrados.forEach(livro => {
+if (versao !== pesquisarLivros.versao) return;
+
+if (!encontrados.length && !encontrouLiterarios) {
+  resultadosLivros.textContent =
+    "Nenhum livro, autor ou editora encontrado. Tente outra pesquisa.";
+  return;
+}
+
+encontrados.forEach(livro => {
       const card = document.createElement("div");
       card.className = "book-result";
 
