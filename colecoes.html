@@ -1024,10 +1024,10 @@ main {
   flex: 1;
   min-width: 0;
   padding: 10px 6px;
-  border: 1px solid #D9DCF5;
+  border: 1px solid #D8C8EB;
   border-radius: 10px;
-  background: #E9EAF8;
-  color: #5267D8;
+  background: #E9DFF7;
+  color: #76549F;
   font-family: inherit;
   font-size: 12px;
   font-weight: 600;
@@ -1037,11 +1037,17 @@ main {
 }
 
 #favoritosLivroModal button:hover {
-  background: #DADDF5;
+  background: #DDCDED;
 }
 
 #favoritosLivroModal button:active {
   transform: scale(0.98);
+}
+
+#favoritosLivroModal button.favorito-ativo {
+  background: #9B79C8;
+  border-color: #9B79C8;
+  color: #FFFFFF;
 }
 </style>
 </head>
@@ -1603,9 +1609,13 @@ function configurarBotoesFavoritosLivro(livro) {
   ? "Autor favoritado"
   : "Favoritar autor";
 
+botaoAutor.classList.toggle("favorito-ativo", autorFavorito);
+
 botaoEditora.textContent = editoraFavorita
   ? "Editora favoritada"
   : "Favoritar editora";
+
+botaoEditora.classList.toggle("favorito-ativo", editoraFavorita);
   };
 
   botaoAutor.onclick = () => {
