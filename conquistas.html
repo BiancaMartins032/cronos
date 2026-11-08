@@ -896,9 +896,9 @@ document.getElementById("gamerscoreJogo").textContent =
 document.getElementById("contadorConquistasJogo").textContent =
   `${concluidas}/${total}`;
 
-  const porcentagem = total > 0
-    ? Math.round((concluidas / total) * 100)
-    : 0;
+  const porcentagem = gamerscoreTotal > 0
+  ? Math.round((gamerscoreConcluido / gamerscoreTotal) * 100)
+  : 0;
 
   document.getElementById("totalConcluidas").textContent =
     concluidas;
