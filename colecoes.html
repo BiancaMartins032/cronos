@@ -1012,6 +1012,37 @@ main {
   background: #8F263D;
   color: #FFFFFF;
 }
+  #favoritosLivroModal {
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+  margin: 12px 0;
+  width: 100%;
+}
+
+#favoritosLivroModal button {
+  flex: 1;
+  min-width: 0;
+  padding: 10px 6px;
+  border: 1px solid #D9DCF5;
+  border-radius: 10px;
+  background: #E9EAF8;
+  color: #5267D8;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+#favoritosLivroModal button:hover {
+  background: #DADDF5;
+}
+
+#favoritosLivroModal button:active {
+  transform: scale(0.98);
+}
 </style>
 </head>
 
@@ -1569,12 +1600,12 @@ function configurarBotoesFavoritosLivro(livro) {
     );
 
     botaoAutor.textContent = autorFavorito
-      ? "★ Autor favorito"
-      : "☆ Favoritar autor";
+  ? "Autor favoritado"
+  : "Favoritar autor";
 
-    botaoEditora.textContent = editoraFavorita
-      ? "★ Editora favorita"
-      : "☆ Favoritar editora";
+botaoEditora.textContent = editoraFavorita
+  ? "Editora favoritada"
+  : "Favoritar editora";
   };
 
   botaoAutor.onclick = () => {
@@ -2818,13 +2849,13 @@ document.addEventListener("DOMContentLoaded", () => {
     <h2 id="modalTituloLivro"></h2>
 <p id="modalAutorLivro"></p>
 
-<div id="favoritosLivroModal" style="display:flex; flex-direction:column; gap:8px; margin:12px 0;">
+<div id="favoritosLivroModal">
   <button type="button" id="favoritarAutorLivro">
-    ☆ Favoritar autor
+    Favoritar autor
   </button>
 
   <button type="button" id="favoritarEditoraLivro">
-    ☆ Favoritar editora
+    Favoritar editora
   </button>
 </div>
 
