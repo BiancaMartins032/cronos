@@ -2729,18 +2729,6 @@ percentual.style.cssText =
 linhaProgresso.append(barraFundo, percentual);
 
 grupo.appendChild(linhaProgresso);
-    const botaoConquistas = document.createElement("button");
-botaoConquistas.type = "button";
-botaoConquistas.textContent = "Ver conquistas";
-botaoConquistas.style.cssText =
-  "background:#E9DFF7;border:1px solid #D8C8EB;border-radius:8px;padding:7px 10px;color:#76549F;font-size:11px;font-weight:600;cursor:pointer;text-align:center;width:100%;";
-
-botaoConquistas.addEventListener("click", () => {
-  window.location.href =
-    "conquistas.html?id=" + encodeURIComponent(jogo.id);
-});
-
-grupo.appendChild(botaoConquistas);
 
 linhaProgresso.style.cursor = "pointer";
 linhaProgresso.title = "Ver conquistas";
