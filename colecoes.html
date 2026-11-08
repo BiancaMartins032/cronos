@@ -93,6 +93,14 @@ main {
 .collection-page.active {
   display: block;
 }
+  /* Modo de pesquisa */
+.collection-page.modo-busca:not(#livros) {
+  display: none !important;
+}
+
+#livros.modo-busca .favoritos-literarios {
+  display: none !important;
+}
 
 .section {
   margin-bottom: 22px;
@@ -1910,6 +1918,12 @@ if (campoBuscaLivro) {
     clearTimeout(tempoBuscaLivro);
 
     const pesquisa = campoBuscaLivro.value.trim();
+
+    const buscando = pesquisa.length > 0;
+
+    document.querySelectorAll(".collection-page").forEach(secao => {
+      secao.classList.toggle("modo-busca", buscando);
+    });
 
     if (pesquisa.length < 3) {
       resultadosLivros.innerHTML = "";
