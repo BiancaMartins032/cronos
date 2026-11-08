@@ -1405,7 +1405,77 @@ function salvarEditorasFavoritas(lista) {
     "editora"
   );
 }
+  function alternarFavorito(tipo, nome) {
+  if (!nome || nome === "Autor não informado" || nome === "Editora não informada") {
+    alert("Não há informação suficiente para favoritar.");
+    return;
+  }
+
+  const chave = tipo === "autor"
+    ? "mn_autores_favoritos"
+    : "mn_editoras_favoritas";
+
+  const favoritos = JSON.parse(localStorage.getItem(chave) || "[]");
+
+  const indice = favoritos.findIndex(
+    item => item.nome.toLowerCase() === nome.toLowerCase()
+  );
+
+  if (indice >= 0) {
+    favoritos.splice(indice, 1);
+  } else {
+    favoritos.push({
+      nome: nome,
+      imagem: ""
+    });
+  }
+
+  localStorage.setItem(chave, JSON.stringify(favoritos));
+  renderFavoritosLiterarios();
+}
+
+function configurarBotoesFavoritosLivro(livro) {
+  const botaoAutor = document.getElementById("favoritarAutorLivro");
+  const botaoEditora = document.getElementById("favoritarEditoraLivro");
+
+  if (!botaoAutor || !botaoEditora) return;
+
+  const atualizarBotoes = () => {
+    const autores = obterAutoresFavoritos();
+    const editoras = obterEditorasFavoritas();
+
+    const autorFavorito = autores.some(
+      item => item.nome.toLowerCase() === (livro.autor || "").toLowerCase()
+    );
+
+    const editoraFavorita = editoras.some(
+      item => item.nome.toLowerCase() === (livro.editora || "").toLowerCase()
+    );
+
+    botaoAutor.textContent = autorFavorito
+      ? "★ Autor favorito"
+      : "☆ Favoritar autor";
+
+    botaoEditora.textContent = editoraFavorita
+      ? "★ Editora favorita"
+      : "☆ Favoritar editora";
+  };
+
+  botaoAutor.onclick = () => {
+    alternarFavorito("autor", livro.autor);
+    atualizarBotoes();
+  };
+
+  botaoEditora.onclick = () => {
+    alternarFavorito("editora", livro.editora);
+    atualizarBotoes();
+  };
+
+  atualizarBotoes();
+}
+
 function renderLivros() {
+  let livros = [];
   let livros = [];
 
   try {
@@ -1460,6 +1530,7 @@ if (status === "Lendo") {
         document.getElementById("modalTituloLivro").textContent = livro.titulo;
         document.getElementById("modalAutorLivro").textContent =
           livro.autor || "Autor não informado";
+        configurarBotoesFavoritosLivro(livro);
 
         document.getElementById("modalStatusLivro").value = livro.status;
         avaliacaoLivroAtual = Number(livro.avaliacao || 0);
