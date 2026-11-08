@@ -1161,11 +1161,13 @@ document.addEventListener("DOMContentLoaded", function () {
     cover: livro.capa || null,
     status: livro.status,
     data: {
-      obraId: livro.obraId || null,
-      localId: livro.id,
-      paginasTotal: livro.paginasTotal || 0,
-      paginasLidas: livro.paginasLidas || 0
-    }
+  obraId: livro.obraId || null,
+  localId: livro.id,
+  paginasTotal: livro.paginasTotal || 0,
+  paginasLidas: livro.paginasLidas || 0,
+  avaliacao: livro.avaliacao || 0,
+  resenha: livro.resenha || ""
+}
   };
 
   const { error } = await cliente
