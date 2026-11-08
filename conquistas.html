@@ -491,39 +491,35 @@
   <button class="filtro ativo" data-filtro="todas">Tudo</button>
   <button class="filtro" data-filtro="original">Original</button>
   <button class="filtro" data-filtro="complemento">Complemento</button>
-</div>
 
-<div class="area-filtro-situacao">
-  <button
-    type="button"
-    class="botao-filtro-situacao"
-    id="botaoFiltroSituacao"
-    aria-label="Filtrar conquistas"
-    title="Filtrar conquistas"
-  >
-    <svg viewBox="0 0 24 24"
-         fill="none"
-         xmlns="http://www.w3.org/2000/svg">
-      <path d="M3 5H21L14 13V19L10 21V13L3 5Z"
-            stroke="currentColor"
-            stroke-width="1.6"
-            stroke-linecap="round"
-            stroke-linejoin="round"/>
-    </svg>
-  </button>
+  <div class="area-filtro-situacao">
+    <button
+      type="button"
+      class="botao-filtro-situacao"
+      id="botaoFiltroSituacao"
+      aria-label="Filtrar conquistas"
+      title="Filtrar conquistas"
+    >
+      <svg viewBox="0 0 24 24" fill="none"
+           xmlns="http://www.w3.org/2000/svg">
+        <path d="M3 5H21L14 13V19L10 21V13L3 5Z"
+              stroke="currentColor"
+              stroke-width="1.6"
+              stroke-linecap="round"
+              stroke-linejoin="round"/>
+      </svg>
+    </button>
 
-  <div class="menu-filtro-situacao" id="menuFiltroSituacao" hidden>
-    <p>Deseja filtrar suas conquistas em:</p>
-
-    <button type="button" data-situacao="todas">Todas</button>
-    <button type="button" data-situacao="desbloqueadas">Desbloqueadas</button>
-    <button type="button" data-situacao="bloqueadas">Bloqueadas</button>
+    <div class="menu-filtro-situacao" id="menuFiltroSituacao" hidden>
+      <p>Deseja filtrar suas conquistas em:</p>
+      <button type="button" data-situacao="todas">Todas</button>
+      <button type="button" data-situacao="desbloqueadas">Desbloqueadas</button>
+      <button type="button" data-situacao="bloqueadas">Bloqueadas</button>
+    </div>
   </div>
 </div>
 
-    <section class="lista-conquistas" id="listaConquistas"></section>
-
-  </main>
+<section class="lista-conquistas" id="listaConquistas"></section>
 
   
 <script>
