@@ -424,6 +424,54 @@
       line-height: 1.6;
     }
 
+    .menu-filtro-situacao {
+  width: 320px;
+  max-width: calc(100vw - 40px);
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+.titulo-menu-estatisticas {
+  color: #FFFFFF;
+  font-size: 14px;
+  margin: 0 0 12px;
+}
+
+.lista-estatisticas-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.item-estatistica {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  font-size: 12px;
+}
+
+.item-estatistica span {
+  color: #AAA7BD;
+}
+
+.item-estatistica strong {
+  color: #FFFFFF;
+  white-space: nowrap;
+}
+
+.aviso-estatisticas {
+  color: #AAA7BD;
+  font-size: 10px;
+  line-height: 1.5;
+  margin: 12px 0;
+}
+
+.separador-menu {
+  height: 1px;
+  background: #393750;
+  margin: 15px 0;
+}
     @media (max-width: 500px) {
   .cabecalho {
     padding: 15px;
@@ -578,11 +626,28 @@
     </button>
 
     <div class="menu-filtro-situacao" id="menuFiltroSituacao" hidden>
-      <p>Deseja filtrar suas conquistas em:</p>
-      <button type="button" data-situacao="todas">Todas</button>
-      <button type="button" data-situacao="desbloqueadas">Desbloqueadas</button>
-      <button type="button" data-situacao="bloqueadas">Bloqueadas</button>
-    </div>
+
+  <h3 class="titulo-menu-estatisticas">Estatísticas do jogo</h3>
+
+  <div id="listaEstatisticasJogo" class="lista-estatisticas-menu">
+    <p>Carregando estatísticas...</p>
+  </div>
+
+  <p class="aviso-estatisticas">
+    Algumas estatísticas podem não estar disponíveis na Xbox.
+  </p>
+
+  <div class="separador-menu"></div>
+
+  <h3 class="titulo-menu-estatisticas">Filtrar conquistas</h3>
+
+  <p>Deseja filtrar suas conquistas em:</p>
+
+  <button type="button" data-situacao="todas">Todas</button>
+  <button type="button" data-situacao="desbloqueadas">Desbloqueadas</button>
+  <button type="button" data-situacao="bloqueadas">Bloqueadas</button>
+
+</div>
   </div>
 </div>
 
@@ -601,7 +666,115 @@ const lista = document.getElementById("listaConquistas");
 let filtroAtual = "todas";
 let filtroSituacao = "todas";
 let conquistas = [];
-  
+
+  async function carregarEstatisticas(titleId) {
+  const area = document.getElementById("listaEstatisticasJogo");
+
+  area.textContent = "Carregando estatísticas...";
+
+  try {
+    const resposta = await fetch(
+      "/api/xbox/stats?titleId=" + encodeURIComponent(titleId)
+    );
+
+    if (!resposta.ok) {
+      throw new Error("Não foi possível consultar as estatísticas.");
+    }
+
+    const dados = await resposta.json();
+    const conteudo = dados.content || dados;
+
+    const estatisticasGerais =
+      (conteudo.statlistscollection || [])
+        .flatMap(item => item.stats || []);
+
+    const estatisticasGrupos =
+      (conteudo.groups || [])
+        .flatMap(grupo =>
+          (grupo.statlistscollection || [])
+            .flatMap(item => item.stats || [])
+        );
+
+    const estatisticas = [
+      ...estatisticasGerais,
+      ...estatisticasGrupos
+    ];
+
+    if (!estatisticas.length) {
+      area.textContent = "Nenhuma estatística disponível.";
+      return;
+    }
+
+    area.innerHTML = "";
+
+    function adicionarEstatistica(nome, valor) {
+      const linha = document.createElement("div");
+      linha.className = "item-estatistica";
+
+      const titulo = document.createElement("span");
+      titulo.textContent = nome;
+
+      const resultado = document.createElement("strong");
+      resultado.textContent = valor;
+
+      linha.append(titulo, resultado);
+      area.appendChild(linha);
+    }
+
+    const tempo = estatisticas.find(
+      item => item.name === "MinutesPlayed"
+    );
+
+    if (tempo) {
+      const minutos = Number(tempo.value);
+
+      if (Number.isFinite(minutos)) {
+        const horas = Math.floor(minutos / 60);
+        const minutosRestantes = minutos % 60;
+
+        adicionarEstatistica(
+          "Tempo de jogo",
+          `${horas}h ${minutosRestantes}min`
+        );
+      }
+    }
+
+    estatisticas
+      .filter(item => item.name !== "MinutesPlayed")
+      .forEach(item => {
+        const nome =
+          item.groupproperties?.DisplayName ||
+          item.properties?.DisplayName ||
+          item.name;
+
+        const numero = Number(item.value);
+
+        if (!Number.isFinite(numero)) return;
+
+        const formato =
+          item.groupproperties?.DisplayFormat;
+
+        const valor = formato === "Integer"
+          ? Math.round(numero).toLocaleString("pt-BR")
+          : numero.toLocaleString("pt-BR", {
+              maximumFractionDigits: 2
+            });
+
+        adicionarEstatistica(nome, valor);
+      });
+
+    const observacao = document.createElement("p");
+    observacao.className = "aviso-estatisticas";
+    observacao.textContent =
+      "A estatística de Mais Procurados retornou um valor cuja interpretação ainda precisa ser confirmada. A Xbox não forneceu, nesta consulta, dados separados sobre troféus do Charada ou distância percorrida.";
+
+    area.appendChild(observacao);
+
+  } catch (erro) {
+    console.error("Erro ao carregar estatísticas:", erro);
+    area.textContent = "Não foi possível carregar as estatísticas do jogo.";
+  }
+}
 function atualizarConquistaMitica() {
   const originais = conquistas.filter(
     c => c.category === "original"
@@ -806,6 +979,7 @@ async function carregarJogo() {
         "Este jogo não foi encontrado no histórico Xbox."
       );
     }
+    carregarEstatisticas(jogoXbox.titleId);
 
     const url =
       "/api/xbox/achievements?xuid=" +
