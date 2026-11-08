@@ -1800,7 +1800,11 @@ function renderJogos() {
 
     elemento.innerHTML = "";
 
-    if (status === "Quero jogar" || status === "Quero adquirir") {
+    if (
+  status === "Quero jogar" ||
+  status === "Quero adquirir" ||
+  status === "Concluído"
+) {
       elemento.style.cssText =
         "display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,110px));gap:14px;align-items:start;";
     } else {
@@ -1837,104 +1841,128 @@ function renderJogos() {
       return;
     }
 
-    // JOGANDO E CONCLUÍDOS: MANTÉM O CARTÃO ATUAL
-    const card = document.createElement("div");
-    card.style.cssText =
-      "display:flex;align-items:center;gap:12px;width:100%;max-width:360px;margin:0;padding:10px;background:var(--surface);border:1px solid var(--border);border-radius:12px;";
+    // JOGOS CONCLUÍDOS: SOMENTE CAPA E ESTRELAS
+if (jogo.status === "Concluído") {
+  const grupo = document.createElement("div");
+  grupo.style.cssText =
+    "width:110px;display:flex;flex-direction:column;gap:7px;";
 
-    const botaoJogo = document.createElement("button");
-    botaoJogo.type = "button";
-    botaoJogo.style.cssText =
-      "display:flex;align-items:center;gap:10px;flex:1;min-width:0;padding:0;border:none;background:transparent;color:var(--text);cursor:pointer;text-align:left;";
+  const botaoCapa = document.createElement("button");
+  botaoCapa.type = "button";
+  botaoCapa.style.cssText =
+    "width:100%;aspect-ratio:2/3;padding:0;border:1px solid var(--border);border-radius:9px;overflow:hidden;background:var(--surface2);cursor:pointer;";
 
-    const imagem = document.createElement("img");
-    imagem.src = normalizarCapaJogo(jogo.cover);
-    imagem.alt = "Capa de " + jogo.title;
-    imagem.style.cssText =
-      "display:block;width:65px;flex:0 0 65px;aspect-ratio:2/3;height:auto;object-fit:cover;border-radius:9px;";
+  const imagem = document.createElement("img");
+  imagem.src = normalizarCapaJogo(jogo.cover);
+  imagem.alt = "Ver conquistas de " + jogo.title;
+  imagem.style.cssText =
+    "display:block;width:100%;height:100%;object-fit:cover;";
 
-    const informacoes = document.createElement("div");
-    informacoes.style.cssText =
-      "display:flex;flex-direction:column;gap:5px;min-width:0;";
+  botaoCapa.appendChild(imagem);
 
-    const titulo = document.createElement("strong");
-    titulo.textContent = jogo.title;
-    titulo.style.cssText = "font-size:13px;line-height:1.4;";
-
-    informacoes.appendChild(titulo);
-
-    // ESTRELAS ABAIXO DO NOME, SOMENTE NOS CONCLUÍDOS
-    if (jogo.status === "Concluído" && jogo.avaliacao > 0) {
-      const estrelas = document.createElement("span");
-      estrelas.textContent =
-        "★".repeat(jogo.avaliacao) +
-        "☆".repeat(5 - jogo.avaliacao);
-
-      estrelas.style.cssText =
-        "font-size:15px;letter-spacing:2px;color:#B69AFF;";
-
-      informacoes.appendChild(estrelas);
-    }
-
-    botaoJogo.append(imagem, informacoes);
-    botaoJogo.addEventListener("click", () => abrirModalJogo(jogo));
-
-    card.appendChild(botaoJogo);
-
-    // PROGRESSO DE CONQUISTAS MANTIDO
-    if (jogo.status === "Jogando" || jogo.status === "Concluído") {
-      const conquistas = JSON.parse(
-        localStorage.getItem("mn_conquistas_" + jogo.id) || "[]"
-      );
-
-      const concluidas = conquistas.filter(c => c.unlocked).length;
-
-      const porcentagem = conquistas.length
-        ? Math.round((concluidas / conquistas.length) * 100)
-        : 0;
-
-      const botaoProgresso = document.createElement("button");
-      botaoProgresso.type = "button";
-      botaoProgresso.setAttribute(
-        "aria-label",
-        "Ver conquistas de " + jogo.title
-      );
-      botaoProgresso.style.cssText =
-        "flex:1;min-width:0;padding:8px 4px;border:none;background:transparent;color:var(--text);cursor:pointer;text-align:left;";
-
-      const percentual = document.createElement("strong");
-      percentual.textContent = porcentagem + "%";
-      percentual.style.cssText =
-        "display:block;font-size:22px;color:var(--purple);margin-bottom:8px;";
-
-      const barraFundo = document.createElement("div");
-      barraFundo.style.cssText =
-        "width:100%;height:7px;background:var(--surface2);border-radius:10px;overflow:hidden;";
-
-      const barraPreenchida = document.createElement("div");
-      barraPreenchida.style.cssText =
-        "width:" + porcentagem + "%;height:100%;background:var(--purple);border-radius:10px;";
-
-      barraFundo.appendChild(barraPreenchida);
-
-      const aviso = document.createElement("small");
-      aviso.textContent = "Clique para ver conquistas";
-      aviso.style.cssText =
-        "display:block;margin-top:7px;font-size:10px;color:var(--muted);";
-
-      botaoProgresso.append(percentual, barraFundo, aviso);
-
-      botaoProgresso.addEventListener("click", () => {
-        window.location.href =
-          "conquistas.html?id=" + encodeURIComponent(jogo.id);
-      });
-
-      card.appendChild(botaoProgresso);
-    }
-
-    destino.appendChild(card);
+  botaoCapa.addEventListener("click", () => {
+    window.location.href =
+      "conquistas.html?id=" + encodeURIComponent(jogo.id);
   });
+
+  grupo.appendChild(botaoCapa);
+
+  if (jogo.avaliacao > 0) {
+    const estrelas = document.createElement("div");
+    estrelas.textContent =
+      "★".repeat(jogo.avaliacao) +
+      "☆".repeat(5 - jogo.avaliacao);
+
+    estrelas.style.cssText =
+      "font-size:15px;letter-spacing:1px;color:#B69AFF;text-align:center;";
+
+    grupo.appendChild(estrelas);
+  }
+
+  destino.appendChild(grupo);
+  return;
 }
+
+// JOGANDO: MANTÉM O CARTÃO E O PROGRESSO ATUAIS
+const card = document.createElement("div");
+card.style.cssText =
+  "display:flex;align-items:center;gap:12px;width:100%;max-width:360px;margin:0;padding:10px;background:var(--surface);border:1px solid var(--border);border-radius:12px;";
+
+const botaoJogo = document.createElement("button");
+botaoJogo.type = "button";
+botaoJogo.style.cssText =
+  "display:flex;align-items:center;gap:10px;flex:1;min-width:0;padding:0;border:none;background:transparent;color:var(--text);cursor:pointer;text-align:left;";
+
+const imagem = document.createElement("img");
+imagem.src = normalizarCapaJogo(jogo.cover);
+imagem.alt = "Capa de " + jogo.title;
+imagem.style.cssText =
+  "display:block;width:65px;flex:0 0 65px;aspect-ratio:2/3;height:auto;object-fit:cover;border-radius:9px;";
+
+const informacoes = document.createElement("div");
+informacoes.style.cssText =
+  "display:flex;flex-direction:column;gap:5px;min-width:0;";
+
+const titulo = document.createElement("strong");
+titulo.textContent = jogo.title;
+titulo.style.cssText = "font-size:13px;line-height:1.4;";
+
+informacoes.appendChild(titulo);
+botaoJogo.append(imagem, informacoes);
+
+botaoJogo.addEventListener("click", () => abrirModalJogo(jogo));
+card.appendChild(botaoJogo);
+
+if (jogo.status === "Jogando") {
+  const conquistas = JSON.parse(
+    localStorage.getItem("mn_conquistas_" + jogo.id) || "[]"
+  );
+
+  const concluidas = conquistas.filter(c => c.unlocked).length;
+  const porcentagem = conquistas.length
+    ? Math.round((concluidas / conquistas.length) * 100)
+    : 0;
+
+  const botaoProgresso = document.createElement("button");
+  botaoProgresso.type = "button";
+  botaoProgresso.setAttribute(
+    "aria-label",
+    "Ver conquistas de " + jogo.title
+  );
+  botaoProgresso.style.cssText =
+    "flex:1;min-width:0;padding:8px 4px;border:none;background:transparent;color:var(--text);cursor:pointer;text-align:left;";
+
+  const percentual = document.createElement("strong");
+  percentual.textContent = porcentagem + "%";
+  percentual.style.cssText =
+    "display:block;font-size:22px;color:var(--purple);margin-bottom:8px;";
+
+  const barraFundo = document.createElement("div");
+  barraFundo.style.cssText =
+    "width:100%;height:7px;background:var(--surface2);border-radius:10px;overflow:hidden;";
+
+  const barraPreenchida = document.createElement("div");
+  barraPreenchida.style.cssText =
+    "width:" + porcentagem + "%;height:100%;background:var(--purple);border-radius:10px;";
+
+  barraFundo.appendChild(barraPreenchida);
+
+  const aviso = document.createElement("small");
+  aviso.textContent = "Clique para ver conquistas";
+  aviso.style.cssText =
+    "display:block;margin-top:7px;font-size:10px;color:var(--muted);";
+
+  botaoProgresso.append(percentual, barraFundo, aviso);
+
+  botaoProgresso.addEventListener("click", () => {
+    window.location.href =
+      "conquistas.html?id=" + encodeURIComponent(jogo.id);
+  });
+
+  card.appendChild(botaoProgresso);
+}
+
+destino.appendChild(card);
 
 document.addEventListener("DOMContentLoaded", () => {
   document.querySelectorAll("#estrelasAvaliacao button").forEach(botao => {
