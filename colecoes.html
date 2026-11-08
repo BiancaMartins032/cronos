@@ -1351,6 +1351,8 @@ document.querySelectorAll("#estrelasAvaliacaoLivro button").forEach(botao => {
             livrosAtualizados[indice].status = novoStatus;
             livrosAtualizados[indice].avaliacao =
   novoStatus === "Lido" ? avaliacaoLivroAtual : 0;
+            livrosAtualizados[indice].resenha =
+  document.getElementById("resenhaLivro").value.trim();
 
 try {
   await salvarLivroNoSupabase(livrosAtualizados[indice]);
