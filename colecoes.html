@@ -1664,7 +1664,9 @@ resumo.textContent =
 
 informacoes.append(titulo, resumo);
 
-      card.addEventListener("click", () => abrirModalJogo(jogo));
+card.append(imagem, informacoes);
+
+card.addEventListener("click", () => abrirModalJogo(jogo));
 
       resultadosJogos.appendChild(card);
     });
@@ -1782,37 +1784,7 @@ function renderJogos() {
   };
 
   const jogos = obterJogosSalvos();
-
-  // Atualiza automaticamente o status conforme as conquistas
-  jogos.forEach(jogo => {
-    if (jogo.status !== "Jogando" && jogo.status !== "Concluído") return;
-
-    let conquistas = [];
-
-    try {
-      conquistas = JSON.parse(
-        localStorage.getItem("mn_conquistas_" + jogo.id) || "[]"
-      );
-    } catch (erro) {
-      conquistas = [];
-    }
-
-    const concluidas = conquistas.filter(c => c.unlocked).length;
-
-    const porcentagem = conquistas.length
-      ? Math.round((concluidas / conquistas.length) * 100)
-      : 0;
-
-    if (porcentagem === 100) {
-      jogo.status = "Concluído";
-    } else {
-      jogo.status = "Jogando";
-    }
-  });
-
-  // Salva os status atualizados
-  salvarJogosLocais(jogos);
-
+  
   // Limpa as categorias antes de desenhar novamente
   Object.values(categorias).forEach(id => {
     const elemento = document.getElementById(id);
@@ -1853,11 +1825,6 @@ estrelas.style.cssText =
   "font-size:15px;letter-spacing:2px;color:#B69AFF;";
 
 informacoes.append(titulo);
-
-if (jogo.status === "Jogando" || jogo.status === "Concluído") {
-  informacoes.append(estrelas);
-}
-
 botaoJogo.append(imagem, informacoes);
     botaoJogo.addEventListener("click", () => abrirModalJogo(jogo));
 
@@ -1911,6 +1878,17 @@ botaoJogo.append(imagem, informacoes);
     }
 
     destino.appendChild(card);
+
+if (jogo.status === "Concluído" && jogo.avaliacao > 0) {
+  const estrelasExternas = document.createElement("div");
+  estrelasExternas.textContent = "★".repeat(jogo.avaliacao) +
+    "☆".repeat(5 - jogo.avaliacao);
+
+  estrelasExternas.style.cssText =
+    "max-width:360px;margin: -2px 0 12px 10px;font-size:16px;letter-spacing:2px;color:#B69AFF;";
+
+  destino.appendChild(estrelasExternas);
+}
   });
 }
 
