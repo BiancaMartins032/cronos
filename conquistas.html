@@ -479,6 +479,36 @@
   border: 1px solid #393750;
   border-radius: 16px;
 }
+    .botao-estatisticas {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0;
+  background: transparent;
+  border: none;
+  color: #FFFFFF;
+  font-size: 19px;
+  font-weight: bold;
+  text-align: left;
+  cursor: pointer;
+}
+
+.botao-estatisticas svg {
+  width: 22px;
+  height: 22px;
+  color: #A58BFF;
+  transition: transform 0.25s ease;
+  flex-shrink: 0;
+}
+
+#conteudoEstatisticas {
+  margin-top: 20px;
+}
+
+#conteudoEstatisticas[hidden] {
+  display: none;
+}
 
 .secao-estatisticas .titulo-secao {
   margin-top: 0;
@@ -644,16 +674,44 @@
           </section>
 
     <section class="secao-estatisticas">
-      <h2 class="titulo-secao">Estatísticas do jogo</h2>
 
-      <div id="listaEstatisticasJogo" class="lista-estatisticas-menu">
-        <p>Carregando estatísticas...</p>
-      </div>
+  <button
+    type="button"
+    class="botao-estatisticas"
+    id="botaoEstatisticas"
+    aria-expanded="false"
+  >
+    <span>Estatísticas do jogo</span>
 
-      <p class="aviso-estatisticas">
-        Algumas estatísticas podem não estar disponíveis na Xbox.
-      </p>
-    </section>
+    <svg
+      id="setaEstatisticas"
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M6 9L12 15L18 9"
+        stroke="currentColor"
+        stroke-width="1.8"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+    </svg>
+  </button>
+
+  <div id="conteudoEstatisticas" hidden>
+
+    <div id="listaEstatisticasJogo" class="lista-estatisticas-menu">
+      <p>Carregando estatísticas...</p>
+    </div>
+
+    <p class="aviso-estatisticas">
+      Algumas estatísticas podem não estar disponíveis na Xbox.
+    </p>
+
+  </div>
+
+</section>
 
     <h2 class="titulo-secao">Conquistas do jogo</h2>
 
@@ -1336,6 +1394,29 @@ document.addEventListener("click", evento => {
   ) {
     menuFiltroSituacao.hidden = true;
   }
+});
+  const botaoEstatisticas =
+  document.getElementById("botaoEstatisticas");
+
+const conteudoEstatisticas =
+  document.getElementById("conteudoEstatisticas");
+
+const setaEstatisticas =
+  document.getElementById("setaEstatisticas");
+
+botaoEstatisticas.addEventListener("click", () => {
+  const aberto = !conteudoEstatisticas.hidden;
+
+  conteudoEstatisticas.hidden = aberto;
+
+  botaoEstatisticas.setAttribute(
+    "aria-expanded",
+    String(!aberto)
+  );
+
+  setaEstatisticas.style.transform = aberto
+    ? "rotate(0deg)"
+    : "rotate(180deg)";
 });
 carregarJogo();
 
