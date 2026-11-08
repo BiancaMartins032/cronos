@@ -121,6 +121,12 @@
       flex-wrap: wrap;
       margin-bottom: 18px;
     }
+    .subtitulo-filtro {
+      color: #FFFFFF;
+      font-size: 12px;
+      font-weight: bold;
+      margin: 12px 0 8px;
+    }
 
     .filtro {
       padding: 9px 15px;
@@ -406,10 +412,20 @@
 
     <h2 class="titulo-secao">Conquistas do jogo</h2>
 
-    <div class="filtros">
+    <p class="subtitulo-filtro">Categoria</p>
+
+<div class="filtros filtros-categoria">
   <button class="filtro ativo" data-filtro="todas">Tudo</button>
   <button class="filtro" data-filtro="original">Original</button>
   <button class="filtro" data-filtro="complemento">Complemento</button>
+</div>
+
+<p class="subtitulo-filtro">Situação</p>
+
+<div class="filtros filtros-situacao">
+  <button class="filtro ativo" data-situacao="todas">Todas</button>
+  <button class="filtro" data-situacao="desbloqueadas">Desbloqueadas</button>
+  <button class="filtro" data-situacao="bloqueadas">Bloqueadas</button>
 </div>
 
     <section class="lista-conquistas" id="listaConquistas"></section>
@@ -427,6 +443,7 @@ const jogo = jogos.find(item => String(item.id) === String(jogoId));
 const lista = document.getElementById("listaConquistas");
 
 let filtroAtual = "todas";
+let filtroSituacao = "todas";
 let conquistas = [];
   
 function atualizarConquistaMitica() {
@@ -748,6 +765,13 @@ function renderizarConquistas() {
       c => c.category === "complemento"
     );
   }
+  if (filtroSituacao === "desbloqueadas") {
+  filtradas = filtradas.filter(c => c.unlocked);
+}
+
+if (filtroSituacao === "bloqueadas") {
+  filtradas = filtradas.filter(c => !c.unlocked);
+}
 
   if (!filtradas.length) {
     mostrarMensagem(
@@ -875,9 +899,9 @@ function renderizarConquistas() {
 }
 
 
-document.querySelectorAll(".filtro").forEach(botao => {
+document.querySelectorAll(".filtros-categoria .filtro").forEach(botao => {
   botao.addEventListener("click", () => {
-    document.querySelectorAll(".filtro").forEach(item => {
+    document.querySelectorAll(".filtros-categoria .filtro").forEach(item => {
       item.classList.remove("ativo");
     });
 
@@ -888,6 +912,18 @@ document.querySelectorAll(".filtro").forEach(botao => {
   });
 });
 
+document.querySelectorAll(".filtros-situacao .filtro").forEach(botao => {
+  botao.addEventListener("click", () => {
+    document.querySelectorAll(".filtros-situacao .filtro").forEach(item => {
+      item.classList.remove("ativo");
+    });
+
+    botao.classList.add("ativo");
+    filtroSituacao = botao.dataset.situacao;
+
+    renderizarConquistas();
+  });
+});
 carregarJogo();
 
 </script>
