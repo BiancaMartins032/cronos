@@ -2237,17 +2237,27 @@ document.addEventListener("DOMContentLoaded", () => {
 </div>
 
 <div id="resenhaLivroContainer">
-  <label for="resenhaLivro">Minha resenha</label>
+  <label>Minha resenha</label>
+
+  <div id="resenhaVisualizacao" class="resenha-visualizacao">
+    <p id="textoResenhaLivro"></p>
+
+    <button
+      type="button"
+      id="editarResenhaLivro"
+      aria-label="Editar resenha"
+      title="Editar resenha"
+    >
+      ✎
+    </button>
+  </div>
+
   <textarea
     id="resenhaLivro"
     maxlength="3000"
-    placeholder="O que você está achando do livro? Escreva sua opinião, impressões e momentos marcantes..."
+    placeholder="O que você está achando do livro?"
   ></textarea>
 </div>
-
-<button type="button" id="salvarLivroColecao">
-  Adicionar à minha coleção
-</button>
 
     <button
   type="button"
