@@ -1327,13 +1327,13 @@ estrelasLivro.forEach(botao => {
 function obterAutoresFavoritos() {
   return JSON.parse(
     localStorage.getItem("mn_autores_favoritos") || "[]"
-  );
+  ).sort((a, b) => a.nome.localeCompare(b.nome, "pt-BR"));
 }
 
 function obterEditorasFavoritas() {
   return JSON.parse(
     localStorage.getItem("mn_editoras_favoritas") || "[]"
-  );
+  ).sort((a, b) => a.nome.localeCompare(b.nome, "pt-BR"));
 }
 
 function salvarAutoresFavoritos(lista) {
@@ -1347,6 +1347,62 @@ function salvarEditorasFavoritas(lista) {
   localStorage.setItem(
     "mn_editoras_favoritas",
     JSON.stringify(lista)
+  );
+}
+  function renderFavoritosLiterarios() {
+  const autoresContainer = document.getElementById("autoresFavoritos");
+  const editorasContainer = document.getElementById("editorasFavoritas");
+
+  if (!autoresContainer || !editorasContainer) return;
+
+  function desenharFavoritos(container, favoritos, tipo) {
+    container.innerHTML = "";
+
+    favoritos.forEach(item => {
+      const botao = document.createElement("button");
+      botao.className = "favorito-literario";
+      botao.type = "button";
+
+      if (item.imagem) {
+        const imagem = document.createElement("img");
+        imagem.src = item.imagem;
+        imagem.alt = item.nome;
+        botao.appendChild(imagem);
+      } else {
+        const inicial = document.createElement("div");
+        inicial.className = "favorito-inicial";
+        inicial.textContent = item.nome.charAt(0).toUpperCase();
+        botao.appendChild(inicial);
+      }
+
+      const nome = document.createElement("span");
+      nome.textContent = item.nome;
+      botao.appendChild(nome);
+
+      botao.addEventListener("click", () => {
+        const parametro = new URLSearchParams({
+          tipo: tipo,
+          nome: item.nome
+        });
+
+        window.location.href =
+          "detalhes-literarios.html?" + parametro.toString();
+      });
+
+      container.appendChild(botao);
+    });
+  }
+
+  desenharFavoritos(
+    autoresContainer,
+    obterAutoresFavoritos(),
+    "autor"
+  );
+
+  desenharFavoritos(
+    editorasContainer,
+    obterEditorasFavoritas(),
+    "editora"
   );
 }
 function renderLivros() {
@@ -1525,6 +1581,7 @@ document.querySelectorAll("#estrelasAvaliacaoLivro button").forEach(botao => {
     document.getElementById("modalLivro").classList.remove("active");
 
     renderLivros();
+    renderFavoritosLiterarios();
 
   } catch (erro) {
     console.error("Erro ao excluir livro:", erro);
@@ -1895,6 +1952,7 @@ const novoLivro = {
   obraId: livro.obraId,
   titulo: livro.titulo,
   autor: livro.autor,
+  editora: livro.editora || "",
   capa: livro.capa,
   paginasTotal: status === "Lendo" ? total : livro.paginasTotal,
   paginasLidas: status === "Lendo" ? lidas : 0,
@@ -2612,6 +2670,7 @@ async function sincronizarColecaoLivrosInicial() {
         data: {
         obraId: livro.obraId || null,
         localId: livro.id,
+          editora: livro.editora || "",
         paginasTotal: livro.paginasTotal || 0,
         paginasLidas: livro.paginasLidas || 0,
         avaliacao: livro.avaliacao || 0
@@ -2645,6 +2704,7 @@ async function sincronizarColecaoLivrosInicial() {
       obraId: registro.data?.obraId || registro.item_id,
       titulo: registro.title,
       autor: registro.author || "",
+      editora: registro.data?.editora || "",
       capa: registro.cover || "",
       status: registro.status,
       paginasTotal: registro.data?.paginasTotal || 0,
