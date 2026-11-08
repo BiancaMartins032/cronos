@@ -288,10 +288,10 @@
     <h2 class="titulo-secao">Conquistas do jogo</h2>
 
     <div class="filtros">
-      <button class="filtro ativo" data-filtro="todas">Todas</button>
-      <button class="filtro" data-filtro="concluidas">Concluídas</button>
-      <button class="filtro" data-filtro="pendentes">Pendentes</button>
-    </div>
+  <button class="filtro ativo" data-filtro="todas">Tudo</button>
+  <button class="filtro" data-filtro="original">Original</button>
+  <button class="filtro" data-filtro="complemento">Complemento</button>
+</div>
 
     <section class="lista-conquistas" id="listaConquistas"></section>
 
@@ -299,288 +299,360 @@
 
   
 <script>
-  const parametros = new URLSearchParams(window.location.search);
-  const jogoId = parametros.get("id");
+  
+const parametros = new URLSearchParams(window.location.search);
+const jogoId = parametros.get("id");
 
-  const jogos = JSON.parse(
-    localStorage.getItem("mn_jogos") || "[]"
-  );
+const jogos = JSON.parse(localStorage.getItem("mn_jogos") || "[]");
+const jogo = jogos.find(item => String(item.id) === String(jogoId));
+const lista = document.getElementById("listaConquistas");
 
-  const jogo = jogos.find(
-    item => String(item.id) === String(jogoId)
-  );
+let filtroAtual = "todas";
+let conquistas = [];
 
-  const lista = document.getElementById("listaConquistas");
+// DLCs identificadas no Xbox.
+const nomesComplementos = [
+  "Planos de Sucessão",
+  "Justiça Dura",
+  "Evolução",
+  "Arriscando a Pele",
+  "O Monstro Oculto",
+  "A Ressurreição e a Vida",
+  "Exposto ao Frio",
+  "Arquivo Morto",
+  "Maluca com a Prisão",
+  "Contra o Capuz Vermelho"
+];
 
-  let filtroAtual = "todas";
-  let conquistas = [];
+function normalizarNome(nome) {
+  return String(nome || "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, "");
+}
 
-  // Normaliza nomes para facilitar a comparação entre catálogos.
-  function normalizarNome(nome) {
-    return String(nome || "")
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "")
-      .toLowerCase()
-      .replace(/[^a-z0-9]/g, "");
+function classificarConquista(nome) {
+  const nomeNormalizado = normalizarNome(nome);
+
+  if (nomesComplementos.some(dlc =>
+    normalizarNome(dlc) === nomeNormalizado
+  )) {
+    return "complemento";
   }
 
-  function mostrarMensagem(texto) {
-    lista.innerHTML = "";
+  return "nao-identificada";
+}
 
-    const mensagem = document.createElement("div");
-    mensagem.className = "mensagem";
-    mensagem.textContent = texto;
+function mostrarMensagem(texto) {
+  lista.innerHTML = "";
 
-    lista.appendChild(mensagem);
-  }
+  const mensagem = document.createElement("div");
+  mensagem.className = "mensagem";
+  mensagem.textContent = texto;
 
-  async function carregarJogo() {
-    if (!jogo) {
-      document.getElementById("tituloJogo").textContent =
-        "Jogo não encontrado";
+  lista.appendChild(mensagem);
+}
 
-      mostrarMensagem(
-        "Não foi possível localizar este jogo na sua coleção."
-      );
-      return;
-    }
+function formatarData(data) {
+  if (!data || data.startsWith("0001-")) return "";
 
+  const dataValida = new Date(data);
+
+  if (Number.isNaN(dataValida.getTime())) return "";
+
+  return dataValida.toLocaleDateString("pt-BR", {
+    timeZone: "UTC"
+  });
+}
+
+async function carregarJogo() {
+  if (!jogo) {
     document.getElementById("tituloJogo").textContent =
-      jogo.title;
+      "Jogo não encontrado";
 
-    document.getElementById("capaJogo").src =
-      jogo.cover || "";
-
-    mostrarMensagem("Conectando ao Xbox e carregando conquistas...");
-
-    const chaveCache = "mn_conquistas_" + jogo.id;
-
-    try {
-      // 1. Busca o histórico de jogos Xbox.
-      const respostaJogos = await fetch("/api/xbox/games");
-
-      if (!respostaJogos.ok) {
-        throw new Error("Não foi possível consultar o histórico Xbox.");
-      }
-
-      const dadosJogos = await respostaJogos.json();
-
-      const titulos = dadosJogos.content?.titles ||
-        dadosJogos.titles ||
-        [];
-
-      if (!titulos.length) {
-        throw new Error("O histórico Xbox não retornou jogos.");
-      }
-
-      // 2. Localiza o jogo da coleção no histórico Xbox.
-      const nomeProcurado = normalizarNome(jogo.title);
-
-      let jogoXbox = titulos.find(titulo =>
-        normalizarNome(titulo.name) === nomeProcurado
-      );
-
-      // Tenta uma comparação parcial quando o nome varia.
-      if (!jogoXbox) {
-        jogoXbox = titulos.find(titulo => {
-          const nomeXbox = normalizarNome(titulo.name);
-
-          return nomeXbox.length >= 5 &&
-            nomeProcurado.length >= 5 &&
-            (
-              nomeXbox.includes(nomeProcurado) ||
-              nomeProcurado.includes(nomeXbox)
-            );
-        });
-      }
-
-      if (!jogoXbox || !jogoXbox.titleId) {
-        throw new Error(
-          "Este jogo não foi encontrado no histórico da sua conta Xbox."
-        );
-      }
-
-      // 3. Busca as conquistas usando o titleId encontrado.
-      const url =
-        "/api/xbox/achievements?xuid=" +
-        encodeURIComponent(dadosJogos.content?.xuid || "") +
-        "&titleId=" +
-        encodeURIComponent(jogoXbox.titleId);
-
-      const respostaConquistas = await fetch(url);
-
-      if (!respostaConquistas.ok) {
-        throw new Error("O Xbox não conseguiu fornecer as conquistas.");
-      }
-
-      const dadosConquistas = await respostaConquistas.json();
-
-      const listaXbox = dadosConquistas.content?.achievements ||
-        dadosConquistas.achievements ||
-        [];
-
-      if (!Array.isArray(listaXbox)) {
-        throw new Error("O formato das conquistas retornadas é inválido.");
-      }
-
-      // 4. Converte os dados para o formato da página.
-      conquistas = listaXbox.map(item => {
-        const recompensa = (item.rewards || []).find(
-          recompensa => recompensa.type === "Gamerscore"
-        );
-
-        const imagem = (item.mediaAssets || []).find(
-          asset => asset.type === "Icon"
-        );
-
-        return {
-          id: item.id,
-          name: item.name || "Conquista",
-          description:
-            item.description ||
-            item.lockedDescription ||
-            "Descrição não disponível.",
-          gamerscore: Number(recompensa?.value || 0),
-          icon: imagem?.url || "",
-          unlocked:
-            String(item.progressState).toLowerCase() === "achieved",
-          timeUnlocked: item.progression?.timeUnlocked || null
-        };
-      });
-
-      // 5. Guarda os dados atualizados no aparelho.
-      localStorage.setItem(
-        chaveCache,
-        JSON.stringify(conquistas)
-      );
-
-      atualizarConquistas();
-
-    } catch (error) {
-      console.error("Erro na sincronização Xbox:", error);
-
-      // Se a conexão falhar, tenta mostrar a última sincronização.
-      const cache = JSON.parse(
-        localStorage.getItem(chaveCache) || "[]"
-      );
-
-      if (cache.length) {
-        conquistas = cache;
-        atualizarConquistas();
-
-        console.warn(
-          "Exibindo conquistas salvas anteriormente."
-        );
-      } else {
-        mostrarMensagem(error.message);
-      }
-    }
+    mostrarMensagem(
+      "Não foi possível localizar este jogo na sua coleção."
+    );
+    return;
   }
 
-  function atualizarConquistas() {
-    const concluidas = conquistas.filter(
-      conquista => conquista.unlocked
-    ).length;
+  document.getElementById("tituloJogo").textContent = jogo.title;
+  document.getElementById("capaJogo").src = jogo.cover || "";
 
-    const total = conquistas.length;
+  mostrarMensagem("Conectando ao Xbox e carregando conquistas...");
 
-    const porcentagem = total > 0
-      ? Math.round((concluidas / total) * 100)
-      : 0;
+  const chaveCache = "mn_conquistas_" + jogo.id;
 
-    document.getElementById("totalConcluidas").textContent =
-      concluidas;
+  try {
+    const respostaJogos = await fetch("/api/xbox/games");
 
-    document.getElementById("totalConquistas").textContent =
-      total;
+    if (!respostaJogos.ok) {
+      throw new Error("Não foi possível consultar o histórico Xbox.");
+    }
 
-    document.getElementById("porcentagem").textContent =
-      porcentagem + "%";
+    const dadosJogos = await respostaJogos.json();
 
-    document.getElementById("barraProgresso").style.width =
-      porcentagem + "%";
+    const titulos = dadosJogos.content?.titles ||
+      dadosJogos.titles || [];
+
+    if (!titulos.length) {
+      throw new Error("O histórico Xbox não retornou jogos.");
+    }
+
+    const nomeProcurado = normalizarNome(jogo.title);
+
+    let jogoXbox = titulos.find(titulo =>
+      normalizarNome(titulo.name) === nomeProcurado
+    );
+
+    if (!jogoXbox) {
+      jogoXbox = titulos.find(titulo => {
+        const nomeXbox = normalizarNome(titulo.name);
+
+        return nomeXbox.length >= 5 &&
+          nomeProcurado.length >= 5 &&
+          (
+            nomeXbox.includes(nomeProcurado) ||
+            nomeProcurado.includes(nomeXbox)
+          );
+      });
+    }
+
+    if (!jogoXbox || !jogoXbox.titleId) {
+      throw new Error(
+        "Este jogo não foi encontrado no histórico Xbox."
+      );
+    }
+
+    const url =
+      "/api/xbox/achievements?xuid=" +
+      encodeURIComponent(dadosJogos.content?.xuid || "") +
+      "&titleId=" +
+      encodeURIComponent(jogoXbox.titleId);
+
+    const respostaConquistas = await fetch(url);
+
+    if (!respostaConquistas.ok) {
+      throw new Error("O Xbox não conseguiu fornecer as conquistas.");
+    }
+
+    const dadosConquistas = await respostaConquistas.json();
+
+    const listaXbox = dadosConquistas.content?.achievements ||
+      dadosConquistas.achievements || [];
+
+    if (!Array.isArray(listaXbox)) {
+      throw new Error("O formato das conquistas é inválido.");
+    }
+
+    conquistas = listaXbox.map(item => {
+      const recompensa = (item.rewards || []).find(
+        r => r.type === "Gamerscore"
+      );
+
+      const imagem = (item.mediaAssets || []).find(
+        asset => asset.type === "Icon"
+      );
+
+      return {
+        id: item.id,
+        name: item.name || "Conquista",
+        description:
+          item.description ||
+          item.lockedDescription ||
+          "Descrição não disponível.",
+        gamerscore: Number(recompensa?.value || 0),
+        icon: imagem?.url || "",
+        unlocked:
+          String(item.progressState).toLowerCase() === "achieved",
+        timeUnlocked: item.progression?.timeUnlocked || null,
+        rarity: item.rarity?.currentCategory || "Common",
+        rarityPercentage:
+          Number(item.rarity?.currentPercentage || 0),
+        category: classificarConquista(item.name)
+      };
+    });
+
+    localStorage.setItem(
+      chaveCache,
+      JSON.stringify(conquistas)
+    );
+
+    atualizarConquistas();
+
+  } catch (error) {
+    console.error("Erro na sincronização Xbox:", error);
+
+    const cache = JSON.parse(
+      localStorage.getItem(chaveCache) || "[]"
+    );
+
+    if (cache.length) {
+      conquistas = cache;
+      atualizarConquistas();
+      console.warn("Exibindo conquistas salvas anteriormente.");
+    } else {
+      mostrarMensagem(error.message);
+    }
+  }
+}
+
+function atualizarConquistas() {
+  const concluidas = conquistas.filter(c => c.unlocked).length;
+  const total = conquistas.length;
+
+  const porcentagem = total > 0
+    ? Math.round((concluidas / total) * 100)
+    : 0;
+
+  document.getElementById("totalConcluidas").textContent =
+    concluidas;
+
+  document.getElementById("totalConquistas").textContent =
+    total;
+
+  document.getElementById("porcentagem").textContent =
+    porcentagem + "%";
+
+  document.getElementById("barraProgresso").style.width =
+    porcentagem + "%";
+
+  renderizarConquistas();
+}
+
+function renderizarConquistas() {
+  lista.innerHTML = "";
+
+  let filtradas = conquistas;
+
+  if (filtroAtual === "original") {
+    filtradas = conquistas.filter(
+      c => c.category === "original"
+    );
+  }
+
+  if (filtroAtual === "complemento") {
+    filtradas = conquistas.filter(
+      c => c.category === "complemento"
+    );
+  }
+
+  if (!filtradas.length) {
+    mostrarMensagem(
+      "Não há conquistas identificadas nesta categoria."
+    );
+    return;
+  }
+
+  filtradas.forEach(conquista => {
+    const card = document.createElement("article");
+    card.className = "conquista";
+
+    const icone = document.createElement("div");
+    icone.className = "icone-conquista";
+
+    if (conquista.icon) {
+      const imagem = document.createElement("img");
+      imagem.src = conquista.icon;
+      imagem.alt = "";
+      icone.appendChild(imagem);
+    } else {
+      icone.textContent = "MN";
+    }
+
+    const detalhes = document.createElement("div");
+    detalhes.className = "detalhes";
+
+    const nome = document.createElement("strong");
+    nome.textContent = conquista.name;
+
+    const descricao = document.createElement("p");
+    descricao.textContent = conquista.description;
+
+    const pontos = document.createElement("p");
+    pontos.className = "pontuacao";
+    pontos.innerHTML =
+      '<span class="simbolo-g">G</span> ' +
+      conquista.gamerscore;
+
+    const raridade = document.createElement("p");
+    raridade.className = "raridade";
+
+    const categoriaRaridade =
+      conquista.rarity === "Rare" ? "Rara" :
+      conquista.rarity === "Common" ? "Comum" :
+      conquista.rarity;
+
+    raridade.textContent =
+      categoriaRaridade + " · " +
+      conquista.rarityPercentage.toLocaleString("pt-BR") +
+      "% dos jogadores";
+
+    const progresso = document.createElement("div");
+    progresso.className = "progresso-conquista";
+
+    const barra = document.createElement("div");
+    barra.className = "barra-conquista";
+
+    barra.style.width = conquista.unlocked ? "100%" : "0%";
+
+    progresso.appendChild(barra);
+
+    const status = document.createElement("span");
+    status.className = "status " +
+      (conquista.unlocked ? "concluida" : "pendente");
+
+    status.textContent = conquista.unlocked
+      ? "Desbloqueada"
+      : "Bloqueada";
+
+    const data = document.createElement("p");
+    data.className = "data-desbloqueio";
+
+    data.textContent = conquista.unlocked
+      ? "Desbloqueada em " + formatarData(conquista.timeUnlocked)
+      : "Ainda não desbloqueada";
+
+    const categoria = document.createElement("p");
+    categoria.className = "categoria-conquista";
+
+    categoria.textContent =
+      conquista.category === "complemento"
+        ? "Complemento"
+        : "Categoria ainda não identificada";
+
+    detalhes.append(
+      nome,
+      descricao,
+      pontos,
+      raridade,
+      progresso,
+      status,
+      data,
+      categoria
+    );
+
+    card.append(icone, detalhes);
+    lista.appendChild(card);
+  });
+}
+
+document.querySelectorAll(".filtro").forEach(botao => {
+  botao.addEventListener("click", () => {
+    document.querySelectorAll(".filtro").forEach(item => {
+      item.classList.remove("ativo");
+    });
+
+    botao.classList.add("ativo");
+    filtroAtual = botao.dataset.filtro;
 
     renderizarConquistas();
-  }
-
-  function renderizarConquistas() {
-    lista.innerHTML = "";
-
-    const filtradas = conquistas.filter(conquista => {
-      if (filtroAtual === "concluidas") return conquista.unlocked;
-      if (filtroAtual === "pendentes") return !conquista.unlocked;
-      return true;
-    });
-
-    if (!conquistas.length) {
-      mostrarMensagem(
-        "Nenhuma conquista foi retornada para este jogo."
-      );
-      return;
-    }
-
-    if (!filtradas.length) {
-      mostrarMensagem("Nenhuma conquista nesta categoria.");
-      return;
-    }
-
-    filtradas.forEach(conquista => {
-      const card = document.createElement("article");
-      card.className = "conquista";
-
-      const icone = document.createElement("div");
-      icone.className = "icone-conquista";
-
-      if (conquista.icon) {
-        const imagem = document.createElement("img");
-        imagem.src = conquista.icon;
-        imagem.alt = "";
-        icone.appendChild(imagem);
-      } else {
-        icone.textContent = "MN";
-      }
-
-      const detalhes = document.createElement("div");
-      detalhes.className = "detalhes";
-
-      const nome = document.createElement("strong");
-      nome.textContent = conquista.name;
-
-      const descricao = document.createElement("p");
-      descricao.textContent = conquista.description;
-
-      const pontos = document.createElement("p");
-      pontos.textContent = conquista.gamerscore + " pontos";
-
-      detalhes.append(nome, descricao, pontos);
-
-      const status = document.createElement("span");
-      status.className = "status " +
-        (conquista.unlocked ? "concluida" : "pendente");
-
-      status.textContent = conquista.unlocked
-        ? "Concluída"
-        : "Pendente";
-
-      card.append(icone, detalhes, status);
-      lista.appendChild(card);
-    });
-  }
-
-  document.querySelectorAll(".filtro").forEach(botao => {
-    botao.addEventListener("click", () => {
-      document.querySelectorAll(".filtro").forEach(item => {
-        item.classList.remove("ativo");
-      });
-
-      botao.classList.add("ativo");
-      filtroAtual = botao.dataset.filtro;
-
-      renderizarConquistas();
-    });
   });
+});
 
-  carregarJogo();
+carregarJogo();
+
 </script>
 
 </body>
