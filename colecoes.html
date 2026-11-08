@@ -944,15 +944,8 @@ main {
     </svg>
 
     <section class="favoritos-literarios">
-  <div class="favoritos-grupo">
-    <h3>Autores favoritos</h3>
-    <div id="autoresFavoritos" class="favoritos-lista"></div>
-  </div>
-
-  <div class="favoritos-grupo">
-    <h3>Editoras favoritas</h3>
-    <div id="editorasFavoritas" class="favoritos-lista"></div>
-  </div>
+  <h3>Meus favoritos</h3>
+  <div id="favoritosLiterarios" class="favoritos-lista"></div>
 </section>
     <input
       type="search"
@@ -1350,48 +1343,60 @@ function salvarEditorasFavoritas(lista) {
   );
 }
   function renderFavoritosLiterarios() {
-  const autoresContainer = document.getElementById("autoresFavoritos");
-  const editorasContainer = document.getElementById("editorasFavoritas");
+  const container = document.getElementById("favoritosLiterarios");
 
-  if (!autoresContainer || !editorasContainer) return;
+  if (!container) return;
 
-  function desenharFavoritos(container, favoritos, tipo) {
-    container.innerHTML = "";
+  container.innerHTML = "";
 
-    favoritos.forEach(item => {
-      const botao = document.createElement("button");
-      botao.className = "favorito-literario";
-      botao.type = "button";
+  const autores = obterAutoresFavoritos().map(item => ({
+    ...item,
+    tipo: "autor"
+  }));
 
-      if (item.imagem) {
-        const imagem = document.createElement("img");
-        imagem.src = item.imagem;
-        imagem.alt = item.nome;
-        botao.appendChild(imagem);
-      } else {
-        const inicial = document.createElement("div");
-        inicial.className = "favorito-inicial";
-        inicial.textContent = item.nome.charAt(0).toUpperCase();
-        botao.appendChild(inicial);
-      }
+  const editoras = obterEditorasFavoritas().map(item => ({
+    ...item,
+    tipo: "editora"
+  }));
 
-      const nome = document.createElement("span");
-      nome.textContent = item.nome;
-      botao.appendChild(nome);
+  const favoritos = [...autores, ...editoras].sort(
+    (a, b) => a.nome.localeCompare(b.nome, "pt-BR")
+  );
 
-      botao.addEventListener("click", () => {
-        const parametro = new URLSearchParams({
-          tipo: tipo,
-          nome: item.nome
-        });
+  favoritos.forEach(item => {
+    const botao = document.createElement("button");
+    botao.className = "favorito-literario";
+    botao.type = "button";
 
-        window.location.href =
-          "detalhes-literarios.html?" + parametro.toString();
+    if (item.imagem) {
+      const imagem = document.createElement("img");
+      imagem.src = item.imagem;
+      imagem.alt = item.nome;
+      botao.appendChild(imagem);
+    } else {
+      const inicial = document.createElement("div");
+      inicial.className = "favorito-inicial";
+      inicial.textContent = item.nome.charAt(0).toUpperCase();
+      botao.appendChild(inicial);
+    }
+
+    const nome = document.createElement("span");
+    nome.textContent = item.nome;
+    botao.appendChild(nome);
+
+    botao.addEventListener("click", () => {
+      const parametro = new URLSearchParams({
+        tipo: item.tipo,
+        nome: item.nome
       });
 
-      container.appendChild(botao);
+      window.location.href =
+        "detalhes-literarios.html?" + parametro.toString();
     });
-  }
+
+    container.appendChild(botao);
+  });
+}
 
   desenharFavoritos(
     autoresContainer,
