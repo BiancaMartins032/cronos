@@ -1775,6 +1775,7 @@ function salvarJogosLocais(jogos) {
 }
 
 
+
 function renderJogos() {
   const categorias = {
     "Jogando": "jogos-jogando",
@@ -1784,20 +1785,54 @@ function renderJogos() {
   };
 
   const jogos = obterJogosSalvos();
-  
-  // Limpa as categorias antes de desenhar novamente
-  Object.values(categorias).forEach(id => {
+
+  Object.entries(categorias).forEach(([status, id]) => {
     const elemento = document.getElementById(id);
-    if (elemento) elemento.innerHTML = "";
+    if (!elemento) return;
+
+    elemento.innerHTML = "";
+
+    if (status === "Quero jogar" || status === "Quero adquirir") {
+      elemento.style.cssText =
+        "display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,110px));gap:14px;align-items:start;";
+    } else {
+      elemento.style.cssText =
+        "display:flex;flex-direction:column;align-items:stretch;gap:12px;";
+    }
   });
 
   jogos.forEach(jogo => {
     const destino = document.getElementById(categorias[jogo.status]);
     if (!destino) return;
 
+    // QUERO JOGAR E QUERO ADQUIRIR: SOMENTE CAPAS
+    if (
+      jogo.status === "Quero jogar" ||
+      jogo.status === "Quero adquirir"
+    ) {
+      const botaoCapa = document.createElement("button");
+      botaoCapa.type = "button";
+      botaoCapa.style.cssText =
+        "width:100%;max-width:110px;aspect-ratio:2/3;padding:0;border:1px solid var(--border);border-radius:9px;overflow:hidden;background:var(--surface2);cursor:pointer;";
+
+      const imagem = document.createElement("img");
+      imagem.src = normalizarCapaJogo(jogo.cover);
+      imagem.alt = "Capa de " + jogo.title;
+      imagem.loading = "lazy";
+      imagem.style.cssText =
+        "display:block;width:100%;height:100%;object-fit:cover;";
+
+      botaoCapa.appendChild(imagem);
+      botaoCapa.addEventListener("click", () => abrirModalJogo(jogo));
+
+      destino.appendChild(botaoCapa);
+      return;
+    }
+
+    // JOGANDO E CONCLUÍDOS: MANTÉM O CARTÃO ATUAL
     const card = document.createElement("div");
     card.style.cssText =
-      "display:flex;align-items:center;gap:12px;width:100%;max-width:360px;margin:8px 0;padding:10px;background:var(--surface);border:1px solid var(--border);border-radius:12px;";
+      "display:flex;align-items:center;gap:12px;width:100%;max-width:360px;margin:0;padding:10px;background:var(--surface);border:1px solid var(--border);border-radius:12px;";
 
     const botaoJogo = document.createElement("button");
     botaoJogo.type = "button";
@@ -1806,31 +1841,39 @@ function renderJogos() {
 
     const imagem = document.createElement("img");
     imagem.src = normalizarCapaJogo(jogo.cover);
-    imagem.alt = "";
+    imagem.alt = "Capa de " + jogo.title;
     imagem.style.cssText =
       "display:block;width:65px;flex:0 0 65px;aspect-ratio:2/3;height:auto;object-fit:cover;border-radius:9px;";
 
     const informacoes = document.createElement("div");
-informacoes.style.cssText =
-  "display:flex;flex-direction:column;gap:5px;min-width:0;";
+    informacoes.style.cssText =
+      "display:flex;flex-direction:column;gap:5px;min-width:0;";
 
-const titulo = document.createElement("strong");
-titulo.textContent = jogo.title;
-titulo.style.cssText = "font-size:13px;line-height:1.4;";
+    const titulo = document.createElement("strong");
+    titulo.textContent = jogo.title;
+    titulo.style.cssText = "font-size:13px;line-height:1.4;";
 
-const estrelas = document.createElement("span");
-estrelas.textContent = "★".repeat(jogo.avaliacao || 0) +
-  "☆".repeat(5 - (jogo.avaliacao || 0));
-estrelas.style.cssText =
-  "font-size:15px;letter-spacing:2px;color:#B69AFF;";
+    informacoes.appendChild(titulo);
 
-informacoes.append(titulo);
-botaoJogo.append(imagem, informacoes);
+    // ESTRELAS ABAIXO DO NOME, SOMENTE NOS CONCLUÍDOS
+    if (jogo.status === "Concluído" && jogo.avaliacao > 0) {
+      const estrelas = document.createElement("span");
+      estrelas.textContent =
+        "★".repeat(jogo.avaliacao) +
+        "☆".repeat(5 - jogo.avaliacao);
+
+      estrelas.style.cssText =
+        "font-size:15px;letter-spacing:2px;color:#B69AFF;";
+
+      informacoes.appendChild(estrelas);
+    }
+
+    botaoJogo.append(imagem, informacoes);
     botaoJogo.addEventListener("click", () => abrirModalJogo(jogo));
 
     card.appendChild(botaoJogo);
 
-    // Barra somente para jogos em andamento ou concluídos
+    // PROGRESSO DE CONQUISTAS MANTIDO
     if (jogo.status === "Jogando" || jogo.status === "Concluído") {
       const conquistas = JSON.parse(
         localStorage.getItem("mn_conquistas_" + jogo.id) || "[]"
@@ -1844,7 +1887,10 @@ botaoJogo.append(imagem, informacoes);
 
       const botaoProgresso = document.createElement("button");
       botaoProgresso.type = "button";
-      botaoProgresso.setAttribute("aria-label", "Ver conquistas de " + jogo.title);
+      botaoProgresso.setAttribute(
+        "aria-label",
+        "Ver conquistas de " + jogo.title
+      );
       botaoProgresso.style.cssText =
         "flex:1;min-width:0;padding:8px 4px;border:none;background:transparent;color:var(--text);cursor:pointer;text-align:left;";
 
@@ -1862,10 +1908,11 @@ botaoJogo.append(imagem, informacoes);
         "width:" + porcentagem + "%;height:100%;background:var(--purple);border-radius:10px;";
 
       barraFundo.appendChild(barraPreenchida);
+
       const aviso = document.createElement("small");
       aviso.textContent = "Clique para ver conquistas";
       aviso.style.cssText =
-      "display:block;margin-top:7px;font-size:10px;color:var(--muted);";
+        "display:block;margin-top:7px;font-size:10px;color:var(--muted);";
 
       botaoProgresso.append(percentual, barraFundo, aviso);
 
@@ -1878,17 +1925,6 @@ botaoJogo.append(imagem, informacoes);
     }
 
     destino.appendChild(card);
-
-if (jogo.status === "Concluído" && jogo.avaliacao > 0) {
-  const estrelasExternas = document.createElement("div");
-  estrelasExternas.textContent = "★".repeat(jogo.avaliacao) +
-    "☆".repeat(5 - jogo.avaliacao);
-
-  estrelasExternas.style.cssText =
-    "max-width:360px;margin: -2px 0 12px 10px;font-size:16px;letter-spacing:2px;color:#B69AFF;";
-
-  destino.appendChild(estrelasExternas);
-}
   });
 }
 
