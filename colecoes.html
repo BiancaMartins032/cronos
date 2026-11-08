@@ -1553,6 +1553,13 @@ if (item.imagem) {
   imagem.alt = item.nome;
   imagem.style.cursor = "pointer";
   imagem.style.touchAction = "pan-y";
+  imagem.style.userSelect = "none";
+  imagem.style.webkitUserSelect = "none";
+  imagem.draggable = false;
+
+imagem.addEventListener("contextmenu", evento => {
+  evento.preventDefault();
+});
 
   imagem.addEventListener("pointerdown", () => {
     if (item.tipo !== "autor") return;
