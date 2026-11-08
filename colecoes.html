@@ -1920,10 +1920,6 @@ if (campoBuscaLivro) {
   document.getElementById("buscarLivro").value = "";
   resultadosLivros.innerHTML = "";
 };
-          botao.textContent = obterAutoresFavoritos().some(
-            item => item.nome.toLowerCase() === autor.name.toLowerCase()
-          ) ? "★ Autor favorito" : "☆ Favoritar autor";
-        };
 
         informacoes.append(nome, tipo, botao);
         card.append(imagem, informacoes);
