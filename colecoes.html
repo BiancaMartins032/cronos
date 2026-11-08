@@ -94,11 +94,15 @@ main {
   display: block;
 }
   /* Modo de pesquisa */
-.collection-page.modo-busca:not(#livros) {
+#livros.modo-busca > .section:not(:first-child) {
   display: none !important;
 }
 
 #livros.modo-busca .favoritos-literarios {
+  display: none !important;
+}
+
+.collection-page.modo-busca:not(#livros) {
   display: none !important;
 }
 
