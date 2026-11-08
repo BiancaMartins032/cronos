@@ -851,8 +851,8 @@ main {
   .favoritos-literarios {
   display: flex;
   flex-direction: column;
-  gap: 20px;
-  margin: 20px 0;
+  gap: 8px;
+  margin: 12px 0;
 }
 
 .favoritos-grupo h3 {
@@ -1898,6 +1898,11 @@ if (campoBuscaLivro) {
 
         imagem.alt = autor.name;
         imagem.onerror = () => imagem.style.display = "none";
+        imagem.onload = () => {
+       if (imagem.naturalWidth <= 1) {
+       imagem.style.display = "none";
+  }
+};
 
         const informacoes = document.createElement("div");
         informacoes.className = "book-result-info";
