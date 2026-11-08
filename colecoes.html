@@ -2385,7 +2385,8 @@ async function sincronizarColecaoLivrosInicial() {
       status: registro.status,
       paginasTotal: registro.data?.paginasTotal || 0,
       paginasLidas: registro.data?.paginasLidas || 0,
-      avaliacao: registro.data?.avaliacao || 0
+      avaliacao: registro.data?.avaliacao || 0,
+      resenha: registro.data?.resenha || ""
     }));
 
     localStorage.setItem(
