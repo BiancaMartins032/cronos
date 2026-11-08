@@ -380,15 +380,26 @@ main {
 }
 
 #modalJogo #excluirJogoColecao {
-  width: 100%;
-  padding: 12px;
-  margin-top: 10px;
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  background: var(--surface2);
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  width: 40px;
+  height: 40px;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
   color: var(--muted);
-  font: inherit;
   cursor: pointer;
+  z-index: 10;
+}
+
+#modalJogo #excluirJogoColecao:hover {
+  background: var(--surface2);
+  color: #e05b63;
 }
   #livros-lendo,
 #livros-lidos,
@@ -1687,13 +1698,19 @@ informacoes.append(titulo, resumo);
 let avaliacaoJogoAtual = 0;
 
 function abrirModalJogo(jogo) {
-  jogoSelecionado = jogo;
+  const jogosSalvos = obterJogosSalvos();
 
-  const dados = jogo.data || jogo;
+  const jogoNaColecao = jogosSalvos.find(
+    item => String(item.id) === String(jogo.id)
+  );
+
+  jogoSelecionado = jogoNaColecao || jogo;
+
+  const dados = jogoSelecionado.data || jogoSelecionado;
 
   const capa = normalizarCapaJogo(
-    jogo.cover?.url ||
-    jogo.cover ||
+    jogoSelecionado.cover?.url ||
+    jogoSelecionado.cover ||
     dados.cover?.url ||
     dados.cover
   );
@@ -1701,7 +1718,7 @@ function abrirModalJogo(jogo) {
   document.getElementById("modalCapaJogo").src = capa;
 
   document.getElementById("modalTituloJogo").textContent =
-    jogo.title || dados.name || dados.title || "Jogo sem título";
+    jogoSelecionado.title || dados.name || dados.title || "Jogo sem título";
 
   const ano = dados.first_release_date
     ? new Date(dados.first_release_date * 1000).getFullYear()
@@ -1714,7 +1731,7 @@ function abrirModalJogo(jogo) {
   document.getElementById("modalInfoJogo").textContent =
     `${ano}${plataformas ? " • " + plataformas : ""}`;
 
-  avaliacaoJogoAtual = Number(jogo.avaliacao || 0);
+  avaliacaoJogoAtual = Number(jogoSelecionado.avaliacao || 0);
 
   document.querySelectorAll("#estrelasAvaliacao button").forEach(botao => {
     const nota = Number(botao.dataset.nota);
@@ -1722,7 +1739,13 @@ function abrirModalJogo(jogo) {
   });
 
   document.getElementById("modalStatusJogo").value =
-    jogo.status || "Quero jogar";
+    jogoSelecionado.status || "Quero jogar";
+
+  const botaoExcluir = document.getElementById("excluirJogoColecao");
+  botaoExcluir.style.display = jogoNaColecao ? "flex" : "none";
+
+  document.getElementById("salvarJogoColecao").textContent =
+    jogoNaColecao ? "Salvar alterações" : "Adicionar à minha coleção";
 
   modalJogo.style.display = "flex";
 }
@@ -1958,18 +1981,22 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (botaoExcluirJogo) {
     botaoExcluirJogo.addEventListener("click", () => {
-      if (!jogoSelecionado) return;
+  if (!jogoSelecionado) return;
 
-      const jogos = obterJogosSalvos().filter(
-        jogo => jogo.id !== jogoSelecionado.id
-      );
+  if (!confirm("Deseja realmente excluir este jogo da sua coleção?")) {
+    return;
+  }
 
-      salvarJogosLocais(jogos);
-      renderJogos();
+  const jogos = obterJogosSalvos().filter(
+    jogo => String(jogo.id) !== String(jogoSelecionado.id)
+  );
 
-      modalJogo.style.display = "none";
-      jogoSelecionado = null;
-    });
+  salvarJogosLocais(jogos);
+  renderJogos();
+
+  modalJogo.style.display = "none";
+  jogoSelecionado = null;
+});
   }
 });
 document.addEventListener("DOMContentLoaded", () => {
@@ -2082,14 +2109,23 @@ document.addEventListener("DOMContentLoaded", () => {
     </button>
 
     <button
-      type="button"
-      id="excluirJogoColecao"
-      style="display:none;"
-      title="Excluir jogo"
-    >
-      Excluir jogo
-    </button>
-
+  type="button"
+  id="excluirJogoColecao"
+  style="display:none;"
+  title="Excluir jogo da coleção"
+  aria-label="Excluir jogo da coleção"
+>
+  <svg xmlns="http://www.w3.org/2000/svg"
+       width="21" height="21" viewBox="0 0 24 24"
+       fill="none" stroke="currentColor"
+       stroke-width="1.8" stroke-linecap="round"
+       stroke-linejoin="round">
+    <path d="M3 6h18"/>
+    <path d="M8 6V4h8v2"/>
+    <path d="M19 6l-1 14H6L5 6"/>
+    <path d="M10 11v5M14 11v5"/>
+  </svg>
+</button>
   </div>
 </div>
 
