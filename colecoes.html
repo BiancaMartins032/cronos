@@ -1062,19 +1062,46 @@ function showCollection(collectionId, button) {
 
 renderMediaCollection();
 window.addEventListener("pageshow", renderMediaCollection);
-  const formLivro = document.getElementById("formLivro");
-  document.addEventListener("DOMContentLoaded", function () {
+
+const formLivro = document.getElementById("formLivro");
+
+document.addEventListener("DOMContentLoaded", function () {
   const seletorStatusLivro = document.getElementById("modalStatusLivro");
   const camposProgresso = document.getElementById("progressoLeituraCampos");
+  const avaliacaoContainer = document.getElementById("avaliacaoLivroContainer");
   const fecharModal = document.getElementById("fecharModalLivro");
   const modal = document.getElementById("modalLivro");
 
-  if (seletorStatusLivro && camposProgresso) {
+  if (seletorStatusLivro) {
     seletorStatusLivro.addEventListener("change", function () {
-      camposProgresso.style.display =
-        this.value === "Lendo" ? "block" : "none";
+      if (camposProgresso) {
+        camposProgresso.style.display =
+          this.value === "Lendo" ? "block" : "none";
+      }
+
+      if (avaliacaoContainer) {
+        avaliacaoContainer.style.display =
+          this.value === "Lido" ? "block" : "none";
+      }
     });
   }
+
+  const estrelasLivro = document.querySelectorAll(
+    "#estrelasAvaliacaoLivro button"
+  );
+
+  estrelasLivro.forEach(botao => {
+    botao.addEventListener("click", function () {
+      avaliacaoLivroAtual = Number(this.dataset.nota);
+
+      estrelasLivro.forEach(estrela => {
+        estrela.classList.toggle(
+          "selecionada",
+          Number(estrela.dataset.nota) <= avaliacaoLivroAtual
+        );
+      });
+    });
+  });
 
   if (fecharModal && modal) {
     fecharModal.addEventListener("click", function () {
