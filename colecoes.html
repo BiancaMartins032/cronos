@@ -1544,19 +1544,24 @@ function salvarEditorasFavoritas(lista) {
     botao.className = "favorito-literario";
     botao.type = "button";
 
-    if (item.imagem) {
+    let temporizadorPressao;
+let pressaoLonga = false;
+
+if (item.imagem) {
   const imagem = document.createElement("img");
   imagem.src = item.imagem;
   imagem.alt = item.nome;
   imagem.style.cursor = "pointer";
   imagem.style.touchAction = "pan-y";
 
-  let temporizadorPressao;
-
   imagem.addEventListener("pointerdown", () => {
     if (item.tipo !== "autor") return;
 
+    pressaoLonga = false;
+
     temporizadorPressao = setTimeout(() => {
+      pressaoLonga = true;
+
       const confirmar = confirm(
         "Deseja realmente excluir este autor dos seus favoritos?"
       );
@@ -1591,17 +1596,30 @@ function salvarEditorasFavoritas(lista) {
   inicial.textContent = item.nome.charAt(0).toUpperCase();
   botao.appendChild(inicial);
 }
-    const nome = document.createElement("span");
-    nome.textContent = item.tipo === "autor"
-    ? nomeConhecidoAutor(item.nome)
-    : item.nome;
-    botao.appendChild(nome);
 
-    botao.addEventListener("click", () => {
-      const parametro = new URLSearchParams({
-        tipo: item.tipo,
-        nome: item.nome
-      });
+const nome = document.createElement("span");
+nome.textContent = item.tipo === "autor"
+  ? nomeConhecidoAutor(item.nome)
+  : item.nome;
+
+botao.appendChild(nome);
+
+botao.addEventListener("click", evento => {
+  if (pressaoLonga) {
+    evento.preventDefault();
+    evento.stopPropagation();
+    pressaoLonga = false;
+    return;
+  }
+
+  const parametro = new URLSearchParams({
+    tipo: item.tipo,
+    nome: item.nome
+  });
+
+  window.location.href =
+    "detalhes-literarios.html?" + parametro.toString();
+});
 
       window.location.href =
         "detalhes-literarios.html?" + parametro.toString();
