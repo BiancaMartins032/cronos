@@ -1545,91 +1545,98 @@ function salvarEditorasFavoritas(lista) {
     botao.type = "button";
 
     let temporizadorPressao;
-let pressaoLonga = false;
+    let pressaoLonga = false;
 
-if (item.imagem) {
-  const imagem = document.createElement("img");
-  imagem.src = item.imagem;
-  imagem.alt = item.nome;
-  imagem.style.cursor = "pointer";
-  imagem.style.touchAction = "pan-y";
-  imagem.style.userSelect = "none";
-  imagem.style.webkitUserSelect = "none";
-  imagem.draggable = false;
+    if (item.imagem) {
+      const imagem = document.createElement("img");
+      imagem.src = item.imagem;
+      imagem.alt = item.nome;
 
-imagem.addEventListener("contextmenu", evento => {
-  evento.preventDefault();
-});
+      imagem.style.cursor = "pointer";
+      imagem.style.touchAction = "pan-y";
+      imagem.style.userSelect = "none";
+      imagem.style.webkitUserSelect = "none";
+      imagem.style.webkitTouchCallout = "none";
+      imagem.draggable = false;
 
-  imagem.addEventListener("pointerdown", () => {
-    if (item.tipo !== "autor") return;
+      imagem.addEventListener("contextmenu", evento => {
+        evento.preventDefault();
+      });
 
-    pressaoLonga = false;
+      imagem.addEventListener("touchstart", () => {
+        if (item.tipo !== "autor") return;
 
-    temporizadorPressao = setTimeout(() => {
-      pressaoLonga = true;
+        pressaoLonga = false;
 
-      const confirmar = confirm(
-        "Deseja realmente excluir este autor dos seus favoritos?"
-      );
+        temporizadorPressao = setTimeout(() => {
+          pressaoLonga = true;
 
-      if (!confirmar) return;
+          const confirmar = confirm(
+            "Deseja realmente excluir este autor dos seus favoritos?"
+          );
 
-      const atualizados = obterAutoresFavoritos().filter(
-        autor => autor.nome.toLowerCase() !== item.nome.toLowerCase()
-      );
+          if (!confirmar) return;
 
-      salvarAutoresFavoritos(atualizados);
-      renderFavoritosLiterarios();
-    }, 300);
+          const atualizados = obterAutoresFavoritos().filter(
+            autor =>
+              autor.nome.toLowerCase() !== item.nome.toLowerCase()
+          );
+
+          salvarAutoresFavoritos(atualizados);
+          renderFavoritosLiterarios();
+        }, 300);
+      }, { passive: true });
+
+      imagem.addEventListener("touchend", () => {
+        clearTimeout(temporizadorPressao);
+      });
+
+      imagem.addEventListener("touchmove", () => {
+        clearTimeout(temporizadorPressao);
+      });
+
+      imagem.addEventListener("touchcancel", () => {
+        clearTimeout(temporizadorPressao);
+      });
+
+      botao.appendChild(imagem);
+    } else {
+      const inicial = document.createElement("div");
+      inicial.className = "favorito-inicial";
+      inicial.textContent = item.nome.charAt(0).toUpperCase();
+      botao.appendChild(inicial);
+    }
+
+    const nome = document.createElement("span");
+    nome.textContent = item.tipo === "autor"
+      ? nomeConhecidoAutor(item.nome)
+      : item.nome;
+
+    botao.appendChild(nome);
+
+    botao.addEventListener("contextmenu", evento => {
+      evento.preventDefault();
+    });
+
+    botao.addEventListener("click", evento => {
+      if (pressaoLonga) {
+        evento.preventDefault();
+        evento.stopPropagation();
+        pressaoLonga = false;
+        return;
+      }
+
+      const parametro = new URLSearchParams({
+        tipo: item.tipo,
+        nome: item.nome
+      });
+
+      window.location.href =
+        "detalhes-literarios.html?" + parametro.toString();
+    });
+
+    container.appendChild(botao);
   });
-
-  imagem.addEventListener("pointerup", () => {
-    clearTimeout(temporizadorPressao);
-  });
-
-  imagem.addEventListener("pointerleave", () => {
-    clearTimeout(temporizadorPressao);
-  });
-
-  imagem.addEventListener("pointercancel", () => {
-    clearTimeout(temporizadorPressao);
-  });
-
-  botao.appendChild(imagem);
-} else {
-  const inicial = document.createElement("div");
-  inicial.className = "favorito-inicial";
-  inicial.textContent = item.nome.charAt(0).toUpperCase();
-  botao.appendChild(inicial);
-}
-
-const nome = document.createElement("span");
-nome.textContent = item.tipo === "autor"
-  ? nomeConhecidoAutor(item.nome)
-  : item.nome;
-
-botao.appendChild(nome);
-
-botao.addEventListener("click", evento => {
-  if (pressaoLonga) {
-    evento.preventDefault();
-    evento.stopPropagation();
-    pressaoLonga = false;
-    return;
-  }
-
-  const parametro = new URLSearchParams({
-    tipo: item.tipo,
-    nome: item.nome
-  });
-
-  window.location.href =
-    "detalhes-literarios.html?" + parametro.toString();
-});
-
-container.appendChild(botao);
-});
 }
 
 function alternarFavorito(tipo, nome, imagem = "") {
