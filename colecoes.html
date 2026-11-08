@@ -1938,52 +1938,7 @@ if (campoBuscaLivro) {
   imagem.src =
     `https://covers.openlibrary.org/a/olid/${idAutor}-M.jpg`;
 });
-
-        imagem.alt = autor.name;
-        imagem.onerror = () => imagem.style.display = "none";
-        imagem.onload = () => {
-       if (imagem.naturalWidth <= 1) {
-       imagem.style.display = "none";
-  }
-};
-
-        const informacoes = document.createElement("div");
-        informacoes.className = "book-result-info";
-
-        const nome = document.createElement("strong");
-        nome.textContent = autor.name;
-
-        const tipo = document.createElement("small");
-        tipo.textContent = "Autor";
-
-        const botao = document.createElement("button");
-        botao.type = "button";
-        botao.textContent = "☆ Favoritar autor";
-
-        botao.onclick = evento => {
-  evento.stopPropagation();
-
-  alternarFavorito("autor", autor.name, imagem.src);
-
-  document.getElementById("buscarLivro").value = "";
-  resultadosLivros.innerHTML = "";
-};
-
-        informacoes.append(nome, tipo, botao);
-        card.append(imagem, informacoes);
-
-        card.style.cursor = "pointer";
-        card.onclick = () => {
-          window.location.href =
-            "detalhes-literarios.html?" +
-            new URLSearchParams({
-              tipo: "autor",
-              nome: autor.name
-            });
-        };
-
-        resultadosLivros.appendChild(card);
-      });
+      
     }
   } catch (erro) {
     console.error("Erro ao pesquisar autores:", erro);
