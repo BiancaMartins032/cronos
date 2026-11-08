@@ -1398,7 +1398,7 @@ function salvarEditorasFavoritas(lista) {
   });
 }
 
-  function alternarFavorito(tipo, nome) {
+  function alternarFavorito(tipo, nome, imagem = "") {
   if (!nome || nome === "Autor não informado" || nome === "Editora não informada") {
     alert("Não há informação suficiente para favoritar.");
     return;
@@ -1419,7 +1419,7 @@ function salvarEditorasFavoritas(lista) {
   } else {
     favoritos.push({
       nome: nome,
-      imagem: ""
+      imagem: imagem
     });
   }
 
@@ -1913,8 +1913,13 @@ if (campoBuscaLivro) {
         botao.textContent = "☆ Favoritar autor";
 
         botao.onclick = evento => {
-          evento.stopPropagation();
-          alternarFavorito("autor", autor.name);
+  evento.stopPropagation();
+
+  alternarFavorito("autor", autor.name, imagem.src);
+
+  document.getElementById("buscarLivro").value = "";
+  resultadosLivros.innerHTML = "";
+};
           botao.textContent = obterAutoresFavoritos().some(
             item => item.nome.toLowerCase() === autor.name.toLowerCase()
           ) ? "★ Autor favorito" : "☆ Favoritar autor";
