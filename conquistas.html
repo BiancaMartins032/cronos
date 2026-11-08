@@ -63,6 +63,45 @@
       font-size: 22px;
       margin: 0 0 15px;
     }
+    .estatisticas-jogo {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  margin-bottom: 13px;
+}
+
+.estatistica-gamerscore,
+.estatistica-conquistas {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: #FFFFFF;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.estatistica-conquistas svg {
+  width: 23px;
+  height: 23px;
+  stroke: #A58BFF;
+  flex-shrink: 0;
+}
+
+.progresso-geral-linha {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.progresso-geral-linha .barra-fundo {
+  flex: 1;
+  min-width: 0;
+}
+
+.progresso-geral-linha .porcentagem {
+  font-size: 17px;
+  white-space: nowrap;
+}
 
     .porcentagem {
       color: #A99BFF;
@@ -463,12 +502,40 @@
       <img id="capaJogo" class="capa" src="" alt="Capa do jogo">
 
       <div class="informacoes">
-        <h1 id="tituloJogo">Carregando jogo...</h1>
-        <div class="porcentagem" id="porcentagem">0%</div>
-        <div class="barra-fundo">
-          <div class="barra-preenchida" id="barraProgresso"></div>
-        </div>
-      </div>
+  <h1 id="tituloJogo">Carregando jogo...</h1>
+
+  <div class="estatisticas-jogo">
+
+    <div class="estatistica-gamerscore">
+      <span class="simbolo-g">G</span>
+      <span id="gamerscoreJogo">0/0</span>
+    </div>
+
+    <div class="estatistica-conquistas">
+      <svg viewBox="0 0 24 24" fill="none"
+           xmlns="http://www.w3.org/2000/svg">
+        <path d="M8 4H16V9C16 12 14.2 14 12 14C9.8 14 8 12 8 9V4Z"
+              stroke="currentColor" stroke-width="1.6"
+              stroke-linejoin="round"/>
+        <path d="M8 6H5V8C5 10 6.2 11 8 11M16 6H19V8C19 10 17.8 11 16 11"
+              stroke="currentColor" stroke-width="1.6"
+              stroke-linecap="round"/>
+        <path d="M12 14V18M8 21H16M9 18H15"
+              stroke="currentColor" stroke-width="1.6"
+              stroke-linecap="round"/>
+      </svg>
+      <span id="contadorConquistasJogo">0/0</span>
+    </div>
+
+  </div>
+
+  <div class="progresso-geral-linha">
+    <div class="barra-fundo">
+      <div class="barra-preenchida" id="barraProgresso"></div>
+    </div>
+    <span class="porcentagem" id="porcentagem">0%</span>
+  </div>
+</div>
     </section>
 
     <section class="resumo">
@@ -816,6 +883,18 @@ async function carregarJogo() {
 function atualizarConquistas() {
   const concluidas = conquistas.filter(c => c.unlocked).length;
   const total = conquistas.length;
+  const gamerscoreConcluido = conquistas
+  .filter(c => c.unlocked)
+  .reduce((total, c) => total + c.gamerscore, 0);
+
+const gamerscoreTotal = conquistas
+  .reduce((total, c) => total + c.gamerscore, 0);
+
+document.getElementById("gamerscoreJogo").textContent =
+  `${gamerscoreConcluido}/${gamerscoreTotal}`;
+
+document.getElementById("contadorConquistasJogo").textContent =
+  `${concluidas}/${total}`;
 
   const porcentagem = total > 0
     ? Math.round((concluidas / total) * 100)
