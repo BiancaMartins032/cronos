@@ -78,6 +78,40 @@ export default {
         );
       }
     }
+        // API do Xbox — estatísticas de um jogo
+    if (url.pathname === "/api/xbox/stats" && request.method === "GET") {
+      try {
+        const titleId = url.searchParams.get("titleId") || "1479758055";
+
+        if (!env.OPENXBL_API_KEY) {
+          return Response.json(
+            { error: "Chave da OpenXBL não configurada." },
+            { status: 500 }
+          );
+        }
+
+        const resposta = await fetch(
+          `https://api.xbl.io/v2/achievements/stats/${encodeURIComponent(titleId)}`,
+          {
+            headers: {
+              "X-Authorization": env.OPENXBL_API_KEY
+            }
+          }
+        );
+
+        const dados = await resposta.json();
+
+        return Response.json(dados, {
+          status: resposta.status
+        });
+
+      } catch (error) {
+        return Response.json(
+          { error: "Erro ao consultar estatísticas do jogo." },
+          { status: 500 }
+        );
+      }
+    }
         // API do Xbox — histórico de jogos do perfil
     if (url.pathname === "/api/xbox/games" && request.method === "GET") {
       try {
