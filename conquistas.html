@@ -952,6 +952,12 @@ function atualizarConquistaMitica() {
   );
 
   secao.appendChild(detalhes);
+
+  const estatisticas = document.querySelector(".secao-estatisticas");
+
+  if (estatisticas) {
+    secao.insertAdjacentElement("afterend", estatisticas);
+  }
 }
 
 
