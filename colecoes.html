@@ -1563,30 +1563,30 @@ function salvarEditorasFavoritas(lista) {
         evento.preventDefault();
       });
 
-      imagem.addEventListener("touchstart", () => {
-        if (item.tipo !== "autor") return;
+      imagem.addEventListener("touchstart", (evento) => {
+  if (item.tipo !== "autor") return;
 
-        pressaoLonga = false;
+  evento.preventDefault();
 
-        temporizadorPressao = setTimeout(() => {
-          pressaoLonga = true;
+  pressaoLonga = false;
 
-          const confirmar = confirm(
-            "Deseja realmente excluir este autor dos seus favoritos?"
-          );
+  temporizadorPressao = setTimeout(() => {
+    pressaoLonga = true;
 
-          if (!confirmar) return;
+    const confirmar = confirm(
+      "Deseja realmente excluir este autor dos seus favoritos?"
+    );
 
-          const atualizados = obterAutoresFavoritos().filter(
-            autor =>
-              autor.nome.toLowerCase() !== item.nome.toLowerCase()
-          );
+    if (!confirmar) return;
 
-          salvarAutoresFavoritos(atualizados);
-          renderFavoritosLiterarios();
-        }, 300);
-      }, { passive: true });
+    const atualizados = obterAutoresFavoritos().filter(
+      autor => autor.nome.toLowerCase() !== item.nome.toLowerCase()
+    );
 
+    salvarAutoresFavoritos(atualizados);
+    renderFavoritosLiterarios();
+  }, 300);
+}, { passive: false });
       imagem.addEventListener("touchend", () => {
         clearTimeout(temporizadorPressao);
       });
