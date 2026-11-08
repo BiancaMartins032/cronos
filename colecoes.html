@@ -1801,10 +1801,17 @@ function renderJogos() {
     elemento.innerHTML = "";
 
     if (
+  status === "Jogando" ||
   status === "Quero jogar" ||
   status === "Quero adquirir" ||
   status === "Concluído"
 ) {
+  elemento.style.cssText =
+    "display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;align-items:start;";
+} else {
+  elemento.style.cssText =
+    "display:flex;flex-direction:column;align-items:stretch;gap:12px;";
+}
       elemento.style.cssText =
         "display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,110px));gap:14px;align-items:start;";
     } else {
@@ -1883,92 +1890,70 @@ if (jogo.status === "Concluído") {
   return;
 }
 
-// JOGANDO: MANTÉM O CARTÃO E O PROGRESSO ATUAIS
-const card = document.createElement("div");
-card.style.cssText =
-  "display:flex;align-items:center;gap:12px;width:100%;max-width:360px;margin:0;padding:10px;background:var(--surface);border:1px solid var(--border);border-radius:12px;";
+// JOGANDO: CAPA COM PROGRESSO ABAIXO
+const grupo = document.createElement("div");
+grupo.style.cssText =
+  "width:100%;min-width:0;display:flex;flex-direction:column;gap:7px;";
 
-const botaoJogo = document.createElement("button");
-botaoJogo.type = "button";
-botaoJogo.style.cssText =
-  "display:flex;align-items:center;gap:10px;flex:1;min-width:0;padding:0;border:none;background:transparent;color:var(--text);cursor:pointer;text-align:left;";
+const botaoCapa = document.createElement("button");
+botaoCapa.type = "button";
+botaoCapa.style.cssText =
+  "width:100%;aspect-ratio:2/3;padding:0;border:1px solid var(--border);border-radius:9px;overflow:hidden;background:var(--surface2);cursor:pointer;";
 
 const imagem = document.createElement("img");
 imagem.src = normalizarCapaJogo(jogo.cover);
 imagem.alt = "Capa de " + jogo.title;
+imagem.loading = "lazy";
 imagem.style.cssText =
-  "display:block;width:65px;flex:0 0 65px;aspect-ratio:2/3;height:auto;object-fit:cover;border-radius:9px;";
+  "display:block;width:100%;height:100%;object-fit:cover;";
 
-const informacoes = document.createElement("div");
-informacoes.style.cssText =
-  "display:flex;flex-direction:column;gap:5px;min-width:0;";
+botaoCapa.appendChild(imagem);
+botaoCapa.addEventListener("click", () => abrirModalJogo(jogo));
 
-const titulo = document.createElement("strong");
-titulo.textContent = jogo.title;
-titulo.style.cssText = "font-size:13px;line-height:1.4;";
+grupo.appendChild(botaoCapa);
 
-informacoes.appendChild(titulo);
-botaoJogo.append(imagem, informacoes);
+const conquistas = JSON.parse(
+  localStorage.getItem("mn_conquistas_" + jogo.id) || "[]"
+);
 
-botaoJogo.addEventListener("click", () => abrirModalJogo(jogo));
-card.appendChild(botaoJogo);
+const concluidas = conquistas.filter(c => c.unlocked).length;
+const porcentagem = conquistas.length
+  ? Math.round((concluidas / conquistas.length) * 100)
+  : 0;
 
-if (jogo.status === "Jogando") {
-  const conquistas = JSON.parse(
-    localStorage.getItem("mn_conquistas_" + jogo.id) || "[]"
-  );
+const linhaProgresso = document.createElement("div");
+linhaProgresso.style.cssText =
+  "display:flex;align-items:center;gap:5px;width:100%;";
 
-  const concluidas = conquistas.filter(c => c.unlocked).length;
-  const porcentagem = conquistas.length
-    ? Math.round((concluidas / conquistas.length) * 100)
-    : 0;
+const barraFundo = document.createElement("div");
+barraFundo.style.cssText =
+  "flex:1;min-width:0;height:6px;background:var(--surface2);border-radius:10px;overflow:hidden;";
 
-  const botaoProgresso = document.createElement("button");
-  botaoProgresso.type = "button";
-  botaoProgresso.setAttribute(
-    "aria-label",
-    "Ver conquistas de " + jogo.title
-  );
-  botaoProgresso.style.cssText =
-    "flex:1;min-width:0;padding:8px 4px;border:none;background:transparent;color:var(--text);cursor:pointer;text-align:left;";
+const barraPreenchida = document.createElement("div");
+barraPreenchida.style.cssText =
+  "width:" + porcentagem + "%;height:100%;background:var(--purple);border-radius:10px;";
 
-    const percentual = document.createElement("strong");
-  percentual.textContent = porcentagem + "%";
-  percentual.style.cssText =
-    "font-size:13px;color:var(--purple);min-width:35px;text-align:right;";
+barraFundo.appendChild(barraPreenchida);
 
-  const barraFundo = document.createElement("div");
-  barraFundo.style.cssText =
-    "flex:1;min-width:0;height:7px;background:var(--surface2);border-radius:10px;overflow:hidden;";
+const percentual = document.createElement("strong");
+percentual.textContent = porcentagem + "%";
+percentual.style.cssText =
+  "font-size:10px;color:var(--purple);min-width:27px;text-align:right;";
 
-  const barraPreenchida = document.createElement("div");
-  barraPreenchida.style.cssText =
-    "width:" + porcentagem + "%;height:100%;background:var(--purple);border-radius:10px;";
+linhaProgresso.append(barraFundo, percentual);
 
-  barraFundo.appendChild(barraPreenchida);
+grupo.appendChild(linhaProgresso);
 
-  const linhaProgresso = document.createElement("div");
-  linhaProgresso.style.cssText =
-    "display:flex;align-items:center;gap:10px;width:100%;";
+linhaProgresso.style.cursor = "pointer";
+linhaProgresso.title = "Ver conquistas";
 
-  linhaProgresso.append(barraFundo, percentual);
+linhaProgresso.addEventListener("click", () => {
+  window.location.href =
+    "conquistas.html?id=" + encodeURIComponent(jogo.id);
+});
 
-  const aviso = document.createElement("small");
-  aviso.textContent = "Clique para ver conquistas";
-  aviso.style.cssText =
-    "display:block;margin-top:7px;font-size:10px;color:var(--muted);";
-
-    botaoProgresso.append(linhaProgresso, aviso);
-
-  botaoProgresso.addEventListener("click", () => {
-    window.location.href =
-      "conquistas.html?id=" + encodeURIComponent(jogo.id);
-  });
-
-  card.appendChild(botaoProgresso);
-}
-
-destino.appendChild(card);
+destino.appendChild(grupo);
+return;
  });
 }
   
