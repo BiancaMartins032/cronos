@@ -1166,21 +1166,40 @@ if (containerResenha) {
   }
 
   const estrelasLivro = document.querySelectorAll(
-    "#estrelasAvaliacaoLivro button"
-  );
+  "#estrelasAvaliacaoLivro button"
+);
 
-  estrelasLivro.forEach(botao => {
-    botao.addEventListener("click", function () {
-      avaliacaoLivroAtual = Number(this.dataset.nota);
+const mensagensAvaliacao = {
+  1: "Abandonei! Não consegui me envolver e não encontrei motivos para continuar.",
+  2: "Não me conquistou. Teve alguns momentos interessantes, mas não compensou.",
+  3: "Uma boa leitura. Cumpriu seu papel, mas provavelmente não ficará na minha memória.",
+  4: "Quase perfeito! Amei a experiência, mas senti falta daquele detalhe que faria toda a diferença.",
+  5: "Favorito do coração! Perfeito, mexeu comigo e deixou saudade."
+};
 
-      estrelasLivro.forEach(estrela => {
-        estrela.classList.toggle(
-          "selecionada",
-          Number(estrela.dataset.nota) <= avaliacaoLivroAtual
-        );
-      });
+const mensagemAvaliacao = document.getElementById("mensagemAvaliacaoLivro");
+
+function atualizarMensagemAvaliacao() {
+  if (!mensagemAvaliacao) return;
+
+  mensagemAvaliacao.textContent =
+    mensagensAvaliacao[avaliacaoLivroAtual] || "";
+}
+
+estrelasLivro.forEach(botao => {
+  botao.addEventListener("click", function () {
+    avaliacaoLivroAtual = Number(this.dataset.nota);
+
+    estrelasLivro.forEach(estrela => {
+      estrela.classList.toggle(
+        "selecionada",
+        Number(estrela.dataset.nota) <= avaliacaoLivroAtual
+      );
     });
+
+    atualizarMensagemAvaliacao();
   });
+});
 
   if (fecharModal && modal) {
     fecharModal.addEventListener("click", function () {
@@ -2318,6 +2337,8 @@ document.addEventListener("DOMContentLoaded", () => {
     <button type="button" data-nota="4" aria-label="4 estrelas">★</button>
     <button type="button" data-nota="5" aria-label="5 estrelas">★</button>
   </div>
+
+  <p id="mensagemAvaliacaoLivro"></p>
 </div>
 
 <div id="resenhaLivroContainer">
