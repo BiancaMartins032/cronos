@@ -1121,6 +1121,7 @@ window.addEventListener("pageshow", renderMediaCollection);
 
   if (error) throw error;
 }
+  let avaliacaoLivroAtual = 0;
 function renderLivros() {
   let livros = [];
 
@@ -1178,6 +1179,21 @@ if (status === "Lendo") {
           livro.autor || "Autor não informado";
 
         document.getElementById("modalStatusLivro").value = livro.status;
+        avaliacaoLivroAtual = Number(livro.avaliacao || 0);
+
+const containerAvaliacao = document.getElementById("avaliacaoLivroContainer");
+
+if (containerAvaliacao) {
+  containerAvaliacao.style.display =
+    livro.status === "Lido" ? "block" : "none";
+}
+
+document.querySelectorAll("#estrelasAvaliacaoLivro button").forEach(botao => {
+  botao.classList.toggle(
+    "selecionada",
+    Number(botao.dataset.nota) <= avaliacaoLivroAtual
+  );
+});
         document.getElementById("modalTotalPaginas").value =
           livro.paginasTotal || "";
 
@@ -1334,19 +1350,53 @@ try {
 
    container.appendChild(grupo);
 
+} else if (status === "Lido") {
+  const grupo = document.createElement("div");
+  grupo.style.cssText =
+    "width:100%;min-width:0;display:flex;flex-direction:column;gap:7px;align-items:stretch;";
+
+  const card = document.createElement("div");
+  card.className = "book-cover-card";
+
+  const capa = document.createElement("img");
+  capa.src = livro.capa;
+  capa.alt = "Capa de " + livro.titulo;
+  capa.loading = "lazy";
+
+  card.appendChild(capa);
+  card.addEventListener("click", abrirModal);
+
+  grupo.appendChild(card);
+
+  if (livro.avaliacao > 0) {
+    const estrelas = document.createElement("div");
+
+    estrelas.textContent =
+      "★".repeat(livro.avaliacao) +
+      "☆".repeat(5 - livro.avaliacao);
+
+    estrelas.style.cssText =
+      "width:100%;font-size:15px;letter-spacing:1px;color:#B69AFF;text-align:center;";
+
+    grupo.appendChild(estrelas);
+  }
+
+  container.appendChild(grupo);
+
 } else {
   const card = document.createElement("div");
-        card.className = "book-cover-card";
+  card.className = "book-cover-card";
 
-        const capa = document.createElement("img");
-        capa.src = livro.capa;
-        capa.alt = "Capa de " + livro.titulo;
-        capa.loading = "lazy";
+  const capa = document.createElement("img");
+  capa.src = livro.capa;
+  capa.alt = "Capa de " + livro.titulo;
+  capa.loading = "lazy";
 
-        card.appendChild(capa);
-        card.addEventListener("click", abrirModal);
+  card.appendChild(capa);
+  card.addEventListener("click", abrirModal);
 
-        container.appendChild(card);
+  container.appendChild(card);
+}
       }
     });
   });
@@ -2229,11 +2279,12 @@ async function sincronizarColecaoLivrosInicial() {
         cover: livro.capa || null,
         status: livro.status,
         data: {
-          obraId: livro.obraId || null,
-          localId: livro.id,
-          paginasTotal: livro.paginasTotal || 0,
-          paginasLidas: livro.paginasLidas || 0
-        }
+        obraId: livro.obraId || null,
+        localId: livro.id,
+        paginasTotal: livro.paginasTotal || 0,
+        paginasLidas: livro.paginasLidas || 0,
+        avaliacao: livro.avaliacao || 0
+}
       }));
 
       if (registros.length) {
