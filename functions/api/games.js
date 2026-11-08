@@ -275,7 +275,7 @@ if (normalizarNome(jogo.name) === "batman arkham knight") {
           cover: capaXbox
             ? { url: capaXbox }
             : jogo.cover,
-          summary: await traduzirTexto(jogo.summary)
+          summary: ""
         };
       })
     );
