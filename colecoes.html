@@ -2101,9 +2101,22 @@ document.addEventListener("DOMContentLoaded", () => {
       >
     </div>
 
-    <button type="button" id="salvarLivroColecao">
-      Adicionar à minha coleção
-    </button>
+    
+<div class="avaliacao-jogo" id="avaliacaoLivroContainer" style="display:none;">
+  <label>Sua avaliação</label>
+  <div id="estrelasAvaliacaoLivro" class="estrelas-avaliacao">
+    <button type="button" data-nota="1" aria-label="1 estrela">★</button>
+    <button type="button" data-nota="2" aria-label="2 estrelas">★</button>
+    <button type="button" data-nota="3" aria-label="3 estrelas">★</button>
+    <button type="button" data-nota="4" aria-label="4 estrelas">★</button>
+    <button type="button" data-nota="5" aria-label="5 estrelas">★</button>
+  </div>
+</div>
+
+<button type="button" id="salvarLivroColecao">
+  Adicionar à minha coleção
+</button>
+
     <button
   type="button"
   id="excluirLivroColecao"
