@@ -729,6 +729,37 @@ main {
   flex-direction: column;
   gap: 6px;
 }
+  
+.avaliacao-jogo {
+  margin: 12px 0 20px;
+  text-align: center;
+}
+
+.avaliacao-jogo label {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--text);
+}
+
+.estrelas-avaliacao {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+}
+
+.estrelas-avaliacao button {
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: #777184;
+  font-size: 30px;
+  cursor: pointer;
+}
+
+.estrelas-avaliacao button.selecionada {
+  color: #B69AFF;
+}
+
 </style>
 </head>
 
@@ -1695,13 +1726,13 @@ async function pesquisarJogos(pesquisa) {
   }
 });
 
+let avaliacaoJogoAtual = 0;
+
 function abrirModalJogo(jogo) {
   jogoSelecionado = jogo;
 
-  // Recupera os dados originais da busca
   const dados = jogo.data || jogo;
 
-  // Capa
   const capa = normalizarCapaJogo(
     jogo.cover?.url ||
     jogo.cover ||
@@ -1711,34 +1742,29 @@ function abrirModalJogo(jogo) {
 
   document.getElementById("modalCapaJogo").src = capa;
 
-  // Título
   document.getElementById("modalTituloJogo").textContent =
     jogo.title || dados.name || dados.title || "Jogo sem título";
 
-  // Ano
   const ano = dados.first_release_date
     ? new Date(dados.first_release_date * 1000).getFullYear()
     : "Ano não informado";
 
-  // Gêneros
-  const generos = (dados.genres || [])
-    .map(genero => genero.name)
-    .join(", ");
-
-  // Plataformas
   const plataformas = (dados.platforms || [])
     .map(plataforma => plataforma.name)
     .join(", ");
 
   document.getElementById("modalInfoJogo").textContent =
-    `${ano}${generos ? " • " + generos : ""}` +
-    `${plataformas ? " • " + plataformas : ""}`;
+    `${ano}${plataformas ? " • " + plataformas : ""}`;
 
-  // Descrição
-  document.getElementById("modalDescricaoJogo").textContent =
-    dados.summary || "Descrição não disponível.";
+  avaliacaoJogoAtual = Number(jogo.avaliacao || 0);
 
-  document.getElementById("modalStatusJogo").value = jogo.status || "Quero jogar";
+  document.querySelectorAll("#estrelasAvaliacao button").forEach(botao => {
+    const nota = Number(botao.dataset.nota);
+    botao.classList.toggle("selecionada", nota <= avaliacaoJogoAtual);
+  });
+
+  document.getElementById("modalStatusJogo").value =
+    jogo.status || "Quero jogar";
 
   modalJogo.style.display = "flex";
 }
@@ -1831,12 +1857,22 @@ function renderJogos() {
     imagem.style.cssText =
       "display:block;width:65px;flex:0 0 65px;aspect-ratio:2/3;height:auto;object-fit:cover;border-radius:9px;";
 
-    const titulo = document.createElement("strong");
-    titulo.textContent = jogo.title;
-    titulo.style.cssText =
-      "font-size:13px;line-height:1.4;";
+    const informacoes = document.createElement("div");
+informacoes.style.cssText =
+  "display:flex;flex-direction:column;gap:5px;min-width:0;";
 
-    botaoJogo.append(imagem, titulo);
+const titulo = document.createElement("strong");
+titulo.textContent = jogo.title;
+titulo.style.cssText = "font-size:13px;line-height:1.4;";
+
+const estrelas = document.createElement("span");
+estrelas.textContent = "★".repeat(jogo.avaliacao || 0) +
+  "☆".repeat(5 - (jogo.avaliacao || 0));
+estrelas.style.cssText =
+  "font-size:15px;letter-spacing:2px;color:#B69AFF;";
+
+informacoes.append(titulo, estrelas);
+botaoJogo.append(imagem, informacoes);
     botaoJogo.addEventListener("click", () => abrirModalJogo(jogo));
 
     card.appendChild(botaoJogo);
@@ -1893,45 +1929,65 @@ function renderJogos() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
+  document.querySelectorAll("#estrelasAvaliacao button").forEach(botao => {
+  botao.addEventListener("click", () => {
+    avaliacaoJogoAtual = Number(botao.dataset.nota);
+
+    document.querySelectorAll("#estrelasAvaliacao button").forEach(estrela => {
+      estrela.classList.toggle(
+        "selecionada",
+        Number(estrela.dataset.nota) <= avaliacaoJogoAtual
+      );
+    });
+  });
+});
   const botaoSalvarJogo = document.getElementById("salvarJogoColecao");
 
-  if (botaoSalvarJogo) {
-    botaoSalvarJogo.addEventListener("click", () => {
-      if (!jogoSelecionado) return;
+if (botaoSalvarJogo) {
+  botaoSalvarJogo.addEventListener("click", () => {
+    if (!jogoSelecionado) return;
 
-      const jogos = obterJogosSalvos();
-      const status = document.getElementById("modalStatusJogo").value;
+    const jogos = obterJogosSalvos();
+    const status = document.getElementById("modalStatusJogo").value;
 
-      const jogo = {
-        id: jogoSelecionado.id,
-        title: jogoSelecionado.name || jogoSelecionado.title,
-        cover: normalizarCapaJogo(
-          jogoSelecionado.cover?.url || jogoSelecionado.cover
-        ),
-        status,
-        data: jogoSelecionado
-      };
+    const indice = jogos.findIndex(
+      item => item.id === jogoSelecionado.id
+    );
 
-      const indice = jogos.findIndex(item => item.id === jogo.id);
+    const jogoExistente = indice >= 0 ? jogos[indice] : null;
 
-      if (indice >= 0) {
-        jogos[indice] = jogo;
-      } else {
-        jogos.push(jogo);
-      }
+    const jogo = {
+      ...(jogoExistente || {}),
+      id: jogoSelecionado.id,
+      title: jogoSelecionado.name || jogoSelecionado.title,
+      cover: normalizarCapaJogo(
+        jogoSelecionado.cover?.url ||
+        jogoSelecionado.cover ||
+        jogoSelecionado.data?.cover?.url ||
+        jogoSelecionado.data?.cover
+      ),
+      status,
+      avaliacao: avaliacaoJogoAtual,
+      data: jogoSelecionado.data || jogoSelecionado
+    };
 
-      salvarJogosLocais(jogos);
-renderJogos();
+    if (indice >= 0) {
+      jogos[indice] = jogo;
+    } else {
+      jogos.push(jogo);
+    }
 
-// Limpa a busca e os resultados
-campoBuscaJogo.value = "";
-resultadosJogos.innerHTML = "";
-jogosEncontrados = [];
+    salvarJogosLocais(jogos);
+    renderJogos();
 
-modalJogo.style.display = "none";
-jogoSelecionado = null;
-    });
-  }
+    campoBuscaJogo.value = "";
+    resultadosJogos.innerHTML = "";
+    jogosEncontrados = [];
+
+    modalJogo.style.display = "none";
+    jogoSelecionado = null;
+  });
+}
 });
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -2022,7 +2078,8 @@ document.addEventListener("DOMContentLoaded", () => {
   </div>
 </div>
 
-  <!-- MODAL DOS JOGOS -->
+  
+<!-- MODAL DOS JOGOS -->
 <div id="modalJogo" class="book-modal">
   <div class="book-modal-content">
 
@@ -2034,10 +2091,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
     <h2 id="modalTituloJogo"></h2>
     <p id="modalInfoJogo"></p>
-    <p id="modalDescricaoJogo"></p>
+
+    <div class="avaliacao-jogo">
+      <label>Sua avaliação</label>
+      <div id="estrelasAvaliacao" class="estrelas-avaliacao">
+        <button type="button" data-nota="1" aria-label="1 estrela">★</button>
+        <button type="button" data-nota="2" aria-label="2 estrelas">★</button>
+        <button type="button" data-nota="3" aria-label="3 estrelas">★</button>
+        <button type="button" data-nota="4" aria-label="4 estrelas">★</button>
+        <button type="button" data-nota="5" aria-label="5 estrelas">★</button>
+      </div>
+    </div>
 
     <label for="modalStatusJogo">
-      O que você deseja fazer com este jogo?
+      Categoria do jogo
     </label>
 
     <select id="modalStatusJogo">
@@ -2055,13 +2122,14 @@ document.addEventListener("DOMContentLoaded", () => {
       type="button"
       id="excluirJogoColecao"
       style="display:none;"
-      title="Excluir da minha coleção"
+      title="Excluir jogo"
     >
       Excluir jogo
     </button>
 
   </div>
 </div>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="auth.js"></script>
 <script>
