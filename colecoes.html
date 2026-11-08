@@ -771,6 +771,9 @@ main {
   color: #B69AFF;
 }
 
+  #avaliacaoJogoContainer {
+  display: none;
+}
 </style>
 </head>
 
@@ -1742,6 +1745,11 @@ function abrirModalJogo(jogo) {
 
   document.getElementById("modalStatusJogo").value =
     jogoSelecionado.status || "Quero jogar";
+  const avaliacaoContainer =
+  document.getElementById("avaliacaoJogoContainer");
+
+avaliacaoContainer.style.display =
+  jogoSelecionado.status === "Concluído" ? "block" : "none";
 
   const botaoExcluir = document.getElementById("excluirJogoColecao");
   botaoExcluir.style.display = jogoNaColecao ? "flex" : "none";
@@ -1930,21 +1938,33 @@ function renderJogos() {
 
 document.addEventListener("DOMContentLoaded", () => {
   document.querySelectorAll("#estrelasAvaliacao button").forEach(botao => {
-  botao.addEventListener("click", () => {
-    avaliacaoJogoAtual = Number(botao.dataset.nota);
+    botao.addEventListener("click", () => {
+      avaliacaoJogoAtual = Number(botao.dataset.nota);
 
-    document.querySelectorAll("#estrelasAvaliacao button").forEach(estrela => {
-      estrela.classList.toggle(
-        "selecionada",
-        Number(estrela.dataset.nota) <= avaliacaoJogoAtual
-      );
+      document.querySelectorAll("#estrelasAvaliacao button").forEach(estrela => {
+        estrela.classList.toggle(
+          "selecionada",
+          Number(estrela.dataset.nota) <= avaliacaoJogoAtual
+        );
+      });
     });
   });
-});
+
+  const seletorStatusJogo =
+    document.getElementById("modalStatusJogo");
+
+  const avaliacaoContainer =
+    document.getElementById("avaliacaoJogoContainer");
+
+  seletorStatusJogo.addEventListener("change", () => {
+    avaliacaoContainer.style.display =
+      seletorStatusJogo.value === "Concluído" ? "block" : "none";
+  });
+
   const botaoSalvarJogo = document.getElementById("salvarJogoColecao");
 
-if (botaoSalvarJogo) {
-  botaoSalvarJogo.addEventListener("click", () => {
+  if (botaoSalvarJogo) {
+    botaoSalvarJogo.addEventListener("click", () => {
     if (!jogoSelecionado) return;
 
     const jogos = obterJogosSalvos();
@@ -2096,7 +2116,7 @@ document.addEventListener("DOMContentLoaded", () => {
     <h2 id="modalTituloJogo"></h2>
     <p id="modalInfoJogo"></p>
 
-    <div class="avaliacao-jogo">
+    <div class="avaliacao-jogo" id="avaliacaoJogoContainer">
       <label>Sua avaliação</label>
       <div id="estrelasAvaliacao" class="estrelas-avaliacao">
         <button type="button" data-nota="1" aria-label="1 estrela">★</button>
