@@ -1307,6 +1307,27 @@ if (status === "Lendo") {
 
         document.getElementById("modalStatusLivro").value = livro.status;
         avaliacaoLivroAtual = Number(livro.avaliacao || 0);
+        const mensagensSalvas = {
+        1: "Abandonei! Não consegui me envolver e não encontrei motivos para continuar.",
+        2: "Não me conquistou. Teve alguns momentos interessantes, mas não compensou.",
+        3: "Uma boa leitura. Cumpriu seu papel, mas provavelmente não ficará na minha memória.",
+        4: "Quase perfeito! Amei a experiência, mas senti falta daquele detalhe que faria toda a diferença.",
+        5: "Favorito do coração! Perfeito, mexeu comigo e deixou saudade."
+};
+
+const mensagemSalva = document.getElementById("mensagemAvaliacaoLivro");
+
+if (mensagemSalva) {
+  mensagemSalva.textContent =
+    mensagensSalvas[avaliacaoLivroAtual] || "";
+}
+
+document.querySelectorAll("#estrelasAvaliacaoLivro button").forEach(estrela => {
+  estrela.classList.toggle(
+    "selecionada",
+    Number(estrela.dataset.nota) <= avaliacaoLivroAtual
+  );
+});
         const campoResenha = document.getElementById("resenhaLivro");
 const containerResenha = document.getElementById("resenhaLivroContainer");
 
