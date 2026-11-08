@@ -142,6 +142,80 @@
       color: white;
       border-color: #5267D8;
     }
+    .area-filtro-situacao {
+  position: relative;
+  display: flex;
+  justify-content: flex-end;
+  margin-top: -5px;
+  margin-bottom: 18px;
+}
+
+.botao-filtro-situacao {
+  width: 42px;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #1B1A2B;
+  border: 1px solid #393750;
+  border-radius: 12px;
+  color: #C7C3E8;
+  cursor: pointer;
+}
+
+.botao-filtro-situacao svg {
+  width: 21px;
+  height: 21px;
+}
+
+.botao-filtro-situacao:hover {
+  background: #29263F;
+  color: #A58BFF;
+}
+
+.menu-filtro-situacao {
+  position: absolute;
+  top: 50px;
+  right: 0;
+  z-index: 10;
+  width: 230px;
+  padding: 15px;
+  background: #1B1A2B;
+  border: 1px solid #393750;
+  border-radius: 14px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.35);
+}
+
+.menu-filtro-situacao[hidden] {
+  display: none;
+}
+
+.menu-filtro-situacao p {
+  color: #FFFFFF;
+  font-size: 13px;
+  line-height: 1.5;
+  margin: 0 0 12px;
+}
+
+.menu-filtro-situacao button {
+  display: block;
+  width: 100%;
+  padding: 11px;
+  margin-top: 5px;
+  text-align: left;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  color: #C7C3E8;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.menu-filtro-situacao button:hover,
+.menu-filtro-situacao button.ativo {
+  background: #5267D8;
+  color: #FFFFFF;
+}
 
     
 .lista-conquistas {
@@ -420,12 +494,32 @@
   <button class="filtro" data-filtro="complemento">Complemento</button>
 </div>
 
-<p class="subtitulo-filtro">Situação</p>
+<div class="area-filtro-situacao">
+  <button
+    type="button"
+    class="botao-filtro-situacao"
+    id="botaoFiltroSituacao"
+    aria-label="Filtrar conquistas"
+    title="Filtrar conquistas"
+  >
+    <svg viewBox="0 0 24 24"
+         fill="none"
+         xmlns="http://www.w3.org/2000/svg">
+      <path d="M3 5H21L14 13V19L10 21V13L3 5Z"
+            stroke="currentColor"
+            stroke-width="1.6"
+            stroke-linecap="round"
+            stroke-linejoin="round"/>
+    </svg>
+  </button>
 
-<div class="filtros filtros-situacao">
-  <button class="filtro ativo" data-situacao="todas">Todas</button>
-  <button class="filtro" data-situacao="desbloqueadas">Desbloqueadas</button>
-  <button class="filtro" data-situacao="bloqueadas">Bloqueadas</button>
+  <div class="menu-filtro-situacao" id="menuFiltroSituacao" hidden>
+    <p>Deseja filtrar suas conquistas em:</p>
+
+    <button type="button" data-situacao="todas">Todas</button>
+    <button type="button" data-situacao="desbloqueadas">Desbloqueadas</button>
+    <button type="button" data-situacao="bloqueadas">Bloqueadas</button>
+  </div>
 </div>
 
     <section class="lista-conquistas" id="listaConquistas"></section>
@@ -912,17 +1006,42 @@ document.querySelectorAll(".filtros-categoria .filtro").forEach(botao => {
   });
 });
 
-document.querySelectorAll(".filtros-situacao .filtro").forEach(botao => {
+const botaoFiltroSituacao =
+  document.getElementById("botaoFiltroSituacao");
+
+const menuFiltroSituacao =
+  document.getElementById("menuFiltroSituacao");
+
+// Abrir e fechar a janela
+botaoFiltroSituacao.addEventListener("click", () => {
+  menuFiltroSituacao.hidden = !menuFiltroSituacao.hidden;
+});
+
+// Selecionar uma situação
+menuFiltroSituacao.querySelectorAll("button").forEach(botao => {
   botao.addEventListener("click", () => {
-    document.querySelectorAll(".filtros-situacao .filtro").forEach(item => {
+    filtroSituacao = botao.dataset.situacao;
+
+    menuFiltroSituacao.querySelectorAll("button").forEach(item => {
       item.classList.remove("ativo");
     });
 
     botao.classList.add("ativo");
-    filtroSituacao = botao.dataset.situacao;
+
+    menuFiltroSituacao.hidden = true;
 
     renderizarConquistas();
   });
+});
+
+// Fechar ao clicar fora da janela
+document.addEventListener("click", evento => {
+  if (
+    !menuFiltroSituacao.contains(evento.target) &&
+    !botaoFiltroSituacao.contains(evento.target)
+  ) {
+    menuFiltroSituacao.hidden = true;
+  }
 });
 carregarJogo();
 
