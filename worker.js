@@ -416,12 +416,41 @@ if (url.pathname === "/api/openlibrary/author" && request.method === "GET") {
         .replace(/\s+/g, " ")
         .trim();
 
-      // Mantém apenas as primeiras frases da apresentação do autor.
-      resumo = texto
-        .split(/(?<=[.!?])\s+/)
-        .slice(0, 3)
-        .join(" ")
-        .slice(0, 700);
+      // Remove dados pessoais e mantém o foco na carreira literária.
+const frases = texto
+  .split(/(?<=[.!?])\s+/);
+
+const nomesParaRemover = [
+  nomeCompleto,
+  nome
+].filter(Boolean).sort((a, b) => b.length - a.length);
+
+const frasesCarreira = frases.map(frase => {
+  let limpa = frase.replace(
+    /\([^)]*(?:18|19|20)\d{2}[^)]*\)/g,
+    ""
+  ).trim();
+
+  for (const nomeAutor of nomesParaRemover) {
+    const escapado = nomeAutor.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+    limpa = limpa.replace(
+      new RegExp("^" + escapado + "\\s*", "i"),
+      ""
+    );
+  }
+
+  return limpa;
+}).filter(frase => {
+  return frase &&
+    !/\b(nasceu|nascimento|falecido|falecimento|natural de|naturalidade)\b/i.test(frase);
+});
+
+resumo = frasesCarreira
+  .slice(0, 3)
+  .join(" ")
+  .replace(/^./, letra => letra.toUpperCase())
+  .slice(0, 700);
 
       fontes.wikipedia = "encontrado";
     } else {
