@@ -89,19 +89,15 @@ export default {
             page: String(pagina),
             limit: "100",
             fields: [
-              "key",
-              "title",
-              "author_name",
-              "author_key",
-              "first_publish_year",
-              "cover_i",
-              "edition_count",
-              "editions",
-              "editions.key",
-              "editions.title",
-              "editions.language",
-              "editions.cover_i"
-            ].join(",")
+  "key",
+  "title",
+  "author_name",
+  "author_key",
+  "first_publish_year",
+  "cover_i",
+  "edition_count",
+  "language"
+].join(",")
           });
 
           const resposta = await fetch(
