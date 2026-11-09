@@ -504,6 +504,7 @@ async function buscarEdicaoPortugues(livro) {
       title: edicao.title,
       author: livro.author_name?.[0] || nome,
       cover_i: capa,
+      capa: "https://covers.openlibrary.org/b/id/" + capa + "-M.jpg",
       first_publish_year: anoEdicao
         ? anoEdicao[0]
         : livro.first_publish_year || ""
@@ -515,12 +516,64 @@ async function buscarEdicaoPortugues(livro) {
   }
 }
 
+  
+/* Consulta alternativa: Google Books */
+
+async function buscarLivrosGoogle(termo) {
+  const url =
+    "https://www.googleapis.com/books/v1/volumes?q=" +
+    encodeURIComponent(termo) +
+    "&langRestrict=pt&printType=books&maxResults=40";
+
+  const controlador = new AbortController();
+  const limite = setTimeout(() => controlador.abort(), 15000);
+
+  try {
+    const resposta = await fetch(url, {
+      signal: controlador.signal
+    });
+
+    if (!resposta.ok) {
+      throw new Error("Não foi possível consultar o Google Books.");
+    }
+
+    const dados = await resposta.json();
+
+    return (dados.items || []).map(item => {
+      const info = item.volumeInfo || {};
+      const imagem = info.imageLinks?.thumbnail || "";
+
+      return {
+        obraId: "google:" + item.id,
+        title: info.title || "Título não informado",
+        author: (info.authors || [nome]).join(", "),
+        capa: imagem.replace(/^http:/, "https:"),
+        cover_i: null,
+        first_publish_year:
+          (info.publishedDate || "").match(/\d{4}/)?.[0] || ""
+      };
+    }).filter(livro =>
+  livro.capa &&
+  (dados.items || []).some(item =>
+    "google:" + item.id === livro.obraId &&
+    item.volumeInfo?.language === "pt"
+  )
+);
+
+  } finally {
+    clearTimeout(limite);
+  }
+}
+
+
 /* Exibe os livros */
 
 async function mostrarLivros(livros) {
   listaLivros.innerHTML = "";
 
-  const livrosComCapa = livros.filter(livro => livro.cover_i);
+  const livrosComCapa = livros.filter(
+    livro => livro.capa || livro.cover_i
+  );
 
   if (!livrosComCapa.length) {
     listaLivros.innerHTML =
@@ -538,7 +591,7 @@ async function mostrarLivros(livros) {
     const capa = document.createElement("img");
     capa.alt = "Capa de " + livro.title;
     capa.loading = "lazy";
-    capa.src =
+    capa.src = livro.capa ||
       "https://covers.openlibrary.org/b/id/" +
       livro.cover_i + "-M.jpg";
 
@@ -572,6 +625,7 @@ async function mostrarLivros(livros) {
   });
 }
 
+
 /* Biografia do autor */
 
 async function carregarBiografiaAutor(autor) {
@@ -601,168 +655,107 @@ async function carregarBiografiaAutor(autor) {
   }
 }
 
+
 /* Livros do autor */
 
 async function carregarLivrosAutor(autor) {
   listaLivros.innerHTML =
-    '<p class="mensagem">Buscando edições em português...</p>';
+    '<p class="mensagem">Buscando livros em português...</p>';
 
+  let livrosGoogle = [];
+  let livrosOpenLibrary = [];
+
+  // Primeira fonte: Google Books.
+  try {
+    livrosGoogle = await buscarLivrosGoogle(
+      "inauthor:" + (autor.name || nome)
+    );
+  } catch (erro) {
+    console.warn("Google Books indisponível:", erro);
+  }
+
+  // Segunda fonte: Open Library.
   try {
     const resposta = await fetch(
       "https://openlibrary.org/search.json?author=" +
       encodeURIComponent(autor.name || nome) +
-      "&fields=key,title,author_name,author_key,cover_i,first_publish_year,edition_count" +
+      "&fields=key,title,author_name,cover_i,first_publish_year,edition_count" +
       "&limit=100"
     );
 
-    if (!resposta.ok) throw new Error("Erro na busca");
+    if (!resposta.ok) {
+      throw new Error("Erro na busca alternativa.");
+    }
 
     const dados = await resposta.json();
-    const idAutor = autor.key.replace("/authors/", "");
 
     const obras = (dados.docs || []).filter(livro =>
-      livro.key &&
-      (livro.author_key || []).includes(idAutor)
+      livro.key && livro.cover_i
     );
 
     obras.sort((a, b) =>
       (b.edition_count || 0) - (a.edition_count || 0)
     );
 
-    const obrasUnicas = [];
     const titulos = new Set();
 
-    obras.forEach(livro => {
+    const obrasUnicas = obras.filter(livro => {
       const titulo = (livro.title || "").toLowerCase();
 
-      if (titulo && !titulos.has(titulo)) {
-        titulos.add(titulo);
-        obrasUnicas.push(livro);
-      }
+      if (!titulo || titulos.has(titulo)) return false;
+
+      titulos.add(titulo);
+      return true;
     });
 
     const edicoes = await Promise.all(
       obrasUnicas.slice(0, 35).map(buscarEdicaoPortugues)
     );
 
-    const livrosPortugues = edicoes.filter(Boolean);
-
-    if (!livrosPortugues.length) {
-      listaLivros.innerHTML =
-        '<p class="mensagem">Não encontramos edições em português catalogadas para este autor.</p>';
-      return;
-    }
-
-    await mostrarLivros(livrosPortugues);
+    livrosOpenLibrary = edicoes.filter(Boolean);
 
   } catch (erro) {
-    console.error(erro);
-    listaLivros.innerHTML =
-      '<p class="mensagem">Não foi possível carregar os livros deste autor.</p>';
+    console.warn("Open Library indisponível:", erro);
   }
+
+  // Junta as duas fontes e evita títulos duplicados.
+  const todosLivros = [
+    ...livrosGoogle,
+    ...livrosOpenLibrary
+  ];
+
+  const titulosEncontrados = new Set();
+
+  const livrosUnicos = todosLivros.filter(livro => {
+    const titulo = (livro.title || "").trim().toLowerCase();
+
+    if (!titulo || titulosEncontrados.has(titulo)) {
+      return false;
+    }
+
+    titulosEncontrados.add(titulo);
+    return true;
+  });
+
+  if (!livrosUnicos.length) {
+    listaLivros.innerHTML =
+      '<p class="mensagem">Não encontramos livros em português para este autor. As fontes de consulta podem estar indisponíveis.</p>';
+    return;
+  }
+
+  await mostrarLivros(livrosUnicos);
 }
 
 
 /* Perfil do autor */
 
 async function carregarAutor() {
-  // Tenta novamente se a conexão falhar ou demorar demais.
-  async function buscarComTentativas(url) {
-    let ultimoErro;
+  nomePerfil.textContent = nome;
 
-    for (let tentativa = 1; tentativa <= 2; tentativa++) {
-      const controlador = new AbortController();
-      const tempoLimite = setTimeout(
-        () => controlador.abort(),
-        12000
-      );
-
-      try {
-        const resposta = await fetch(url, {
-          signal: controlador.signal
-        });
-
-        if (!resposta.ok) {
-          throw new Error("A Open Library respondeu com erro.");
-        }
-
-        return await resposta.json();
-
-      } catch (erro) {
-        ultimoErro = erro;
-
-        if (tentativa < 2) {
-          await new Promise(resolve => setTimeout(resolve, 1000));
-        }
-
-      } finally {
-        clearTimeout(tempoLimite);
-      }
-    }
-
-    throw ultimoErro;
-  }
-
-  try {
-    const urlBusca =
-      "https://openlibrary.org/search/authors.json?q=" +
-      encodeURIComponent(nome);
-
-    const dados = await buscarComTentativas(urlBusca);
-
-    const autor = dados.docs?.find(
-      item => item.name?.toLowerCase() === nome.toLowerCase()
-    ) || dados.docs?.[0];
-
-    if (!autor?.key) {
-      biografia.textContent =
-        "Não encontramos informações sobre este autor.";
-
-      listaLivros.innerHTML =
-        '<p class="mensagem">Nenhum livro encontrado.</p>';
-      return;
-    }
-
-    autor.key = autor.key.startsWith("/authors/")
-      ? autor.key
-      : "/authors/" + autor.key;
-
-    nomePerfil.textContent = autor.name || nome;
-
-    // Carrega biografia e livros sem impedir um pelo erro do outro.
-    await Promise.allSettled([
-      carregarBiografiaAutor(autor),
-      carregarLivrosAutor(autor)
-    ]);
-
-    // A foto é opcional.
-    try {
-      const perfil = await buscarComTentativas(
-        "https://openlibrary.org" + autor.key + ".json"
-      );
-
-      if (perfil.photos?.length && !obterFavorito()?.imagem) {
-        fotoPerfil.src =
-          "https://covers.openlibrary.org/a/id/" +
-          perfil.photos[0] + "-M.jpg";
-
-        fotoPerfil.style.display = "";
-      }
-
-    } catch (erroFoto) {
-      console.warn("Não foi possível carregar a foto do autor.");
-    }
-
-  } catch (erro) {
-    console.error("Erro ao carregar autor:", erro);
-
-    nomePerfil.textContent = nome;
-    biografia.textContent =
-      "Não foi possível conectar à biblioteca de livros. Tente novamente mais tarde.";
-
-    listaLivros.innerHTML =
-      '<p class="mensagem">Os livros não puderam ser carregados. Verifique sua conexão e tente novamente.</p>';
-  }
+  await Promise.allSettled([
+    carregarBiografiaAutor({ name: nome }),
+    carregarLivrosAutor({ name: nome })
+  ]);
 }
 
 
@@ -772,7 +765,8 @@ function abrirModalLivro(livro) {
   livroSelecionado = livro;
 
   document.getElementById("modalLivroCapa").src =
-    "https://covers.openlibrary.org/b/id/" + livro.cover_i + "-M.jpg";
+  livro.capa || "https://covers.openlibrary.org/b/id/" +
+  livro.cover_i + "-M.jpg";
 
   document.getElementById("modalLivroTitulo").textContent = livro.title;
   document.getElementById("modalLivroAutor").textContent = livro.author || nome;
@@ -886,8 +880,9 @@ document.getElementById("confirmarAdicionarLivro").addEventListener(
         titulo: livroSelecionado.title,
         autor: livroSelecionado.author || nome,
         editora: "",
-        capa: "https://covers.openlibrary.org/b/id/" +
-          livroSelecionado.cover_i + "-M.jpg",
+        capa: livroSelecionado.capa ||
+        "https://covers.openlibrary.org/b/id/" +
+        livroSelecionado.cover_i + "-M.jpg",
         paginasTotal: status === "Lendo" ? paginasTotal : 0,
         paginasLidas: status === "Lendo" ? paginasLidas : 0,
         status,
