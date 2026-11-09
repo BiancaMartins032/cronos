@@ -81,24 +81,45 @@ main {
 
 .dados-perfil {
   min-width: 0;
+  height: 150px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  #biografia {
+  line-height: 1.7;
+  color: var(--muted);
+  white-space: pre-line;
+  text-align: justify;
 }
 
 .perfil h1 {
-  margin: 4px 0 14px;
+  margin: 0;
   font-size: 24px;
   color: var(--texto);
+  text-align: justify;
 }
 
 .tipo {
   color: var(--roxo-claro);
   font-size: 13px;
   font-weight: 600;
+  text-align: justify;
 }
 
 .detalhes-autor {
   display: flex;
   flex-direction: column;
   gap: 8px;
+  text-align: justify;
+}
+
+.detalhes-autor p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.5;
+  text-align: justify;
 }
 
 .detalhes-autor p {
