@@ -116,6 +116,73 @@ if (url.pathname === "/api/openlibrary/books" && request.method === "GET") {
   }
 }
 
+        // API do Open Library — informações biográficas do autor
+    if (url.pathname === "/api/openlibrary/author" && request.method === "GET") {
+      try {
+        const nome = url.searchParams.get("name");
+
+        if (!nome) {
+          return Response.json(
+            { error: "Informe o nome do autor." },
+            { status: 400 }
+          );
+        }
+
+        const busca = await fetch(
+          "https://openlibrary.org/search/authors.json?q=" +
+          encodeURIComponent(nome)
+        );
+
+        if (!busca.ok) {
+          throw new Error("Erro ao buscar autor: " + busca.status);
+        }
+
+        const dadosBusca = await busca.json();
+
+        const normalizar = texto => texto
+          .normalize("NFD")
+          .replace(/[\u0300-\u036f]/g, "")
+          .toLowerCase()
+          .trim();
+
+        const autorEncontrado = (dadosBusca.docs || []).find(item =>
+          normalizar(item.name || "") === normalizar(nome)
+        );
+
+        if (!autorEncontrado) {
+          return Response.json({
+            error: "Autor não encontrado."
+          }, { status: 404 });
+        }
+
+        const respostaAutor = await fetch(
+          "https://openlibrary.org" + autorEncontrado.key + ".json"
+        );
+
+        if (!respostaAutor.ok) {
+          throw new Error("Erro ao carregar autor: " + respostaAutor.status);
+        }
+
+        const autor = await respostaAutor.json();
+
+        return Response.json({
+          name: autor.name || nome,
+          bio: typeof autor.bio === "string"
+            ? autor.bio
+            : autor.bio?.value || "",
+          birth_date: autor.birth_date || "",
+          location: autor.location || ""
+        });
+
+      } catch (error) {
+        console.error("Erro ao consultar biografia:", error);
+
+        return Response.json(
+          { error: "Não foi possível consultar a biografia." },
+          { status: 500 }
+        );
+      }
+    }
 
     // API do Xbox — consulta o perfil da conta
     if (url.pathname === "/api/xbox/profile" && request.method === "GET") {
