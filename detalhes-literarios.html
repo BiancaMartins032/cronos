@@ -813,6 +813,9 @@ async function buscarEdicaoPortugues(livro) {
     if (!resposta.ok) return null;
 
     const dados = await resposta.json();
+    if (dados.full_name) {
+  nomePerfil.textContent = dados.full_name;
+}
 
     const edicoes = (dados.entries || []).filter(edicao => {
       const idiomas = (edicao.languages || []).map(item =>
@@ -1260,7 +1263,7 @@ async function carregarLivrosAutor(autor) {
 /* Perfil do autor */
 
 async function carregarAutor() {
-  nomePerfil.textContent = nomeCompletoAutor || nome;
+  nomePerfil.textContent = nome;
 
   document.getElementById("nascimentoAutor").textContent =
     "Consultando informações...";
