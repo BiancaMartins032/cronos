@@ -155,11 +155,15 @@ export default {
           );
 
           if (!respostaGoogle.ok) {
-            throw new Error(
-              "Google Books retornou erro: " +
-              respostaGoogle.status
-            );
-          }
+  const detalheGoogle = await respostaGoogle.text();
+
+  throw new Error(
+    "Google Books retornou erro: " +
+    respostaGoogle.status +
+    " - " +
+    detalheGoogle
+  );
+}
 
           const dadosGoogle = await respostaGoogle.json();
 
