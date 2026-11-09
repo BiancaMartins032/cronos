@@ -1191,12 +1191,21 @@ async function carregarLivrosAutor(autor) {
 
         const edicoes = obra.editions?.docs || [];
 
-        const edicaoPortugues = edicoes.find(edicao =>
-          (edicao.language || []).includes("por")
-        );
+const edicaoPortugues =
+  edicoes.find(edicao =>
+    (edicao.language || []).includes("por")
+  ) ||
+  (
+    (obra.language || []).includes("por")
+      ? {
+          title: obra.title,
+          language: ["por"],
+          cover_i: obra.cover_i
+        }
+      : null
+  );
 
-        if (!edicaoPortugues) continue;
-
+if (!edicaoPortugues) continue;
         const autores = obra.author_name || [];
 
         const normalizar = texto => (texto || "")
