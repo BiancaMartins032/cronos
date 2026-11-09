@@ -541,48 +541,74 @@ resumo = frasesCarreira
         falecimento = normalizarData(valorFalecimento);
       }
 
-      // Naturalidade
-      const idNaturalidade =
-        claims.P19?.[0]?.mainsnak?.datavalue?.value?.id;
+     // Naturalidade: cidade e país
+const idNaturalidade =
+  claims.P19?.[0]?.mainsnak?.datavalue?.value?.id;
 
-      if (idNaturalidade) {
-        const respostaLocal = await fetch(
-          "https://www.wikidata.org/w/api.php?" +
-          new URLSearchParams({
-            action: "wbgetentities",
-            ids: idNaturalidade,
-            props: "labels",
-            languages: "pt|en",
-            format: "json"
-          }).toString(),
-          {
-            headers: {
-              "User-Agent": "Cronos/1.0"
-            }
-          }
-        );
-
-        if (respostaLocal.ok) {
-          const dadosLocal = await respostaLocal.json();
-          const local = dadosLocal.entities?.[idNaturalidade];
-
-          naturalidade =
-            local?.labels?.pt?.value ||
-            local?.labels?.en?.value ||
-            "";
-        }
+if (idNaturalidade) {
+  const respostaLocal = await fetch(
+    "https://www.wikidata.org/w/api.php?" +
+    new URLSearchParams({
+      action: "wbgetentities",
+      ids: idNaturalidade,
+      props: "labels|claims",
+      languages: "pt|en",
+      format: "json"
+    }).toString(),
+    {
+      headers: {
+        "User-Agent": "Cronos/1.0"
       }
+    }
+  );
 
-      fontes.wikidata =
-        nascimento || falecimento || naturalidade
-          ? "encontrado"
-          : "entidade encontrada, dados indisponíveis";
+  if (respostaLocal.ok) {
+    const dadosLocal = await respostaLocal.json();
+    const local = dadosLocal.entities?.[idNaturalidade];
+
+    const cidade =
+      local?.labels?.pt?.value ||
+      local?.labels?.en?.value ||
+      "";
+
+    const idPais =
+      local?.claims?.P17?.[0]?.mainsnak?.datavalue?.value?.id;
+
+    let pais = "";
+
+    if (idPais) {
+      const respostaPais = await fetch(
+        "https://www.wikidata.org/w/api.php?" +
+        new URLSearchParams({
+          action: "wbgetentities",
+          ids: idPais,
+          props: "labels",
+          languages: "pt|en",
+          format: "json"
+        }).toString(),
+        {
+          headers: {
+            "User-Agent": "Cronos/1.0"
+          }
+        }
+      );
+
+      if (respostaPais.ok) {
+        const dadosPais = await respostaPais.json();
+        const entidadePais = dadosPais.entities?.[idPais];
+
+        pais =
+          entidadePais?.labels?.pt?.value ||
+          entidadePais?.labels?.en?.value ||
+          "";
+      }
     }
 
-  } catch (erro) {
-    fontes.wikidata = "erro: " + erro.message;
-    console.warn("Wikidata:", erro);
+    naturalidade = cidade && pais
+      ? cidade + ", " + pais
+      : cidade || pais;
   }
+}
 
     // Biografia específica de Cecília Meireles
   if (
