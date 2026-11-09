@@ -1544,9 +1544,6 @@ function salvarEditorasFavoritas(lista) {
     botao.className = "favorito-literario";
     botao.type = "button";
 
-    let temporizadorPressao;
-    let pressaoLonga = false;
-
     if (item.imagem) {
       const imagem = document.createElement("img");
       imagem.src = item.imagem;
@@ -1558,47 +1555,6 @@ function salvarEditorasFavoritas(lista) {
       imagem.style.webkitUserSelect = "none";
       imagem.style.webkitTouchCallout = "none";
       imagem.draggable = false;
-
-      imagem.addEventListener("contextmenu", evento => {
-        evento.preventDefault();
-      });
-
-      imagem.addEventListener("touchstart", (evento) => {
-  if (item.tipo !== "autor") return;
-
-  evento.preventDefault();
-  alert("Toque reconhecido!");
-
-  pressaoLonga = false;
-
-  temporizadorPressao = setTimeout(() => {
-    pressaoLonga = true;
-
-    const confirmar = confirm(
-      "Deseja realmente excluir este autor dos seus favoritos?"
-    );
-
-    if (!confirmar) return;
-
-    const atualizados = obterAutoresFavoritos().filter(
-      autor => autor.nome.toLowerCase() !== item.nome.toLowerCase()
-    );
-
-    salvarAutoresFavoritos(atualizados);
-    renderFavoritosLiterarios();
-  }, 300);
-}, { passive: false });
-      imagem.addEventListener("touchend", () => {
-        clearTimeout(temporizadorPressao);
-      });
-
-      imagem.addEventListener("touchmove", () => {
-        clearTimeout(temporizadorPressao);
-      });
-
-      imagem.addEventListener("touchcancel", () => {
-        clearTimeout(temporizadorPressao);
-      });
 
       botao.appendChild(imagem);
     } else {
@@ -1619,22 +1575,15 @@ function salvarEditorasFavoritas(lista) {
       evento.preventDefault();
     });
 
-    botao.addEventListener("click", evento => {
-      if (pressaoLonga) {
-        evento.preventDefault();
-        evento.stopPropagation();
-        pressaoLonga = false;
-        return;
-      }
+    botao.addEventListener("click", () => {
+  const parametro = new URLSearchParams({
+    tipo: item.tipo,
+    nome: item.nome
+  });
 
-      const parametro = new URLSearchParams({
-        tipo: item.tipo,
-        nome: item.nome
-      });
-
-      window.location.href =
-        "detalhes-literarios.html?" + parametro.toString();
-    });
+  window.location.href =
+    "detalhes-literarios.html?" + parametro.toString();
+});
 
     container.appendChild(botao);
   });
