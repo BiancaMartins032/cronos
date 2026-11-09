@@ -300,79 +300,93 @@
       });
     }
 
-    async function carregarAutor() {
-      biografia.textContent = "Buscando informações sobre o autor...";
+    
+async function carregarAutor() {
+  biografia.textContent = "Buscando informações sobre o autor...";
 
-      try {
-        const busca = await fetch(
-          "https://openlibrary.org/search/authors.json?q=" +
-          encodeURIComponent(nome)
-        );
+  try {
+    const busca = await fetch(
+      "https://openlibrary.org/search/authors.json?q=" +
+      encodeURIComponent(nome)
+    );
 
-        if (!busca.ok) throw new Error("Erro na busca");
+    if (!busca.ok) throw new Error("Erro na busca do autor");
 
-        const dados = await busca.json();
+    const dados = await busca.json();
 
-        const autor = dados.docs?.find(
-          item => item.name?.toLowerCase() === nome.toLowerCase()
-        ) || dados.docs?.[0];
+    const autor = dados.docs?.find(
+      item => item.name?.toLowerCase() === nome.toLowerCase()
+    ) || dados.docs?.[0];
 
-        if (!autor) {
-          biografia.textContent =
-            "Não encontramos informações biográficas sobre este autor.";
-          listaLivros.innerHTML =
-            '<p class="mensagem">Não foi possível localizar seus livros.</p>';
-          return;
-        }
-
-        if (autor.key) {
-          const detalhes = await fetch(
-            "https://openlibrary.org" + autor.key + ".json"
-          );
-
-          if (detalhes.ok) {
-            const perfil = await detalhes.json();
-
-            const bio = perfil.bio?.value || perfil.bio;
-
-            biografia.textContent = bio ||
-              "Ainda não temos uma biografia disponível.";
-
-            if (perfil.photos?.length && !obterFavorito()?.imagem) {
-              fotoPerfil.src =
-                "https://covers.openlibrary.org/a/id/" +
-                perfil.photos[0] + "-M.jpg";
-              fotoPerfil.style.display = "";
-            }
-          }
-        }
-
-        if (autor.key) {
-          const obras = await fetch(
-            "https://openlibrary.org" + autor.key +
-            "/works.json?limit=30"
-          );
-
-          if (obras.ok) {
-            const dadosObras = await obras.json();
-
-            mostrarLivros(
-              (dadosObras.entries || []).map(obra => ({
-                title: obra.title,
-                cover_i: obra.covers?.[0],
-                first_publish_year: null
-              }))
-            );
-          }
-        }
-
-      } catch (erro) {
-        biografia.textContent =
-          "Não foi possível carregar as informações agora.";
-        listaLivros.innerHTML =
-          '<p class="mensagem">Tente novamente mais tarde.</p>';
-      }
+    if (!autor || !autor.key) {
+      biografia.textContent = "Não encontramos informações sobre este autor.";
+      listaLivros.innerHTML =
+        '<p class="mensagem">Nenhum livro encontrado.</p>';
+      return;
     }
+
+    const chaveAutor = autor.key.startsWith("/authors/")
+      ? autor.key
+      : "/authors/" + autor.key;
+
+    try {
+      const respostaPerfil = await fetch(
+        "https://openlibrary.org" + chaveAutor + ".json"
+      );
+
+      if (respostaPerfil.ok) {
+        const perfil = await respostaPerfil.json();
+        const bio = perfil.bio?.value || perfil.bio;
+
+        biografia.textContent = bio ||
+          "Ainda não temos uma biografia disponível.";
+
+        if (perfil.photos?.length && !obterFavorito()?.imagem) {
+          fotoPerfil.src =
+            "https://covers.openlibrary.org/a/id/" +
+            perfil.photos[0] + "-M.jpg";
+
+          fotoPerfil.style.display = "";
+        }
+      } else {
+        biografia.textContent =
+          "Biografia indisponível no momento.";
+      }
+    } catch (erro) {
+      biografia.textContent =
+        "Não foi possível carregar a biografia.";
+    }
+
+    try {
+      const respostaObras = await fetch(
+        "https://openlibrary.org" + chaveAutor +
+        "/works.json?limit=30"
+      );
+
+      if (!respostaObras.ok) throw new Error("Erro nas obras");
+
+      const dadosObras = await respostaObras.json();
+
+      mostrarLivros(
+        (dadosObras.entries || []).map(obra => ({
+          title: obra.title,
+          cover_i: obra.covers?.[0],
+          first_publish_year: null
+        }))
+      );
+    } catch (erro) {
+      listaLivros.innerHTML =
+        '<p class="mensagem">Não foi possível carregar os livros.</p>';
+    }
+
+  } catch (erro) {
+    biografia.textContent =
+      "Não foi possível localizar este autor.";
+    listaLivros.innerHTML =
+      '<p class="mensagem">Tente novamente mais tarde.</p>';
+  }
+}
+
 
     async function carregarEditora() {
       biografia.textContent =
