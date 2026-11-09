@@ -6,16 +6,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Detalhes literários</title>
 
-  <style>
-    
+  ```html
+<style>
 :root {
-  --fundo: #F7F4ED;
-  --texto: #343746;
-  --muted: #737585;
-  --roxo: #5267D8;
-  --roxo-claro: #E9DFF7;
-  --borda: #E8E1D5;
-  --branco: #FFFFFF;
+  --fundo: #000000;
+  --texto: #FFFFFF;
+  --muted: #C4C0CC;
+  --roxo: #C9B6F0;
+  --roxo-claro: #C9B6F0;
+  --roxo-escuro: #7654A8;
+  --borda: #38343F;
+  --branco: #17151C;
 }
 
 * {
@@ -34,14 +35,14 @@ header {
   align-items: center;
   gap: 12px;
   padding: 18px;
-  background: var(--branco);
+  background: var(--fundo);
   border-bottom: 1px solid var(--borda);
 }
 
 header button {
   border: 0;
   background: var(--roxo-claro);
-  color: var(--texto);
+  color: #292333;
   border-radius: 10px;
   padding: 10px 14px;
   font-size: 14px;
@@ -50,6 +51,7 @@ header button {
 
 header strong {
   font-size: 18px;
+  color: var(--texto);
 }
 
 main {
@@ -80,6 +82,7 @@ main {
 .perfil h1 {
   margin: 0 0 8px;
   font-size: 24px;
+  color: var(--texto);
 }
 
 .tipo {
@@ -98,6 +101,7 @@ section {
 section h2 {
   margin: 0 0 18px;
   font-size: 19px;
+  color: var(--texto);
 }
 
 #biografia {
@@ -145,6 +149,7 @@ section h2 {
   line-height: 1.35;
   text-align: center;
   overflow-wrap: anywhere;
+  color: var(--texto);
 }
 
 .livro small {
@@ -169,8 +174,8 @@ section h2 {
   min-height: 34px;
   margin: auto auto 0;
   padding: 8px 10px;
-  background: #D9F0DF;
-  color: #287A43;
+  background: var(--roxo-claro);
+  color: #292333;
   border: none;
   border-radius: 9px;
   font-size: 11px;
@@ -180,7 +185,7 @@ section h2 {
 }
 
 .botao-adicionar-livro.livro-ja-adicionado {
-  background: #236B3A;
+  background: var(--roxo-escuro);
   color: #FFFFFF;
   cursor: default;
 }
@@ -197,7 +202,7 @@ section h2 {
   position: fixed;
   inset: 0;
   z-index: 1000;
-  background: rgba(52, 55, 70, 0.55);
+  background: rgba(0, 0, 0, 0.75);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -241,6 +246,7 @@ section h2 {
   margin: 14px 0 6px;
   font-weight: 600;
   text-align: left;
+  color: var(--texto);
 }
 
 .modal-livro-conteudo select,
@@ -249,7 +255,7 @@ section h2 {
   padding: 11px;
   border: 1px solid var(--borda);
   border-radius: 9px;
-  background: var(--fundo);
+  background: #24212B;
   color: var(--texto);
 }
 
@@ -259,8 +265,8 @@ section h2 {
   padding: 12px;
   border: none;
   border-radius: 9px;
-  background: var(--roxo);
-  color: white;
+  background: var(--roxo-claro);
+  color: #292333;
   font-weight: 600;
   cursor: pointer;
 }
@@ -312,8 +318,8 @@ section h2 {
     font-size: 10px;
   }
 }
-
-  </style>
+</style>
+```
 </head>
 
 <body>
