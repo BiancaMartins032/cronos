@@ -37,6 +37,7 @@ header {
   padding: 18px;
   background: var(--fundo);
   border-bottom: 1px solid var(--borda);
+  justify-content: space-between;
 }
 
 header button {
@@ -374,13 +375,32 @@ section h2 {
   height: 125px;
 }
 }
+  #botaoFavoritarAutor {
+  background: #5267D8;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 9px 13px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+#botaoFavoritarAutor.favorito-ativo {
+  background: #8F3545;
+  color: white;
+}
 </style>
 </head>
 <body>
 
   <header>
-    <button onclick="voltar()">← Voltar</button>
-  </header>
+  <button onclick="voltar()">← Voltar</button>
+  <button id="botaoFavoritarAutor" class="botao-favoritar-autor">
+    Favoritar autor
+  </button>
+</header>
 
  <main>
   <div class="perfil">
@@ -496,6 +516,60 @@ function obterFavorito() {
   }
 }
 
+  function configurarBotaoFavoritoAutor() {
+  const botao = document.getElementById("botaoFavoritarAutor");
+
+  if (!botao) return;
+
+  if (tipo !== "autor") {
+    botao.style.display = "none";
+    return;
+  }
+
+  const atualizar = () => {
+    const favorito = obterFavorito();
+
+    botao.textContent = favorito
+      ? "Autor favoritado"
+      : "Favoritar autor";
+
+    botao.classList.toggle("favorito-ativo", !!favorito);
+  };
+
+  botao.onclick = () => {
+    let favoritos = [];
+
+    try {
+      favoritos = JSON.parse(
+        localStorage.getItem("mn_autores_favoritos") || "[]"
+      );
+    } catch {
+      favoritos = [];
+    }
+
+    const indice = favoritos.findIndex(
+      item => item.nome?.toLowerCase() === nome.toLowerCase()
+    );
+
+    if (indice >= 0) {
+      favoritos.splice(indice, 1);
+    } else {
+      favoritos.push({
+        nome: nome,
+        imagem: fotoPerfil.getAttribute("src") || ""
+      });
+    }
+
+    localStorage.setItem(
+      "mn_autores_favoritos",
+      JSON.stringify(favoritos)
+    );
+
+    atualizar();
+  };
+
+  atualizar();
+}
 function configurarPerfil() {
   if (!nome || !["autor", "editora"].includes(tipo)) {
     nomePerfil.textContent = "Informação indisponível";
@@ -516,6 +590,7 @@ function configurarPerfil() {
     fotoPerfil.style.display = "none";
   };
 
+    configurarBotaoFavoritoAutor();
   return true;
 }
 
