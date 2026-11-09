@@ -697,13 +697,12 @@ await mostrarLivros(livrosUnicos.slice(0, 30));
         "Consulte abaixo os livros encontrados desta editora.";
 
       try {
-        const resposta = await fetch(
-          "https://openlibrary.org/search.json?publisher=" +
-encodeURIComponent(nome) +
-"&limit=50&fields=key,title,author_name,cover_i,first_publish_year"
-          encodeURIComponent(nome) +
-          "&limit=50&fields=title,cover_i,first_publish_year"
-        );
+        
+const resposta = await fetch(
+  "https://openlibrary.org/search.json?publisher=" +
+  encodeURIComponent(nome) +
+  "&limit=50&fields=key,title,author_name,cover_i,first_publish_year"
+);
 
         if (!resposta.ok) {
           throw new Error("Erro na busca");
