@@ -6,7 +6,7 @@ export default {
     const url = new URL(request.url);
 
     // API do Google Books
-    if (url.pathname === "/api/books" && request.method === "GET") {
+    if (url.pathname === "/api/books" && request.method === "GET") { 
       try {
         if (!env.GOOGLE_BOOKS_API_KEY) {
           return Response.json(
