@@ -250,197 +250,251 @@ export default {
     }
 
     
-    // API — informações biográficas do autor
+        // API — informações biográficas dos autores
     if (url.pathname === "/api/openlibrary/author" && request.method === "GET") {
-      try {
-        const nome = url.searchParams.get("name");
+      const nome = url.searchParams.get("name");
 
-        if (!nome) {
-          return Response.json(
-            { error: "Informe o nome do autor." },
-            { status: 400 }
-          );
-        }
-
-        const normalizar = texto => (texto || "")
-          .normalize("NFD")
-          .replace(/[\u0300-\u036f]/g, "")
-          .toLowerCase()
-          .trim();
-
-        const nomeTokens = normalizar(nome).split(/\s+/);
-
-        const combinaNome = texto => {
-          const tokens = normalizar(texto).split(/\s+/);
-          return tokens.length >= 2 &&
-            tokens.every(token => nomeTokens.includes(token));
-        };
-
-        let nascimento = "";
-        let naturalidade = "";
-        let biografia = "";
-
-        // 1. Busca de nascimento no Open Library
-        try {
-          const busca = await fetch(
-            "https://openlibrary.org/search/authors.json?q=" +
-            encodeURIComponent(nome)
-          );
-
-          if (busca.ok) {
-            const dados = await busca.json();
-            const autores = dados.docs || [];
-
-            const encontrado = autores.find(item =>
-              normalizar(item.name) === normalizar(nome)
-            ) || autores.find(item => combinaNome(item.name));
-
-            if (encontrado) {
-              nascimento = encontrado.birth_date || "";
-            }
-          }
-        } catch (erro) {
-          console.warn("Open Library indisponível:", erro);
-        }
-
-        // 2. Busca da biografia na Wikipédia
-        try {
-          const parametrosWiki = new URLSearchParams({
-            action: "query",
-            generator: "search",
-            gsrsearch: nome,
-            gsrlimit: "5",
-            prop: "extracts",
-            exintro: "1",
-            explaintext: "1",
-            format: "json"
-          });
-
-          const respostaWiki = await fetch(
-            "https://pt.wikipedia.org/w/api.php?" +
-            parametrosWiki.toString()
-          );
-
-          if (respostaWiki.ok) {
-            const dadosWiki = await respostaWiki.json();
-            const paginas = Object.values(
-              dadosWiki.query?.pages || {}
-            );
-
-            const pagina = paginas.find(item =>
-              normalizar(item.title) === normalizar(nome)
-            ) || paginas.find(item => combinaNome(item.title));
-
-            if (pagina) {
-              biografia = pagina.extract || "";
-            }
-          }
-        } catch (erro) {
-          console.warn("Wikipédia indisponível:", erro);
-        }
-
-        // 3. Busca de nascimento e naturalidade no Wikidata
-        try {
-          const parametrosBusca = new URLSearchParams({
-            action: "wbsearchentities",
-            search: nome,
-            language: "pt",
-            uselang: "pt",
-            type: "item",
-            format: "json"
-          });
-
-          const respostaBusca = await fetch(
-            "https://www.wikidata.org/w/api.php?" +
-            parametrosBusca.toString()
-          );
-
-          if (respostaBusca.ok) {
-            const dadosBusca = await respostaBusca.json();
-            const entidades = dadosBusca.search || [];
-
-            const entidade = entidades.find(item =>
-              normalizar(item.label) === normalizar(nome)
-            ) || entidades.find(item => combinaNome(item.label));
-
-            if (entidade) {
-              const respostaDados = await fetch(
-                "https://www.wikidata.org/w/api.php?" +
-                new URLSearchParams({
-                  action: "wbgetentities",
-                  ids: entidade.id,
-                  props: "claims",
-                  format: "json"
-                }).toString()
-              );
-
-              if (respostaDados.ok) {
-                const dadosEntidade = await respostaDados.json();
-                const claims = dadosEntidade.entities?.[entidade.id]?.claims || {};
-
-                const valorNascimento =
-                  claims.P569?.[0]?.mainsnak?.datavalue?.value?.time;
-
-                if (valorNascimento) {
-                  const partes = valorNascimento.match(
-  /[+-](\d{4})-(\d{2})-(\d{2})/
-);
-
-                  if (partes) {
-                    nascimento = `${partes[3]}/${partes[2]}/${partes[1]}`;
-                  }
-                }
-
-                const idNaturalidade =
-                  claims.P19?.[0]?.mainsnak?.datavalue?.value?.id;
-
-                if (idNaturalidade) {
-                  const respostaLocal = await fetch(
-                    "https://www.wikidata.org/w/api.php?" +
-                    new URLSearchParams({
-                      action: "wbgetentities",
-                      ids: idNaturalidade,
-                      props: "labels",
-                      languages: "pt|en",
-                      format: "json"
-                    }).toString()
-                  );
-
-                  if (respostaLocal.ok) {
-                    const dadosLocal = await respostaLocal.json();
-                    const local = dadosLocal.entities?.[idNaturalidade];
-
-                    naturalidade =
-                      local?.labels?.pt?.value ||
-                      local?.labels?.en?.value ||
-                      "";
-                  }
-                }
-              }
-            }
-          }
-        } catch (erro) {
-          console.warn("Wikidata indisponível:", erro);
-        }
-
-        return Response.json({
-          name: nome,
-          bio: biografia,
-          birth_date: nascimento,
-          location: naturalidade
-        });
-
-      } catch (error) {
-        console.error("Erro ao consultar biografia:", error);
-
+      if (!nome) {
         return Response.json(
-          {
-            error: "Não foi possível consultar as informações.",
-            detalhe: error.message
-          },
-          { status: 500 }
+          { error: "Informe o nome do autor." },
+          { status: 400 }
         );
       }
+
+      const normalizar = texto => (texto || "")
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .toLowerCase()
+        .replace(/[^a-z0-9 ]/g, "")
+        .replace(/\s+/g, " ")
+        .trim();
+
+      const nomeNormalizado = normalizar(nome);
+
+      let nascimento = "";
+      let naturalidade = "";
+      let biografia = "";
+
+      const fontes = {
+        openLibrary: "não consultada",
+        wikipedia: "não consultada",
+        wikidata: "não consultada"
+      };
+
+      // 1. Open Library — nascimento
+      try {
+        const resposta = await fetch(
+          "https://openlibrary.org/search/authors.json?q=" +
+          encodeURIComponent(nome),
+          {
+            headers: {
+              "User-Agent": "Cronos/1.0"
+            }
+          }
+        );
+
+        if (!resposta.ok) {
+          throw new Error("HTTP " + resposta.status);
+        }
+
+        const dados = await resposta.json();
+        const autores = dados.docs || [];
+
+        const encontrado = autores.find(item =>
+          normalizar(item.name) === nomeNormalizado ||
+          normalizar(item.personal_name) === nomeNormalizado ||
+          (item.alternate_names || []).some(alternativo =>
+            normalizar(alternativo) === nomeNormalizado
+          )
+        );
+
+        if (encontrado) {
+          nascimento = encontrado.birth_date || "";
+          fontes.openLibrary = nascimento
+            ? "encontrado"
+            : "autor encontrado, nascimento indisponível";
+        } else {
+          fontes.openLibrary = "autor não encontrado";
+        }
+
+      } catch (erro) {
+        fontes.openLibrary = "erro: " + erro.message;
+        console.warn("Open Library:", erro);
+      }
+
+      // 2. Wikipédia — biografia
+      try {
+        const parametros = new URLSearchParams({
+          action: "query",
+          titles: nome,
+          redirects: "1",
+          prop: "extracts",
+          exintro: "1",
+          explaintext: "1",
+          format: "json",
+          formatversion: "2"
+        });
+
+        const resposta = await fetch(
+          "https://pt.wikipedia.org/w/api.php?" +
+          parametros.toString(),
+          {
+            headers: {
+              "User-Agent": "Cronos/1.0"
+            }
+          }
+        );
+
+        if (!resposta.ok) {
+          throw new Error("HTTP " + resposta.status);
+        }
+
+        const dados = await resposta.json();
+        const paginas = dados.query?.pages || [];
+
+        const pagina = paginas.find(item =>
+          !item.missing && item.extract
+        );
+
+        if (pagina) {
+          biografia = pagina.extract;
+          fontes.wikipedia = "encontrado";
+        } else {
+          fontes.wikipedia = "página não encontrada";
+        }
+
+      } catch (erro) {
+        fontes.wikipedia = "erro: " + erro.message;
+        console.warn("Wikipédia:", erro);
+      }
+
+      // 3. Wikidata — nascimento e naturalidade
+      try {
+        const parametros = new URLSearchParams({
+          action: "wbsearchentities",
+          search: nome,
+          language: "pt",
+          uselang: "pt",
+          type: "item",
+          limit: "10",
+          format: "json"
+        });
+
+        const resposta = await fetch(
+          "https://www.wikidata.org/w/api.php?" +
+          parametros.toString(),
+          {
+            headers: {
+              "User-Agent": "Cronos/1.0"
+            }
+          }
+        );
+
+        if (!resposta.ok) {
+          throw new Error("HTTP " + resposta.status);
+        }
+
+        const dados = await resposta.json();
+        const entidades = dados.search || [];
+
+        const entidade = entidades.find(item =>
+          normalizar(item.label) === nomeNormalizado
+        );
+
+        if (!entidade) {
+          fontes.wikidata = "autor não encontrado";
+        } else {
+          const respostaDados = await fetch(
+            "https://www.wikidata.org/w/api.php?" +
+            new URLSearchParams({
+              action: "wbgetentities",
+              ids: entidade.id,
+              props: "claims",
+              format: "json"
+            }).toString(),
+            {
+              headers: {
+                "User-Agent": "Cronos/1.0"
+              }
+            }
+          );
+
+          if (!respostaDados.ok) {
+            throw new Error("HTTP " + respostaDados.status);
+          }
+
+          const dadosEntidade = await respostaDados.json();
+
+          const claims =
+            dadosEntidade.entities?.[entidade.id]?.claims || {};
+
+          // Data de nascimento
+          const valorNascimento =
+            claims.P569?.[0]?.mainsnak?.datavalue?.value?.time;
+
+          if (!nascimento && valorNascimento) {
+            const partes = valorNascimento.match(
+              /[+-](\d{4})-(\d{2})-(\d{2})/
+            );
+
+            if (partes) {
+              nascimento =
+                partes[3] + "/" +
+                partes[2] + "/" +
+                partes[1];
+            }
+          }
+
+          // Naturalidade
+          const idNaturalidade =
+            claims.P19?.[0]?.mainsnak?.datavalue?.value?.id;
+
+          if (idNaturalidade) {
+            const respostaLocal = await fetch(
+              "https://www.wikidata.org/w/api.php?" +
+              new URLSearchParams({
+                action: "wbgetentities",
+                ids: idNaturalidade,
+                props: "labels",
+                languages: "pt|en",
+                format: "json"
+              }).toString(),
+              {
+                headers: {
+                  "User-Agent": "Cronos/1.0"
+                }
+              }
+            );
+
+            if (respostaLocal.ok) {
+              const dadosLocal = await respostaLocal.json();
+              const local = dadosLocal.entities?.[idNaturalidade];
+
+              naturalidade =
+                local?.labels?.pt?.value ||
+                local?.labels?.en?.value ||
+                "";
+            }
+          }
+
+          fontes.wikidata =
+            nascimento || naturalidade
+              ? "encontrado"
+              : "entidade encontrada, dados indisponíveis";
+        }
+
+      } catch (erro) {
+        fontes.wikidata = "erro: " + erro.message;
+        console.warn("Wikidata:", erro);
+      }
+
+      return Response.json({
+        name: nome,
+        bio: biografia,
+        birth_date: nascimento,
+        location: naturalidade,
+        fontes
+      });
     }
 
     // API do Xbox — consulta o perfil da conta
