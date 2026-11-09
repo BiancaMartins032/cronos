@@ -1237,9 +1237,6 @@ async function carregarLivrosAutor(autor) {
 
       const autores = obra.author_name || [];
 
-      // Ignora registros com coautores
-      if (autores.length !== 1) continue;
-
       const normalizar = texto => (texto || "")
         .normalize("NFD")
         .replace(/[\u0300-\u036f]/g, "")
