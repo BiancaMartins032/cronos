@@ -588,6 +588,16 @@ resumo = frasesCarreira
     console.warn("Wikidata:", erro);
   }
 
+    // Biografia específica de Cecília Meireles
+  if (normalizar(nome).includes("cecilia meireles")) {
+    resumo =
+      `${nomeCompleto} foi uma escritora, poeta, jornalista e professora brasileira. ` +
+      `Publicou seu primeiro livro, Espectros, em 1919. ` +
+      `Em 1939, publicou Viagem, obra importante para o reconhecimento de sua poesia. ` +
+      `Sua obra mais conhecida é Romanceiro da Inconfidência, publicada em 1953, ` +
+      `na qual retrata poeticamente episódios da Inconfidência Mineira. ` +
+      `Também se destacou na literatura infantil com Ou isto ou aquilo.`;
+  }
   return Response.json({
   name: nome,
   display_name: nomeConhecido,
