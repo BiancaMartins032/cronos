@@ -595,10 +595,10 @@ section h2 {
 
       <div class="detalhes-autor">
   <p><strong>Nascimento:</strong> <span id="nascimentoAutor">Carregando...</span></p>
-  <p>
+  <p id="linhaFalecimento" style="display: none;">
   <strong>Falecimento:</strong>
-  <span id="falecimentoAutor">Carregando...</span>
-  (<span id="idadeAutor">...</span>)
+  <span id="falecimentoAutor"></span>
+  (<span id="idadeAutor"></span>)
 </p>
   <p><strong>Naturalidade:</strong> <span id="naturalidadeAutor">Carregando...</span></p>
 </div>
@@ -1045,13 +1045,13 @@ async function carregarBiografiaAutor(autor) {
   const nascimento = document.getElementById("nascimentoAutor");
   const falecimento = document.getElementById("falecimentoAutor");
   const idade = document.getElementById("idadeAutor");
+  const linhaFalecimento = document.getElementById("linhaFalecimento");
   const naturalidade = document.getElementById("naturalidadeAutor");
 
   biografia.textContent = "Buscando informações sobre a carreira...";
 
   nascimento.textContent = "Consultando...";
-  falecimento.textContent = "Consultando...";
-  idade.textContent = "Consultando...";
+  linhaFalecimento.style.display = "none";
   naturalidade.textContent = "Consultando...";
 
   function formatarData(data) {
@@ -1112,12 +1112,18 @@ async function carregarBiografiaAutor(autor) {
     }
 
     nascimento.textContent = formatarData(dados.birth_date);
-    falecimento.textContent = formatarData(dados.death_date);
+    if (dados.death_date) {
+  falecimento.textContent = formatarData(dados.death_date);
 
-    idade.textContent = calcularIdade(
-      dados.birth_date,
-      dados.death_date
-    );
+  idade.textContent = calcularIdade(
+    dados.birth_date,
+    dados.death_date
+  );
+
+  linhaFalecimento.style.display = "";
+} else {
+  linhaFalecimento.style.display = "none";
+}
 
     naturalidade.textContent = dados.location || "Não informado";
 
@@ -1157,8 +1163,6 @@ biografia.textContent =
       "Não foi possível carregar as informações deste autor.";
 
     nascimento.textContent = "Não disponível";
-    falecimento.textContent = "Não disponível";
-    idade.textContent = "Não disponível";
     naturalidade.textContent = "Não disponível";
   }
 }
