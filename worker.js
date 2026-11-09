@@ -53,7 +53,8 @@ export default {
     }
 
     
-    // API do Open Library — obras com edições em português
+    
+// API do Open Library — obras com edições em português
 if (url.pathname === "/api/openlibrary/books" && request.method === "GET") {
   try {
     const pagina = Math.max(
@@ -61,8 +62,17 @@ if (url.pathname === "/api/openlibrary/books" && request.method === "GET") {
       Number(url.searchParams.get("page")) || 1
     );
 
+    const autor = url.searchParams.get("author");
+
+    if (!autor) {
+      return Response.json(
+        { error: "Informe o nome do autor." },
+        { status: 400 }
+      );
+    }
+
     const parametros = new URLSearchParams({
-      q: "author_key:OL19981A AND language:por",
+      q: `author:"${autor}" AND language:por`,
       page: String(pagina),
       limit: "100",
       fields: [
@@ -105,6 +115,7 @@ if (url.pathname === "/api/openlibrary/books" && request.method === "GET") {
     );
   }
 }
+
 
     // API do Xbox — consulta o perfil da conta
     if (url.pathname === "/api/xbox/profile" && request.method === "GET") {
