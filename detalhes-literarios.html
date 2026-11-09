@@ -521,22 +521,32 @@ async function buscarEdicaoPortugues(livro) {
 
 
 
+
 async function buscarLivrosGoogle(termo) {
-  const consultas = [
-    termo,
+  const consultasEspecificas = [
     'intitle:"A Hora do Vampiro" inauthor:"Stephen King"',
     'intitle:"Salem\'s Lot" inauthor:"Stephen King"',
     'intitle:"Carrie" inauthor:"Stephen King"',
-    'intitle:"Joyland" inauthor:"Stephen King"'
+    'intitle:"Joyland" inauthor:"Stephen King"',
+    'intitle:"O Iluminado" inauthor:"Stephen King"',
+    'intitle:"The Shining" inauthor:"Stephen King"',
+    'intitle:"A Dança da Morte" inauthor:"Stephen King"',
+    'intitle:"The Stand" inauthor:"Stephen King"',
+    'intitle:"Misery" inauthor:"Stephen King"',
+    'intitle:"Cujo" inauthor:"Stephen King"',
+    'intitle:"A Torre Negra" inauthor:"Stephen King"',
+    'intitle:"The Dark Tower" inauthor:"Stephen King"'
   ];
 
+  const consultas = [termo, ...consultasEspecificas];
   const livrosEncontrados = new Map();
-  const quantidadePorPagina = 40;
-  const maxPaginas = 10;
 
-  for (const consulta of consultas) {
+  for (let indice = 0; indice < consultas.length; indice++) {
+    const consulta = consultas[indice];
+    const maxPaginas = indice === 0 ? 10 : 1;
+
     for (let pagina = 0; pagina < maxPaginas; pagina++) {
-      const inicio = pagina * quantidadePorPagina;
+      const inicio = pagina * 40;
 
       const url = "/api/books?q=" +
         encodeURIComponent(consulta) +
@@ -569,7 +579,7 @@ async function buscarLivrosGoogle(termo) {
         }
 
         if (
-          itens.length < quantidadePorPagina ||
+          itens.length < 40 ||
           inicio + itens.length >= (dados.totalItems || 0)
         ) {
           break;
@@ -586,6 +596,7 @@ async function buscarLivrosGoogle(termo) {
       const info = item.volumeInfo || {};
       const idioma = (info.language || "").toLowerCase();
       const imagem = info.imageLinks?.thumbnail || "";
+      const ano = (info.publishedDate || "").match(/\d{4}/)?.[0] || "";
 
       return {
         obraId: "google:" + item.id,
@@ -593,16 +604,21 @@ async function buscarLivrosGoogle(termo) {
         author: (info.authors || [nome]).join(", "),
         capa: imagem.replace(/^http:/, "https:"),
         cover_i: null,
-        first_publish_year:
-          (info.publishedDate || "").match(/\d{4}/)?.[0] || "",
-        idioma
+        first_publish_year: ano,
+        idioma,
+        anoOrdenacao: Number(ano) || 0
       };
     })
     .filter(livro =>
       livro.capa &&
       livro.idioma.startsWith("pt")
+    )
+    .sort((a, b) =>
+      b.anoOrdenacao - a.anoOrdenacao ||
+      a.title.localeCompare(b.title, "pt-BR")
     );
 }
+
 
 
 
