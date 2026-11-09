@@ -662,88 +662,25 @@ async function carregarLivrosAutor(autor) {
   listaLivros.innerHTML =
     '<p class="mensagem">Buscando livros em português...</p>';
 
-  let livrosGoogle = [];
-  let livrosOpenLibrary = [];
-
-  // Primeira fonte: Google Books.
   try {
-    livrosGoogle = await buscarLivrosGoogle(
+    const livrosGoogle = await buscarLivrosGoogle(
       "inauthor:" + (autor.name || nome)
     );
-  } catch (erro) {
-    console.warn("Google Books indisponível:", erro);
-  }
 
-  // Segunda fonte: Open Library.
-  try {
-    const resposta = await fetch(
-      "https://openlibrary.org/search.json?author=" +
-      encodeURIComponent(autor.name || nome) +
-      "&fields=key,title,author_name,cover_i,first_publish_year,edition_count" +
-      "&limit=100"
-    );
-
-    if (!resposta.ok) {
-      throw new Error("Erro na busca alternativa.");
+    if (!livrosGoogle.length) {
+      listaLivros.innerHTML =
+        '<p class="mensagem">Não encontramos livros em português para este autor.</p>';
+      return;
     }
 
-    const dados = await resposta.json();
-
-    const obras = (dados.docs || []).filter(livro =>
-      livro.key && livro.cover_i
-    );
-
-    obras.sort((a, b) =>
-      (b.edition_count || 0) - (a.edition_count || 0)
-    );
-
-    const titulos = new Set();
-
-    const obrasUnicas = obras.filter(livro => {
-      const titulo = (livro.title || "").toLowerCase();
-
-      if (!titulo || titulos.has(titulo)) return false;
-
-      titulos.add(titulo);
-      return true;
-    });
-
-    const edicoes = await Promise.all(
-      obrasUnicas.slice(0, 35).map(buscarEdicaoPortugues)
-    );
-
-    livrosOpenLibrary = edicoes.filter(Boolean);
+    await mostrarLivros(livrosGoogle);
 
   } catch (erro) {
-    console.warn("Open Library indisponível:", erro);
-  }
+    console.error("Erro ao consultar Google Books:", erro);
 
-  // Junta as duas fontes e evita títulos duplicados.
-  const todosLivros = [
-    ...livrosGoogle,
-    ...livrosOpenLibrary
-  ];
-
-  const titulosEncontrados = new Set();
-
-  const livrosUnicos = todosLivros.filter(livro => {
-    const titulo = (livro.title || "").trim().toLowerCase();
-
-    if (!titulo || titulosEncontrados.has(titulo)) {
-      return false;
-    }
-
-    titulosEncontrados.add(titulo);
-    return true;
-  });
-
-  if (!livrosUnicos.length) {
     listaLivros.innerHTML =
-      '<p class="mensagem">Não encontramos livros em português para este autor. As fontes de consulta podem estar indisponíveis.</p>';
-    return;
+      '<p class="mensagem">Não foi possível carregar os livros. Tente novamente mais tarde.</p>';
   }
-
-  await mostrarLivros(livrosUnicos);
 }
 
 
