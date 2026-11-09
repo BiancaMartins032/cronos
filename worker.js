@@ -620,8 +620,9 @@ if (idNaturalidade) {
           `Em 1939, publicou Viagem, obra importante para o reconhecimento de sua poesia. ` +
           `Sua obra mais conhecida é Romanceiro da Inconfidência, publicada em 1953, ` +
           `na qual retrata poeticamente episódios da Inconfidência Mineira. ` +
-          `Também se destacou na literatura infantil com Ou isto ou aquilo.`;
+                    `Também se destacou na literatura infantil com Ou isto ou aquilo.`;
       }
+    }
 
     } catch (erro) {
       fontes.wikidata = "erro: " + erro.message;
