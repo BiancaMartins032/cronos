@@ -52,6 +52,41 @@ export default {
       }
     }
 
+    
+    // API do Open Library — obras e anos de primeira publicação
+    if (url.pathname === "/api/openlibrary/books" && request.method === "GET") {
+      try {
+        const pagina = Math.max(
+          1,
+          Number(url.searchParams.get("page")) || 1
+        );
+
+        const parametros = new URLSearchParams({
+          author: "Stephen King",
+          page: String(pagina),
+          limit: "100",
+          fields: "key,title,author_name,first_publish_year,cover_i,edition_count"
+        });
+
+        const resposta = await fetch(
+          "https://openlibrary.org/search.json?" +
+          parametros.toString()
+        );
+
+        const dados = await resposta.json();
+
+        return Response.json(dados, {
+          status: resposta.status
+        });
+
+      } catch (error) {
+        return Response.json(
+          { error: "Erro ao consultar o Open Library." },
+          { status: 500 }
+        );
+      }
+    }
+
     // API do Xbox — consulta o perfil da conta
     if (url.pathname === "/api/xbox/profile" && request.method === "GET") {
       try {
