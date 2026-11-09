@@ -7,185 +7,176 @@
   <title>Detalhes literários</title>
 
   <style>
-    :root {
-      --fundo: #F7F4ED;
-      --texto: #343746;
-      --muted: #737585;
-      --roxo: #5267D8;
-      --roxo-claro: #E9DFF7;
-      --borda: #E8E1D5;
-      --branco: #FFFFFF;
-    }
-
-    * {
-      box-sizing: border-box;
-    }
-
-    body {
-      margin: 0;
-      background: var(--fundo);
-      color: var(--texto);
-      font-family: Arial, sans-serif;
-    }
-
-    header {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 18px;
-      background: var(--branco);
-      border-bottom: 1px solid var(--borda);
-    }
-
-    header button {
-      border: 0;
-      background: var(--roxo-claro);
-      color: var(--texto);
-      border-radius: 10px;
-      padding: 10px 14px;
-      font-size: 14px;
-      cursor: pointer;
-    }
-
-    header strong {
-      font-size: 18px;
-    }
-
-    main {
-      max-width: 850px;
-      margin: 24px auto;
-      padding: 0 16px 40px;
-    }
-
-    .perfil {
-      display: flex;
-      align-items: center;
-      gap: 20px;
-      padding: 22px;
-      background: var(--branco);
-      border: 1px solid var(--borda);
-      border-radius: 16px;
-    }
-
-    .foto {
-      width: 125px;
-      height: 150px;
-      flex-shrink: 0;
-      object-fit: cover;
-      border-radius: 12px;
-      background: var(--roxo-claro);
-    }
-
-    .perfil h1 {
-      margin: 0 0 8px;
-      font-size: 24px;
-    }
-
-    .tipo {
-      color: var(--muted);
-      font-size: 13px;
-    }
-
-    section {
-      margin-top: 22px;
-      padding: 22px;
-      background: var(--branco);
-      border: 1px solid var(--borda);
-      border-radius: 16px;
-    }
-
-    section h2 {
-      margin: 0 0 14px;
-      font-size: 19px;
-    }
-
-    #biografia {
-      line-height: 1.7;
-      color: var(--muted);
-      white-space: pre-line;
-    }
-
-    .livros {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(125px, 1fr));
-      gap: 16px;
-    }
-
-    .livro {
-      min-width: 0;
-      text-align: left;
-    }
-
-    .livro img {
-      display: block;
-      width: 100%;
-      height: 175px;
-      object-fit: contain;
-      border-radius: 9px;
-      background: var(--fundo);
-    }
-
-    .livro strong {
-      display: block;
-      margin-top: 8px;
-      font-size: 13px;
-      line-height: 1.4;
-    }
-
-    .livro small {
-      display: block;
-      margin-top: 4px;
-      color: var(--muted);
-      font-size: 11px;
-    }
-
-    .mensagem {
-      color: var(--muted);
-      font-size: 14px;
-      line-height: 1.6;
-    }
-
-    @media (max-width: 480px) {
-      .perfil {
-        gap: 14px;
-        padding: 16px;
-      }
-
-      .foto {
-        width: 100px;
-        height: 125px;
-      }
-
-      .perfil h1 {
-        font-size: 19px;
-      }
-
-      section {
-        padding: 17px;
-      }
-    }
     
-.botao-adicionar-livro {
-  display: inline-flex;
-  width: fit-content;
-  max-width: 100%;
-  margin: 10px auto 0;
-  padding: 9px 13px;
+:root {
+  --fundo: #F7F4ED;
+  --texto: #343746;
+  --muted: #737585;
+  --roxo: #5267D8;
+  --roxo-claro: #E9DFF7;
+  --borda: #E8E1D5;
+  --branco: #FFFFFF;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--fundo);
+  color: var(--texto);
+  font-family: Arial, sans-serif;
+}
+
+header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 18px;
+  background: var(--branco);
+  border-bottom: 1px solid var(--borda);
+}
+
+header button {
+  border: 0;
+  background: var(--roxo-claro);
+  color: var(--texto);
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+header strong {
+  font-size: 18px;
+}
+
+main {
+  max-width: 1000px;
+  margin: 24px auto;
+  padding: 0 16px 40px;
+}
+
+.perfil {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 22px;
+  background: var(--branco);
+  border: 1px solid var(--borda);
+  border-radius: 16px;
+}
+
+.foto {
+  width: 125px;
+  height: 150px;
+  flex-shrink: 0;
+  object-fit: cover;
+  border-radius: 12px;
+  background: transparent;
+}
+
+.perfil h1 {
+  margin: 0 0 8px;
+  font-size: 24px;
+}
+
+.tipo {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+section {
+  margin-top: 22px;
+  padding: 22px;
+  background: var(--branco);
+  border: 1px solid var(--borda);
+  border-radius: 16px;
+}
+
+section h2 {
+  margin: 0 0 18px;
+  font-size: 19px;
+}
+
+#biografia {
+  line-height: 1.7;
+  color: var(--muted);
+  white-space: pre-line;
+}
+
+/* Grade e cartões dos livros */
+
+.livros {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 24px 14px;
+  align-items: stretch;
+}
+
+.livro {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.livro img {
+  display: block;
+  width: 100%;
+  height: 165px;
+  object-fit: contain;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  margin-bottom: 10px;
+}
+
+.livro strong {
+  display: flex;
   align-items: center;
   justify-content: center;
+  width: 100%;
+  min-height: 48px;
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.35;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
+.livro small {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 20px;
+  margin-top: 5px;
+  color: var(--muted);
+  font-size: 11px;
+  text-align: center;
+}
+
+/* Botão compacto */
+
+.botao-adicionar-livro {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+  max-width: 100%;
+  min-height: 34px;
+  margin: auto auto 0;
+  padding: 8px 10px;
   background: #D9F0DF;
   color: #287A43;
   border: none;
   border-radius: 9px;
-  font-size: 13px;
+  font-size: 11px;
   font-weight: 600;
+  text-align: center;
   cursor: pointer;
-}
-
-.livro {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
 }
 
 .botao-adicionar-livro.livro-ja-adicionado {
@@ -193,6 +184,14 @@
   color: #FFFFFF;
   cursor: default;
 }
+
+.mensagem {
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+/* Modal */
 
 .modal-livro {
   position: fixed;
@@ -211,17 +210,18 @@
   max-width: 390px;
   max-height: 90vh;
   overflow-y: auto;
-  background: #FFFFFF;
-  border-radius: 16px;
   padding: 24px;
+  background: var(--branco);
+  border-radius: 16px;
   text-align: center;
-  color: #343746;
+  color: var(--texto);
 }
 
 .modal-livro-conteudo > img {
   width: 100px;
   height: 145px;
-  object-fit: cover;
+  object-fit: contain;
+  background: transparent;
   border-radius: 7px;
 }
 
@@ -232,26 +232,25 @@
   border: none;
   background: none;
   font-size: 28px;
-  color: #737585;
+  color: var(--muted);
   cursor: pointer;
 }
 
 .modal-livro-conteudo label {
   display: block;
-  text-align: left;
   margin: 14px 0 6px;
   font-weight: 600;
+  text-align: left;
 }
 
 .modal-livro-conteudo select,
 .modal-livro-conteudo input {
   width: 100%;
   padding: 11px;
-  border: 1px solid #E8E1D5;
+  border: 1px solid var(--borda);
   border-radius: 9px;
-  background: #F7F4ED;
-  color: #343746;
-  box-sizing: border-box;
+  background: var(--fundo);
+  color: var(--texto);
 }
 
 #confirmarAdicionarLivro {
@@ -260,45 +259,60 @@
   padding: 12px;
   border: none;
   border-radius: 9px;
-  background: #5267D8;
+  background: var(--roxo);
   color: white;
   font-weight: 600;
   cursor: pointer;
 }
 
-    .livros {
-  display: grid !important;
-  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
-  gap: 12px;
-  align-items: start;
+#confirmarAdicionarLivro:disabled {
+  opacity: 0.6;
+  cursor: wait;
 }
 
-.livro {
-  min-width: 0;
-  width: 100%;
-  box-sizing: border-box;
+@media (max-width: 480px) {
+  .perfil {
+    gap: 14px;
+    padding: 16px;
+  }
+
+  .foto {
+    width: 100px;
+    height: 125px;
+  }
+
+  .perfil h1 {
+    font-size: 19px;
+  }
+
+  section {
+    padding: 17px 12px;
+  }
+
+  .livros {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 22px 8px;
+  }
+
+  .livro img {
+    height: 125px;
+  }
+
+  .livro strong {
+    min-height: 54px;
+    font-size: 11px;
+  }
+
+  .livro small {
+    font-size: 10px;
+  }
+
+  .botao-adicionar-livro {
+    padding: 7px 5px;
+    font-size: 10px;
+  }
 }
 
-.livro img {
-  width: 100%;
-  height: 150px;
-  object-fit: contain;
-}
-
-.livro strong {
-  overflow-wrap: anywhere;
-  text-align: center;
-}
-
-.botao-adicionar-livro {
-  display: inline-flex !important;
-  width: fit-content !important;
-  max-width: 100%;
-  white-space: normal;
-  text-align: center;
-  font-size: 11px;
-  padding: 7px 5px;
-}
   </style>
 </head>
 
@@ -370,67 +384,139 @@
 <script src="auth.js"></script>
 
 <script>
-    const parametros = new URLSearchParams(window.location.search);
-    const tipo = parametros.get("tipo");
-    const nome = parametros.get("nome");
-
-    const fotoPerfil = document.getElementById("fotoPerfil");
-    const nomePerfil = document.getElementById("nomePerfil");
-    const tipoPerfil = document.getElementById("tipoPerfil");
-    const biografia = document.getElementById("biografia");
-    const listaLivros = document.getElementById("listaLivros");
-
-    function voltar() {
-      if (
-        document.referrer &&
-        new URL(document.referrer).origin === location.origin
-      ) {
-        history.back();
-      } else {
-        location.href = "colecoes.html";
-      }
-    }
-
-    function obterFavorito() {
-      const chave = tipo === "autor"
-        ? "mn_autores_favoritos"
-        : "mn_editoras_favoritas";
-
-      const favoritos = JSON.parse(
-        localStorage.getItem(chave) || "[]"
-      );
-
-      return favoritos.find(
-        item => item.nome.toLowerCase() === nome.toLowerCase()
-      );
-    }
-
-    function configurarPerfil() {
-      if (!nome || !["autor", "editora"].includes(tipo)) {
-        nomePerfil.textContent = "Informação indisponível";
-        biografia.textContent =
-          "Não foi possível identificar este perfil.";
-        return false;
-      }
-
-      const favorito = obterFavorito();
-
-      nomePerfil.textContent = nome;
-      tipoPerfil.textContent =
-        tipo === "autor" ? "AUTOR" : "EDITORA";
-
-      if (favorito && favorito.imagem) {
-        fotoPerfil.src = favorito.imagem;
-      }
-
-      fotoPerfil.onerror = () => {
-        fotoPerfil.style.display = "none";
-      };
-
-      return true;
-    }
-
     
+const parametros = new URLSearchParams(window.location.search);
+const tipo = parametros.get("tipo");
+const nome = parametros.get("nome");
+
+const fotoPerfil = document.getElementById("fotoPerfil");
+const nomePerfil = document.getElementById("nomePerfil");
+const tipoPerfil = document.getElementById("tipoPerfil");
+const biografia = document.getElementById("biografia");
+const listaLivros = document.getElementById("listaLivros");
+
+let livroSelecionado = null;
+
+function voltar() {
+  if (
+    document.referrer &&
+    new URL(document.referrer).origin === location.origin
+  ) {
+    history.back();
+  } else {
+    location.href = "colecoes.html";
+  }
+}
+
+function lerLivrosLocais() {
+  try {
+    return JSON.parse(localStorage.getItem("mn_livros") || "[]");
+  } catch {
+    return [];
+  }
+}
+
+function obterFavorito() {
+  const chave = tipo === "autor"
+    ? "mn_autores_favoritos"
+    : "mn_editoras_favoritas";
+
+  try {
+    const favoritos = JSON.parse(localStorage.getItem(chave) || "[]");
+
+    return favoritos.find(
+      item => item.nome?.toLowerCase() === nome?.toLowerCase()
+    );
+  } catch {
+    return null;
+  }
+}
+
+function configurarPerfil() {
+  if (!nome || !["autor", "editora"].includes(tipo)) {
+    nomePerfil.textContent = "Informação indisponível";
+    biografia.textContent = "Não foi possível identificar este perfil.";
+    return false;
+  }
+
+  const favorito = obterFavorito();
+
+  nomePerfil.textContent = nome;
+  tipoPerfil.textContent = tipo === "autor" ? "AUTOR" : "EDITORA";
+
+  if (favorito?.imagem) {
+    fotoPerfil.src = favorito.imagem;
+  }
+
+  fotoPerfil.onerror = () => {
+    fotoPerfil.style.display = "none";
+  };
+
+  return true;
+}
+
+/* Procura uma edição em português para cada obra */
+
+async function buscarEdicaoPortugues(livro) {
+  if (!livro.key) return null;
+
+  try {
+    const chaveObra = livro.key.startsWith("/works/")
+      ? livro.key
+      : "/works/" + livro.key;
+
+    const resposta = await fetch(
+      "https://openlibrary.org" + chaveObra + "/editions.json?limit=100"
+    );
+
+    if (!resposta.ok) return null;
+
+    const dados = await resposta.json();
+
+    const edicoes = (dados.entries || []).filter(edicao => {
+      const idiomas = (edicao.languages || []).map(item =>
+        (item.key || "").toLowerCase()
+      );
+
+      return idiomas.some(idioma =>
+        idioma.endsWith("/por") ||
+        idioma.endsWith("/pt") ||
+        idioma.endsWith("/pt-br")
+      );
+    });
+
+    if (!edicoes.length) return null;
+
+    const edicao = edicoes.find(item =>
+      item.title && item.covers?.length
+    ) || edicoes.find(item => item.title);
+
+    if (!edicao) return null;
+
+    const capa = edicao.covers?.[0] || livro.cover_i;
+
+    if (!capa) return null;
+
+    const anoEdicao = (edicao.publish_date || "").match(/\d{4}/);
+
+    return {
+      obraId: chaveObra,
+      title: edicao.title,
+      author: livro.author_name?.[0] || nome,
+      cover_i: capa,
+      first_publish_year: anoEdicao
+        ? anoEdicao[0]
+        : livro.first_publish_year || ""
+    };
+
+  } catch (erro) {
+    console.error("Erro ao buscar edição em português:", erro);
+    return null;
+  }
+}
+
+/* Exibe os livros */
+
 async function mostrarLivros(livros) {
   listaLivros.innerHTML = "";
 
@@ -438,41 +524,38 @@ async function mostrarLivros(livros) {
 
   if (!livrosComCapa.length) {
     listaLivros.innerHTML =
-      '<p class="mensagem">Nenhum livro com capa disponível foi encontrado.</p>';
+      '<p class="mensagem">Nenhuma edição em português com capa foi encontrada.</p>';
     return;
   }
 
-  const livrosSalvos = JSON.parse(
-    localStorage.getItem("mn_livros") || "[]"
-  );
+  const livrosSalvos = lerLivrosLocais();
 
-  const cards = livrosComCapa.map(livro => {
-    livro = {
-      ...livro,
-      obraId: livro.obraId || livro.key,
-      author: livro.author || livro.author_name?.[0] || nome
-    };
+  livrosComCapa.forEach(livro => {
     const card = document.createElement("div");
     card.className = "livro";
+    card.dataset.obraId = livro.obraId;
 
     const capa = document.createElement("img");
-    capa.alt = livro.title || "Capa do livro";
+    capa.alt = "Capa de " + livro.title;
+    capa.loading = "lazy";
+    capa.src =
+      "https://covers.openlibrary.org/b/id/" +
+      livro.cover_i + "-M.jpg";
+
+    capa.onerror = () => card.remove();
 
     const titulo = document.createElement("strong");
-    titulo.textContent = livro.title || "Título não informado";
+    titulo.textContent = livro.title;
 
     const ano = document.createElement("small");
-    ano.textContent = livro.first_publish_year
-      ? "Primeira publicação: " + livro.first_publish_year
-      : "";
+    ano.textContent = livro.first_publish_year || "";
 
     const botao = document.createElement("button");
     botao.type = "button";
     botao.className = "botao-adicionar-livro";
-    botao.textContent = "Adicionar à sua lista";
 
     const jaAdicionado = livrosSalvos.some(item =>
-      item.obraId === livro.obraId
+      String(item.obraId) === String(livro.obraId)
     );
 
     if (jaAdicionado) {
@@ -480,246 +563,210 @@ async function mostrarLivros(livros) {
       botao.classList.add("livro-ja-adicionado");
       botao.disabled = true;
     } else {
-      botao.addEventListener("click", () => {
-        abrirModalLivro(livro);
-      });
+      botao.textContent = "Adicionar à sua lista";
+      botao.addEventListener("click", () => abrirModalLivro(livro));
     }
 
     card.append(capa, titulo, ano, botao);
-
-    return { card, capa, livro };
+    listaLivros.appendChild(card);
   });
+}
 
-  const resultados = await Promise.all(
-    cards.map(({ capa, livro }) => {
-      return new Promise(resolve => {
-        capa.onload = () => resolve(true);
-        capa.onerror = () => resolve(false);
+/* Biografia do autor */
 
-        capa.src =
-          "https://covers.openlibrary.org/b/id/" +
-          livro.cover_i + "-M.jpg";
-      });
-    })
-  );
+async function carregarBiografiaAutor(autor) {
+  biografia.textContent = "Buscando biografia em português...";
 
-  cards.forEach(({ card }, indice) => {
-    if (resultados[indice]) {
-      listaLivros.appendChild(card);
+  try {
+    const nomeBusca = (autor.name || nome).replace(/ /g, "_");
+
+    const resposta = await fetch(
+      "https://pt.wikipedia.org/api/rest_v1/page/summary/" +
+      encodeURIComponent(nomeBusca)
+    );
+
+    if (!resposta.ok) throw new Error("Biografia não encontrada");
+
+    const dados = await resposta.json();
+
+    if (dados.type !== "standard" || !dados.extract) {
+      throw new Error("Página indisponível");
     }
-  });
 
-  if (!listaLivros.children.length) {
-    listaLivros.innerHTML =
-      '<p class="mensagem">Nenhuma capa pôde ser carregada no momento.</p>';
+    biografia.textContent = dados.extract;
+
+  } catch {
+    biografia.textContent =
+      "Ainda não encontramos uma biografia em português para este autor.";
   }
 }
 
+/* Livros do autor */
 
-    async function carregarBiografiaAutor(autor) {
-      biografia.textContent =
-        "Buscando biografia em português...";
+async function carregarLivrosAutor(autor) {
+  listaLivros.innerHTML =
+    '<p class="mensagem">Buscando edições em português...</p>';
 
-      try {
-        const nomeBusca = (autor.name || nome).replace(/ /g, "_");
+  try {
+    const resposta = await fetch(
+      "https://openlibrary.org/search.json?author=" +
+      encodeURIComponent(autor.name || nome) +
+      "&fields=key,title,author_name,author_key,cover_i,first_publish_year,edition_count" +
+      "&limit=100"
+    );
 
-        const resposta = await fetch(
-          "https://pt.wikipedia.org/api/rest_v1/page/summary/" +
-          encodeURIComponent(nomeBusca)
-        );
+    if (!resposta.ok) throw new Error("Erro na busca");
 
-        if (!resposta.ok) {
-          throw new Error("Biografia não encontrada");
-        }
+    const dados = await resposta.json();
+    const idAutor = autor.key.replace("/authors/", "");
 
-        const dados = await resposta.json();
+    const obras = (dados.docs || []).filter(livro =>
+      livro.key &&
+      (livro.author_key || []).includes(idAutor)
+    );
 
-        if (
-          dados.type !== "standard" ||
-          !dados.extract
-        ) {
-          throw new Error("Página indisponível");
-        }
+    obras.sort((a, b) =>
+      (b.edition_count || 0) - (a.edition_count || 0)
+    );
 
-        biografia.textContent = dados.extract;
+    const obrasUnicas = [];
+    const titulos = new Set();
 
-        const nomeCompleto = dados.extract.match(
-          /^(.+?)\s+é\s+/i
-        );
+    obras.forEach(livro => {
+      const titulo = (livro.title || "").toLowerCase();
 
-        if (nomeCompleto && nomeCompleto[1]) {
-          nomePerfil.textContent =
-            nomeCompleto[1].trim();
-        }
-
-      } catch (erro) {
-        biografia.textContent =
-          "Ainda não encontramos uma biografia em português para este autor.";
+      if (titulo && !titulos.has(titulo)) {
+        titulos.add(titulo);
+        obrasUnicas.push(livro);
       }
-    }
+    });
 
-    async function carregarLivrosAutor(autor) {
+    const edicoes = await Promise.all(
+      obrasUnicas.slice(0, 35).map(buscarEdicaoPortugues)
+    );
+
+    const livrosPortugues = edicoes.filter(Boolean);
+
+    if (!livrosPortugues.length) {
       listaLivros.innerHTML =
-        '<p class="mensagem">Buscando livros publicados...</p>';
-
-      try {
-        const url =
-          "https://openlibrary.org/search.json?author=" +
-          encodeURIComponent(autor.name || nome) +
-          "&fields=key,title,author_name,author_key,cover_i,first_publish_year,edition_count" +
-          "&limit=100";
-
-        const resposta = await fetch(url);
-
-        if (!resposta.ok) {
-          throw new Error("Erro na busca dos livros");
-        }
-
-        const dados = await resposta.json();
-
-        const idAutor = autor.key.replace("/authors/", "");
-
-        const livros = (dados.docs || []).filter(livro => {
-          const autores = livro.author_key || [];
-
-          return (
-            autores.length === 1 &&
-            autores[0] === idAutor &&
-            livro.cover_i
-          );
-        });
-
-        const livrosUnicos = [];
-const titulosEncontrados = new Set();
-
-livros
-  .sort((a, b) => {
-    return (b.edition_count || 0) -
-      (a.edition_count || 0);
-  })
-  .forEach(livro => {
-    const titulo = (livro.title || "").toLowerCase();
-
-    if (titulo && !titulosEncontrados.has(titulo)) {
-      titulosEncontrados.add(titulo);
-
-      livrosUnicos.push({
-        obraId: livro.key,
-        title: livro.title,
-        author: livro.author_name?.[0] || autor.name || nome,
-        cover_i: livro.cover_i,
-        first_publish_year: livro.first_publish_year
-      });
-    }
-  });
-
-await mostrarLivros(livrosUnicos.slice(0, 30));
-
-      } catch (erro) {
-        listaLivros.innerHTML =
-          '<p class="mensagem">Não foi possível carregar os livros deste autor.</p>';
-      }
+        '<p class="mensagem">Não encontramos edições em português catalogadas para este autor.</p>';
+      return;
     }
 
-    async function carregarAutor() {
-      try {
-        const busca = await fetch(
-          "https://openlibrary.org/search/authors.json?q=" +
-          encodeURIComponent(nome)
-        );
+    await mostrarLivros(livrosPortugues);
 
-        if (!busca.ok) {
-          throw new Error("Erro na busca do autor");
-        }
+  } catch (erro) {
+    console.error(erro);
+    listaLivros.innerHTML =
+      '<p class="mensagem">Não foi possível carregar os livros deste autor.</p>';
+  }
+}
 
-        const dados = await busca.json();
+/* Perfil do autor */
 
-        const autor = dados.docs?.find(
-          item => item.name?.toLowerCase() === nome.toLowerCase()
-        ) || dados.docs?.[0];
+async function carregarAutor() {
+  try {
+    const busca = await fetch(
+      "https://openlibrary.org/search/authors.json?q=" +
+      encodeURIComponent(nome)
+    );
 
-        if (!autor || !autor.key) {
-          biografia.textContent =
-            "Não encontramos informações sobre este autor.";
+    if (!busca.ok) throw new Error("Erro na busca do autor");
 
-          listaLivros.innerHTML =
-            '<p class="mensagem">Nenhum livro encontrado.</p>';
-          return;
-        }
+    const dados = await busca.json();
 
-        const chaveAutor = autor.key.startsWith("/authors/")
-          ? autor.key
-          : "/authors/" + autor.key;
+    const autor = dados.docs?.find(
+      item => item.name?.toLowerCase() === nome.toLowerCase()
+    ) || dados.docs?.[0];
 
-        autor.key = chaveAutor;
-
-        nomePerfil.textContent =
-          autor.name || nome;
-
-        carregarBiografiaAutor(autor);
-        carregarLivrosAutor(autor);
-
-        try {
-          const respostaPerfil = await fetch(
-            "https://openlibrary.org" +
-            chaveAutor + ".json"
-          );
-
-          if (respostaPerfil.ok) {
-            const perfil = await respostaPerfil.json();
-
-            if (
-              perfil.photos?.length &&
-              !obterFavorito()?.imagem
-            ) {
-              fotoPerfil.src =
-                "https://covers.openlibrary.org/a/id/" +
-                perfil.photos[0] + "-M.jpg";
-
-              fotoPerfil.style.display = "";
-            }
-          }
-        } catch (erro) {
-          // A foto do perfil é opcional.
-        }
-
-      } catch (erro) {
-        biografia.textContent =
-          "Não foi possível localizar este autor.";
-
-        listaLivros.innerHTML =
-          '<p class="mensagem">Tente novamente mais tarde.</p>';
-      }
-    }
-
-    async function carregarEditora() {
+    if (!autor?.key) {
       biografia.textContent =
-        "Consulte abaixo os livros encontrados desta editora.";
-
-      try {
-        
-const resposta = await fetch(
-  "https://openlibrary.org/search.json?publisher=" +
-  encodeURIComponent(nome) +
-  "&limit=50&fields=key,title,author_name,cover_i,first_publish_year"
-);
-
-        if (!resposta.ok) {
-          throw new Error("Erro na busca");
-        }
-
-        const dados = await resposta.json();
-
-        await mostrarLivros(dados.docs || []);
-
-      } catch (erro) {
-        listaLivros.innerHTML =
-          '<p class="mensagem">Não foi possível carregar os livros desta editora.</p>';
-      }
+        "Não encontramos informações sobre este autor.";
+      listaLivros.innerHTML =
+        '<p class="mensagem">Nenhum livro encontrado.</p>';
+      return;
     }
 
-  
-let livroSelecionado = null;
+    autor.key = autor.key.startsWith("/authors/")
+      ? autor.key
+      : "/authors/" + autor.key;
+
+    nomePerfil.textContent = autor.name || nome;
+
+    carregarBiografiaAutor(autor);
+    carregarLivrosAutor(autor);
+
+    try {
+      const resposta = await fetch(
+        "https://openlibrary.org" + autor.key + ".json"
+      );
+
+      if (resposta.ok) {
+        const perfil = await resposta.json();
+
+        if (perfil.photos?.length && !obterFavorito()?.imagem) {
+          fotoPerfil.src =
+            "https://covers.openlibrary.org/a/id/" +
+            perfil.photos[0] + "-M.jpg";
+          fotoPerfil.style.display = "";
+        }
+      }
+    } catch {
+      // A foto do perfil é opcional.
+    }
+
+  } catch (erro) {
+    console.error(erro);
+    biografia.textContent = "Não foi possível localizar este autor.";
+    listaLivros.innerHTML =
+      '<p class="mensagem">Tente novamente mais tarde.</p>';
+  }
+}
+
+/* Livros da editora */
+
+async function carregarEditora() {
+  biografia.textContent =
+    "Consulte abaixo as edições em português encontradas desta editora.";
+
+  listaLivros.innerHTML =
+    '<p class="mensagem">Buscando edições em português...</p>';
+
+  try {
+    const resposta = await fetch(
+      "https://openlibrary.org/search.json?publisher=" +
+      encodeURIComponent(nome) +
+      "&limit=50&fields=key,title,author_name,cover_i,first_publish_year,edition_count"
+    );
+
+    if (!resposta.ok) throw new Error("Erro na busca");
+
+    const dados = await resposta.json();
+
+    const obras = (dados.docs || []).filter(livro => livro.key);
+
+    const edicoes = await Promise.all(
+      obras.slice(0, 35).map(buscarEdicaoPortugues)
+    );
+
+    const livrosPortugues = edicoes.filter(Boolean);
+
+    if (!livrosPortugues.length) {
+      listaLivros.innerHTML =
+        '<p class="mensagem">Não encontramos edições em português catalogadas para esta editora.</p>';
+      return;
+    }
+
+    await mostrarLivros(livrosPortugues);
+
+  } catch (erro) {
+    console.error(erro);
+    listaLivros.innerHTML =
+      '<p class="mensagem">Não foi possível carregar os livros desta editora.</p>';
+  }
+}
+
+/* Modal de cadastro */
 
 function abrirModalLivro(livro) {
   livroSelecionado = livro;
@@ -727,12 +774,8 @@ function abrirModalLivro(livro) {
   document.getElementById("modalLivroCapa").src =
     "https://covers.openlibrary.org/b/id/" + livro.cover_i + "-M.jpg";
 
-  document.getElementById("modalLivroTitulo").textContent =
-    livro.title;
-
-  document.getElementById("modalLivroAutor").textContent =
-    livro.author || nome;
-
+  document.getElementById("modalLivroTitulo").textContent = livro.title;
+  document.getElementById("modalLivroAutor").textContent = livro.author || nome;
   document.getElementById("modalLivroStatus").value = "Quero ler";
   document.getElementById("modalPaginasTotal").value = "";
   document.getElementById("modalPaginasLidas").value = "0";
@@ -751,6 +794,15 @@ document.getElementById("fecharModalLivro").addEventListener(
   fecharModalLivro
 );
 
+document.getElementById("modalAdicionarLivro").addEventListener(
+  "click",
+  event => {
+    if (event.target.id === "modalAdicionarLivro") {
+      fecharModalLivro();
+    }
+  }
+);
+
 document.getElementById("modalLivroStatus").addEventListener(
   "change",
   event => {
@@ -758,6 +810,8 @@ document.getElementById("modalLivroStatus").addEventListener(
       event.target.value === "Lendo" ? "block" : "none";
   }
 );
+
+/* Salva na coleção existente */
 
 document.getElementById("confirmarAdicionarLivro").addEventListener(
   "click",
@@ -773,17 +827,15 @@ document.getElementById("confirmarAdicionarLivro").addEventListener(
       document.getElementById("modalPaginasLidas").value
     );
 
-    if (status === "Lendo") {
-      if (
-        !Number.isInteger(paginasTotal) ||
-        paginasTotal <= 0 ||
-        !Number.isInteger(paginasLidas) ||
-        paginasLidas < 0 ||
-        paginasLidas > paginasTotal
-      ) {
-        alert("Informe o total de páginas e um progresso válido.");
-        return;
-      }
+    if (status === "Lendo" && (
+      !Number.isInteger(paginasTotal) ||
+      paginasTotal <= 0 ||
+      !Number.isInteger(paginasLidas) ||
+      paginasLidas < 0 ||
+      paginasLidas > paginasTotal
+    )) {
+      alert("Informe o total de páginas e um progresso válido.");
+      return;
     }
 
     botao.disabled = true;
@@ -805,34 +857,26 @@ document.getElementById("confirmarAdicionarLivro").addEventListener(
         throw new Error("Faça login para adicionar livros à sua lista.");
       }
 
-      const obraId = String(
-        livroSelecionado.obraId || "capa-" + livroSelecionado.cover_i
-      );
+      const obraId = String(livroSelecionado.obraId);
+      const livrosLocais = lerLivrosLocais();
 
-      const livrosLocais = JSON.parse(
-        localStorage.getItem("mn_livros") || "[]"
-      );
-
-      const existente = livrosLocais.find(
-        item => String(item.obraId) === obraId
-      );
-
-      if (existente) {
+      if (livrosLocais.some(item =>
+        String(item.obraId) === obraId
+      )) {
         throw new Error("Este livro já está na sua lista.");
       }
 
-      const { data: registroExistente, error: erroBusca } =
-        await cliente
-          .from("mn_collections")
-          .select("id")
-          .eq("user_id", sessaoData.session.user.id)
-          .eq("universe", "leitura")
-          .eq("item_id", obraId)
-          .maybeSingle();
+      const { data: existente, error: erroBusca } = await cliente
+        .from("mn_collections")
+        .select("id")
+        .eq("user_id", sessaoData.session.user.id)
+        .eq("universe", "leitura")
+        .eq("item_id", obraId)
+        .maybeSingle();
 
       if (erroBusca) throw erroBusca;
 
-      if (registroExistente) {
+      if (existente) {
         throw new Error("Este livro já está na sua coleção.");
       }
 
@@ -885,19 +929,16 @@ document.getElementById("confirmarAdicionarLivro").addEventListener(
         JSON.stringify(livrosLocais)
       );
 
-      document.querySelectorAll(".livro").forEach(card => {
-        const tituloCard = card.querySelector("strong");
+      const card = [...document.querySelectorAll(".livro")].find(
+        item => item.dataset.obraId === obraId
+      );
 
-        if (tituloCard?.textContent === novoLivro.titulo) {
-          const botaoCard = card.querySelector("button");
-
-          if (botaoCard) {
-            botaoCard.textContent = "Livro adicionado";
-            botaoCard.classList.add("livro-ja-adicionado");
-            botaoCard.disabled = true;
-          }
-        }
-      });
+      if (card) {
+        const botaoCard = card.querySelector("button");
+        botaoCard.textContent = "Livro adicionado";
+        botaoCard.classList.add("livro-ja-adicionado");
+        botaoCard.disabled = true;
+      }
 
       fecharModalLivro();
       alert("Livro adicionado à sua lista!");
@@ -912,21 +953,20 @@ document.getElementById("confirmarAdicionarLivro").addEventListener(
   }
 );
 
-    if (configurarPerfil()) {
-      if (tipo === "autor") {
-        carregarAutor();
-      } else {
-        carregarEditora();
+/* Inicialização */
 
-        document.getElementById(
-          "secaoBiografia"
-        ).style.display = "none";
+if (configurarPerfil()) {
+  if (tipo === "autor") {
+    carregarAutor();
+  } else {
+    carregarEditora();
 
-        document.getElementById(
-          "tituloLivros"
-        ).textContent = "Livros publicados pela editora";
-      }
-    }
+    document.getElementById("secaoBiografia").style.display = "none";
+    document.getElementById("tituloLivros").textContent =
+      "Edições em português publicadas pela editora";
+  }
+}
+
   </script>
 
 </body>
