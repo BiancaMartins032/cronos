@@ -662,18 +662,53 @@ async function carregarLivrosAutor(autor) {
   }
 }
 
+
 /* Perfil do autor */
 
 async function carregarAutor() {
+  // Tenta novamente se a conexão falhar ou demorar demais.
+  async function buscarComTentativas(url) {
+    let ultimoErro;
+
+    for (let tentativa = 1; tentativa <= 2; tentativa++) {
+      const controlador = new AbortController();
+      const tempoLimite = setTimeout(
+        () => controlador.abort(),
+        12000
+      );
+
+      try {
+        const resposta = await fetch(url, {
+          signal: controlador.signal
+        });
+
+        if (!resposta.ok) {
+          throw new Error("A Open Library respondeu com erro.");
+        }
+
+        return await resposta.json();
+
+      } catch (erro) {
+        ultimoErro = erro;
+
+        if (tentativa < 2) {
+          await new Promise(resolve => setTimeout(resolve, 1000));
+        }
+
+      } finally {
+        clearTimeout(tempoLimite);
+      }
+    }
+
+    throw ultimoErro;
+  }
+
   try {
-    const busca = await fetch(
+    const urlBusca =
       "https://openlibrary.org/search/authors.json?q=" +
-      encodeURIComponent(nome)
-    );
+      encodeURIComponent(nome);
 
-    if (!busca.ok) throw new Error("Erro na busca do autor");
-
-    const dados = await busca.json();
+    const dados = await buscarComTentativas(urlBusca);
 
     const autor = dados.docs?.find(
       item => item.name?.toLowerCase() === nome.toLowerCase()
@@ -682,6 +717,7 @@ async function carregarAutor() {
     if (!autor?.key) {
       biografia.textContent =
         "Não encontramos informações sobre este autor.";
+
       listaLivros.innerHTML =
         '<p class="mensagem">Nenhum livro encontrado.</p>';
       return;
@@ -693,78 +729,42 @@ async function carregarAutor() {
 
     nomePerfil.textContent = autor.name || nome;
 
-    carregarBiografiaAutor(autor);
-    carregarLivrosAutor(autor);
+    // Carrega biografia e livros sem impedir um pelo erro do outro.
+    await Promise.allSettled([
+      carregarBiografiaAutor(autor),
+      carregarLivrosAutor(autor)
+    ]);
 
+    // A foto é opcional.
     try {
-      const resposta = await fetch(
+      const perfil = await buscarComTentativas(
         "https://openlibrary.org" + autor.key + ".json"
       );
 
-      if (resposta.ok) {
-        const perfil = await resposta.json();
+      if (perfil.photos?.length && !obterFavorito()?.imagem) {
+        fotoPerfil.src =
+          "https://covers.openlibrary.org/a/id/" +
+          perfil.photos[0] + "-M.jpg";
 
-        if (perfil.photos?.length && !obterFavorito()?.imagem) {
-          fotoPerfil.src =
-            "https://covers.openlibrary.org/a/id/" +
-            perfil.photos[0] + "-M.jpg";
-          fotoPerfil.style.display = "";
-        }
+        fotoPerfil.style.display = "";
       }
-    } catch {
-      // A foto do perfil é opcional.
+
+    } catch (erroFoto) {
+      console.warn("Não foi possível carregar a foto do autor.");
     }
 
   } catch (erro) {
-    console.error(erro);
-    biografia.textContent = "Não foi possível localizar este autor.";
+    console.error("Erro ao carregar autor:", erro);
+
+    nomePerfil.textContent = nome;
+    biografia.textContent =
+      "Não foi possível conectar à biblioteca de livros. Tente novamente mais tarde.";
+
     listaLivros.innerHTML =
-      '<p class="mensagem">Tente novamente mais tarde.</p>';
+      '<p class="mensagem">Os livros não puderam ser carregados. Verifique sua conexão e tente novamente.</p>';
   }
 }
 
-/* Livros da editora */
-
-async function carregarEditora() {
-  biografia.textContent =
-    "Consulte abaixo as edições em português encontradas desta editora.";
-
-  listaLivros.innerHTML =
-    '<p class="mensagem">Buscando edições em português...</p>';
-
-  try {
-    const resposta = await fetch(
-      "https://openlibrary.org/search.json?publisher=" +
-      encodeURIComponent(nome) +
-      "&limit=50&fields=key,title,author_name,cover_i,first_publish_year,edition_count"
-    );
-
-    if (!resposta.ok) throw new Error("Erro na busca");
-
-    const dados = await resposta.json();
-
-    const obras = (dados.docs || []).filter(livro => livro.key);
-
-    const edicoes = await Promise.all(
-      obras.slice(0, 35).map(buscarEdicaoPortugues)
-    );
-
-    const livrosPortugues = edicoes.filter(Boolean);
-
-    if (!livrosPortugues.length) {
-      listaLivros.innerHTML =
-        '<p class="mensagem">Não encontramos edições em português catalogadas para esta editora.</p>';
-      return;
-    }
-
-    await mostrarLivros(livrosPortugues);
-
-  } catch (erro) {
-    console.error(erro);
-    listaLivros.innerHTML =
-      '<p class="mensagem">Não foi possível carregar os livros desta editora.</p>';
-  }
-}
 
 /* Modal de cadastro */
 
