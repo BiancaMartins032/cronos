@@ -174,16 +174,20 @@ if (url.pathname === "/api/openlibrary/books" && request.method === "GET") {
           location: autor.location || ""
         });
 
-      } catch (error) {
+            } catch (error) {
         console.error("Erro ao consultar biografia:", error);
 
-        return Response.json(
-          { error: "Não foi possível consultar a biografia." },
+               return Response.json(
+          {
+            error: "Não foi possível consultar a biografia.",
+            detalhe: error.message
+          },
           { status: 500 }
         );
       }
     }
 
+    // API do Xbox — consulta o perfil da conta
     // API do Xbox — consulta o perfil da conta
     if (url.pathname === "/api/xbox/profile" && request.method === "GET") {
       try {
