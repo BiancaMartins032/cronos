@@ -521,40 +521,55 @@ async function buscarEdicaoPortugues(livro) {
 
 
 async function buscarLivrosGoogle(termo) {
-  const url = "/api/books?q=" + encodeURIComponent(termo);
+  const todosLivros = [];
+  const quantidadePorPagina = 40;
+  const maxPaginas = 10;
 
-  const controlador = new AbortController();
-  const limite = setTimeout(() => controlador.abort(), 20000);
+  for (let pagina = 0; pagina < maxPaginas; pagina++) {
+    const inicio = pagina * quantidadePorPagina;
 
-  try {
-    const resposta = await fetch(url, {
-      signal: controlador.signal
-    });
+    const url = "/api/books?q=" +
+      encodeURIComponent(termo) +
+      "&startIndex=" + inicio;
+
+    const resposta = await fetch(url);
 
     if (!resposta.ok) {
-      throw new Error("Não foi possível consultar o Google Books. Código: " + resposta.status);
+      throw new Error("Erro ao consultar Google Books: " + resposta.status);
     }
 
     const dados = await resposta.json();
+    const itens = dados.items || [];
 
-    return (dados.items || []).map(item => {
-      const info = item.volumeInfo || {};
-      const imagem = info.imageLinks?.thumbnail || "";
+    todosLivros.push(...itens);
 
-      return {
-        obraId: "google:" + item.id,
-        title: info.title || "Título não informado",
-        author: (info.authors || [nome]).join(", "),
-        capa: imagem.replace(/^http:/, "https:"),
-        cover_i: null,
-        first_publish_year:
-          (info.publishedDate || "").match(/\d{4}/)?.[0] || ""
-      };
-    }).filter(livro => livro.capa);
-
-  } finally {
-    clearTimeout(limite);
+    if (
+      itens.length < quantidadePorPagina ||
+      todosLivros.length >= (dados.totalItems || 0)
+    ) {
+      break;
+    }
   }
+
+  return todosLivros.map(item => {
+    const info = item.volumeInfo || {};
+    const idioma = (info.language || "").toLowerCase();
+    const imagem = info.imageLinks?.thumbnail || "";
+
+    return {
+      obraId: "google:" + item.id,
+      title: info.title || "Título não informado",
+      author: (info.authors || [nome]).join(", "),
+      capa: imagem.replace(/^http:/, "https:"),
+      cover_i: null,
+      first_publish_year:
+        (info.publishedDate || "").match(/\d{4}/)?.[0] || "",
+      idioma
+    };
+  }).filter(livro =>
+    livro.capa &&
+    livro.idioma.startsWith("pt")
+  );
 }
 
 
