@@ -39,6 +39,7 @@ export default {
         );
 
         const dados = await resposta.json();
+        nomePerfil.textContent = dados.display_name || nome;
 
         return Response.json(dados, {
           status: resposta.status
