@@ -53,45 +53,58 @@ export default {
     }
 
     
-    // API do Open Library — obras e anos de primeira publicação
-    if (url.pathname === "/api/openlibrary/books" && request.method === "GET") {
-      try {
-        const pagina = Math.max(
-          1,
-          Number(url.searchParams.get("page")) || 1
-        );
+    // API do Open Library — obras com edições em português
+if (url.pathname === "/api/openlibrary/books" && request.method === "GET") {
+  try {
+    const pagina = Math.max(
+      1,
+      Number(url.searchParams.get("page")) || 1
+    );
 
-        const parametros = new URLSearchParams({
-  author: "Stephen King",
-  page: String(pagina),
-  limit: "100",
-  fields: "key,title,author_name,first_publish_year,cover_i,edition_count"
-});
+    const parametros = new URLSearchParams({
+      q: "author_key:OL19981A AND language:por",
+      page: String(pagina),
+      limit: "100",
+      fields: [
+        "key",
+        "title",
+        "author_name",
+        "author_key",
+        "first_publish_year",
+        "cover_i",
+        "edition_count",
+        "editions",
+        "editions.key",
+        "editions.title",
+        "editions.language",
+        "editions.cover_i"
+      ].join(",")
+    });
 
-const titulo = url.searchParams.get("title");
+    const resposta = await fetch(
+      "https://openlibrary.org/search.json?" +
+      parametros.toString()
+    );
 
-if (titulo) {
-  parametros.set("title", titulo);
-}
-
-        const resposta = await fetch(
-          "https://openlibrary.org/search.json?" +
-          parametros.toString()
-        );
-
-        const dados = await resposta.json();
-
-        return Response.json(dados, {
-          status: resposta.status
-        });
-
-      } catch (error) {
-        return Response.json(
-          { error: "Erro ao consultar o Open Library." },
-          { status: 500 }
-        );
-      }
+    if (!resposta.ok) {
+      throw new Error("Open Library retornou erro: " + resposta.status);
     }
+
+    const dados = await resposta.json();
+
+    return Response.json(dados, {
+      status: resposta.status
+    });
+
+  } catch (error) {
+    console.error("Erro Open Library:", error);
+
+    return Response.json(
+      { error: "Erro ao consultar o Open Library." },
+      { status: 500 }
+    );
+  }
+}
 
     // API do Xbox — consulta o perfil da conta
     if (url.pathname === "/api/xbox/profile" && request.method === "GET") {
