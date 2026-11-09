@@ -63,7 +63,7 @@ main {
 .perfil {
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 24px;
   padding: 22px;
   background: var(--branco);
   border: 1px solid var(--borda);
@@ -79,15 +79,37 @@ main {
   background: transparent;
 }
 
+.dados-perfil {
+  min-width: 0;
+}
+
 .perfil h1 {
-  margin: 0 0 8px;
+  margin: 4px 0 14px;
   font-size: 24px;
   color: var(--texto);
 }
 
 .tipo {
-  color: var(--muted);
+  color: var(--roxo-claro);
   font-size: 13px;
+  font-weight: 600;
+}
+
+.detalhes-autor {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.detalhes-autor p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.detalhes-autor strong {
+  color: var(--texto);
 }
 
 section {
@@ -328,22 +350,27 @@ section h2 {
     <strong>Detalhes literários</strong>
   </header>
 
-  <main>
-    <div class="perfil">
-      <img id="fotoPerfil" class="foto" alt="">
+ <main>
+  <div class="perfil">
+    <img id="fotoPerfil" class="foto" alt="">
 
-      <div>
-        <div id="tipoPerfil" class="tipo"></div>
-        <h1 id="nomePerfil">Carregando...</h1>
+    <div class="dados-perfil">
+      <div id="tipoPerfil" class="tipo">Autor</div>
+      <h1 id="nomePerfil">Carregando...</h1>
+
+      <div class="detalhes-autor">
+        <p><strong>Nascimento:</strong> <span id="nascimentoAutor">Carregando...</span></p>
+        <p><strong>Naturalidade:</strong> <span id="naturalidadeAutor">Carregando...</span></p>
       </div>
     </div>
+  </div>
 
-    <section id="secaoBiografia">
-      <h2>Biografia</h2>
-      <div id="biografia" class="mensagem">
-        Buscando informações...
-      </div>
-    </section>
+  <section id="secaoBiografia">
+    <h2>Informações</h2>
+    <div id="biografia" class="mensagem">
+      Buscando informações sobre as obras...
+    </div>
+  </section>
 
     <section>
       <h2 id="tituloLivros">Obras publicadas</h2>
@@ -691,32 +718,16 @@ async function mostrarLivros(livros) {
 /* Biografia do autor */
 
 async function carregarBiografiaAutor(autor) {
-  biografia.textContent = "Buscando biografia em português...";
-
-  try {
-    const nomeBusca = (autor.name || nome).replace(/ /g, "_");
-
-    const resposta = await fetch(
-      "https://pt.wikipedia.org/api/rest_v1/page/summary/" +
-      encodeURIComponent(nomeBusca)
-    );
-
-    if (!resposta.ok) throw new Error("Biografia não encontrada");
-
-    const dados = await resposta.json();
-
-    if (dados.type !== "standard" || !dados.extract) {
-      throw new Error("Página indisponível");
-    }
-
-    biografia.textContent = dados.extract;
-
-  } catch {
-    biografia.textContent =
-      "Ainda não encontramos uma biografia em português para este autor.";
-  }
+  biografia.textContent =
+    "Stephen King publicou seu primeiro romance, Carrie, em 1974, " +
+    "aos 26 anos. Desde então, construiu uma carreira com mais de " +
+    "60 livros publicados, incluindo romances, novelas e coletâneas " +
+    "de contos. Suas histórias conquistaram leitores no mundo inteiro " +
+    "e muitas delas foram adaptadas para o cinema e a televisão. " +
+    "Entre as adaptações para o cinema estão O Iluminado, It: A Coisa, " +
+    "À Espera de um Milagre e Cemitério Maldito. Na televisão, suas " +
+    "obras inspiraram produções como The Stand, 11.22.63 e Castle Rock.";
 }
-
 
 /* Livros do autor */
 
@@ -833,7 +844,28 @@ async function carregarLivrosAutor(autor) {
 /* Perfil do autor */
 
 async function carregarAutor() {
-  nomePerfil.textContent = nome;
+  nomePerfil.textContent = "Stephen Edwin King";
+
+  const nascimento = new Date(1947, 8, 21);
+const hoje = new Date();
+
+let idade = hoje.getFullYear() - nascimento.getFullYear();
+
+if (
+  hoje.getMonth() < nascimento.getMonth() ||
+  (
+    hoje.getMonth() === nascimento.getMonth() &&
+    hoje.getDate() < nascimento.getDate()
+  )
+) {
+  idade--;
+}
+
+document.getElementById("nascimentoAutor").textContent =
+  "21 de setembro de 1947 (atualmente com " + idade + " anos)";
+
+  document.getElementById("naturalidadeAutor").textContent =
+    "Portland, Maine, Estados Unidos";
 
   await Promise.allSettled([
     carregarBiografiaAutor({ name: nome }),
