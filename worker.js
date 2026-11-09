@@ -52,71 +52,198 @@ export default {
       }
     }
 
-       // API do Open Library — obras com edições em português
-    
-    // API do Open Library — obras com edições em português
+           // API de livros — Open Library com Google Books como alternativa
     if (url.pathname === "/api/openlibrary/books" && request.method === "GET") {
-      try {
-        const pagina = Math.max(
-          1,
-          Number(url.searchParams.get("page")) || 1
+      const autor = url.searchParams.get("author");
+      const pagina = Math.max(
+        1,
+        Number(url.searchParams.get("page")) || 1
+      );
+
+      if (!autor) {
+        return Response.json(
+          { error: "Informe o nome do autor." },
+          { status: 400 }
         );
+      }
 
-        const autor = url.searchParams.get("author");
+      const cacheKey = new Request(url.toString(), {
+        method: "GET"
+      });
 
-        if (!autor) {
-          return Response.json(
-            { error: "Informe o nome do autor." },
-            { status: 400 }
+      const cache = caches.default;
+
+      try {
+        // 1. Verifica se já existe uma consulta salva
+        const respostaCache = await cache.match(cacheKey);
+
+        if (respostaCache) {
+          return respostaCache;
+        }
+
+        // 2. Tenta consultar primeiro a Open Library
+        try {
+          const parametros = new URLSearchParams({
+            q: `author:"${autor}" AND language:por`,
+            page: String(pagina),
+            limit: "100",
+            fields: [
+              "key",
+              "title",
+              "author_name",
+              "author_key",
+              "first_publish_year",
+              "cover_i",
+              "edition_count",
+              "editions",
+              "editions.key",
+              "editions.title",
+              "editions.language",
+              "editions.cover_i"
+            ].join(",")
+          });
+
+          const resposta = await fetch(
+            "https://openlibrary.org/search.json?" +
+            parametros.toString()
+          );
+
+          if (!resposta.ok) {
+            throw new Error(
+              "Open Library retornou erro: " + resposta.status
+            );
+          }
+
+          const dados = await resposta.json();
+
+          const resultado = Response.json(dados, {
+            headers: {
+              "Cache-Control": "public, max-age=21600"
+            }
+          });
+
+          await cache.put(cacheKey, resultado.clone());
+
+          return resultado;
+
+        } catch (erroOpenLibrary) {
+          console.error(
+            "Open Library indisponível:",
+            erroOpenLibrary
           );
         }
 
-        const parametros = new URLSearchParams({
-          q: `author:"${autor}" AND language:por`,
-          page: String(pagina),
-          limit: "100",
-          fields: [
-            "key",
-            "title",
-            "author_name",
-            "author_key",
-            "first_publish_year",
-            "cover_i",
-            "edition_count",
-            "editions",
-            "editions.key",
-            "editions.title",
-            "editions.language",
-            "editions.cover_i"
-          ].join(",")
-        });
+        // 3. Se a Open Library falhar, tenta o Google Books
+        const livros = [];
+        const idsVistos = new Set();
+        let totalEncontrado = 0;
 
-        const resposta = await fetch(
-          "https://openlibrary.org/search.json?" +
-          parametros.toString()
-        );
+        for (let parte = 0; parte < 3; parte++) {
+          const inicio = (pagina - 1) * 100 + (parte * 40);
 
-        if (!resposta.ok) {
-          throw new Error("Open Library retornou erro: " + resposta.status);
+          const parametrosGoogle = new URLSearchParams({
+            q: `inauthor:"${autor}"`,
+            langRestrict: "pt",
+            startIndex: String(inicio),
+            maxResults: "40",
+            printType: "books"
+          });
+
+          const respostaGoogle = await fetch(
+            "https://www.googleapis.com/books/v1/volumes?" +
+            parametrosGoogle.toString()
+          );
+
+          if (!respostaGoogle.ok) {
+            throw new Error(
+              "Google Books retornou erro: " +
+              respostaGoogle.status
+            );
+          }
+
+          const dadosGoogle = await respostaGoogle.json();
+
+          totalEncontrado = dadosGoogle.totalItems || 0;
+
+          const itens = dadosGoogle.items || [];
+
+          for (const item of itens) {
+            if (!item.id || idsVistos.has(item.id)) continue;
+
+            idsVistos.add(item.id);
+
+            const info = item.volumeInfo || {};
+
+            const dataPublicacao = (
+              info.publishedDate || ""
+            ).match(/^\d{4}/);
+
+            const capaGoogle =
+              info.imageLinks?.thumbnail ||
+              info.imageLinks?.smallThumbnail ||
+              "";
+
+            livros.push({
+              key: "/works/GOOGLE_" + item.id,
+              title: info.title || "Título não informado",
+              author_name: info.authors?.length
+                ? info.authors
+                : [autor],
+              author_key: [],
+              first_publish_year: dataPublicacao
+                ? Number(dataPublicacao[0])
+                : null,
+              cover_i: null,
+              edition_count: 1,
+              editions: {
+                docs: [
+                  {
+                    title: info.title || "Título não informado",
+                    language: ["por"],
+                    cover_i: null,
+                    cover_url: capaGoogle.replace(/^http:/, "https:")
+                  }
+                ]
+              }
+            });
+          }
+
+          if (
+            itens.length < 40 ||
+            inicio + 40 >= totalEncontrado
+          ) {
+            break;
+          }
         }
 
-        const dados = await resposta.json();
+        // 4. Mantém o mesmo formato de resposta da Open Library
+        const dadosAlternativos = {
+          numFound: totalEncontrado,
+          docs: livros
+        };
 
-        return Response.json(dados);
+        const resultado = Response.json(dadosAlternativos, {
+          headers: {
+            "Cache-Control": "public, max-age=21600"
+          }
+        });
+
+        await cache.put(cacheKey, resultado.clone());
+
+        return resultado;
 
       } catch (error) {
-        console.error("Erro Open Library:", error);
+        console.error("Erro nas fontes de livros:", error);
 
         return Response.json(
           {
-            error: "Erro ao consultar o Open Library.",
+            error: "Não foi possível consultar as fontes de livros.",
             detalhe: error.message
           },
-          { status: 500 }
+          { status: 502 }
         );
       }
     }
-
 
     
     // API — informações biográficas do autor
