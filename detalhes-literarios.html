@@ -1025,65 +1025,47 @@ async function mostrarLivros(livros) {
 async function carregarBiografiaAutor(autor) {
   biografia.textContent = "Buscando informações biográficas...";
 
+  document.getElementById("nascimentoAutor").textContent =
+    "Consultando informações...";
+
+  document.getElementById("naturalidadeAutor").textContent =
+    "Consultando informações...";
+
   try {
     const resposta = await fetch(
-      "https://openlibrary.org/search/authors.json?q=" +
+      "/api/openlibrary/author?name=" +
       encodeURIComponent(autor.name)
     );
 
-    if (!resposta.ok) {
-      throw new Error("Não foi possível consultar o autor.");
-    }
-
     const dados = await resposta.json();
 
-    const normalizar = texto => texto
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "")
-      .toLowerCase()
-      .trim();
-
-    const encontrado = (dados.docs || []).find(item =>
-      normalizar(item.name || "") === normalizar(autor.name)
-    );
-
-    if (!encontrado) {
-      biografia.textContent =
-        "Não encontramos informações biográficas confirmadas para este autor.";
-      return;
+    if (!resposta.ok) {
+      throw new Error(dados.error || "Erro ao consultar autor.");
     }
 
-    const respostaAutor = await fetch(
-      "https://openlibrary.org" + encontrado.key + ".json"
-    );
-
-    if (!respostaAutor.ok) {
-      throw new Error("Não foi possível carregar a biografia.");
-    }
-
-    const dadosAutor = await respostaAutor.json();
-
-    const textoBiografia = typeof dadosAutor.bio === "string"
-      ? dadosAutor.bio
-      : dadosAutor.bio?.value || "";
-
-    biografia.textContent = textoBiografia ||
+    biografia.textContent = dados.bio ||
       "Ainda não há uma biografia disponível para este autor.";
 
     document.getElementById("nascimentoAutor").textContent =
-      dadosAutor.birth_date || "Não informado";
+      dados.birth_date || "Não informado";
 
     document.getElementById("naturalidadeAutor").textContent =
-      dadosAutor.location || "Não informado";
+      dados.location || "Não informado";
 
   } catch (erro) {
     console.error("Erro ao carregar biografia:", erro);
 
     biografia.textContent =
       "Não foi possível carregar as informações deste autor.";
+
+    document.getElementById("nascimentoAutor").textContent =
+      "Não disponível";
+
+    document.getElementById("naturalidadeAutor").textContent =
+      "Não disponível";
   }
 }
-
+  
 /* Livros do autor */
 
 
