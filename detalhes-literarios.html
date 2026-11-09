@@ -594,9 +594,11 @@ section h2 {
       <h1 id="nomePerfil">Carregando...</h1>
 
       <div class="detalhes-autor">
-        <p><strong>Nascimento:</strong> <span id="nascimentoAutor">Carregando...</span></p>
-        <p><strong>Naturalidade:</strong> <span id="naturalidadeAutor">Carregando...</span></p>
-      </div>
+  <p><strong>Nascimento:</strong> <span id="nascimentoAutor">Carregando...</span></p>
+  <p><strong>Falecimento:</strong> <span id="falecimentoAutor">Carregando...</span></p>
+  <p><strong>Idade ao falecer:</strong> <span id="idadeAutor">Carregando...</span></p>
+  <p><strong>Naturalidade:</strong> <span id="naturalidadeAutor">Carregando...</span></p>
+</div>
     </div>
   </div>
 
@@ -1036,13 +1038,62 @@ async function mostrarLivros(livros) {
 /* Biografia do autor */
 
 async function carregarBiografiaAutor(autor) {
-  biografia.textContent = "Buscando informações biográficas...";
+  const nascimento = document.getElementById("nascimentoAutor");
+  const falecimento = document.getElementById("falecimentoAutor");
+  const idade = document.getElementById("idadeAutor");
+  const naturalidade = document.getElementById("naturalidadeAutor");
 
-  document.getElementById("nascimentoAutor").textContent =
-    "Consultando informações...";
+  biografia.textContent = "Buscando informações sobre a carreira...";
 
-  document.getElementById("naturalidadeAutor").textContent =
-    "Consultando informações...";
+  nascimento.textContent = "Consultando...";
+  falecimento.textContent = "Consultando...";
+  idade.textContent = "Consultando...";
+  naturalidade.textContent = "Consultando...";
+
+  function formatarData(data) {
+    if (!data) return "Não informado";
+
+    const partes = data.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+
+    if (partes) {
+      const dataFormatada = new Date(
+        Number(partes[1]),
+        Number(partes[2]) - 1,
+        Number(partes[3])
+      );
+
+      return dataFormatada.toLocaleDateString("pt-BR", {
+        day: "numeric",
+        month: "long",
+        year: "numeric"
+      });
+    }
+
+    return data;
+  }
+
+  function calcularIdade(nascimento, falecimento) {
+    if (!nascimento || !falecimento) return "Não informada";
+
+    const n = nascimento.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+    const f = falecimento.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+
+    if (!n || !f) return "Não informada";
+
+    let anos = Number(f[1]) - Number(n[1]);
+
+    if (
+      Number(f[2]) < Number(n[2]) ||
+      (
+        Number(f[2]) === Number(n[2]) &&
+        Number(f[3]) < Number(n[3])
+      )
+    ) {
+      anos--;
+    }
+
+    return anos + " anos";
+  }
 
   try {
     const resposta = await fetch(
@@ -1056,14 +1107,17 @@ async function carregarBiografiaAutor(autor) {
       throw new Error(dados.error || "Erro ao consultar autor.");
     }
 
-    biografia.textContent = dados.bio ||
-      "Ainda não há uma biografia disponível para este autor.";
+    nascimento.textContent = formatarData(dados.birth_date);
+    falecimento.textContent = formatarData(dados.death_date);
+    idade.textContent = calcularIdade(
+      dados.birth_date,
+      dados.death_date
+    );
 
-    document.getElementById("nascimentoAutor").textContent =
-      dados.birth_date || "Não informado";
+    naturalidade.textContent = dados.location || "Não informado";
 
-    document.getElementById("naturalidadeAutor").textContent =
-      dados.location || "Não informado";
+    biografia.textContent = dados.resumo ||
+      "Informações sobre a carreira ainda não disponíveis.";
 
   } catch (erro) {
     console.error("Erro ao carregar biografia:", erro);
@@ -1071,11 +1125,10 @@ async function carregarBiografiaAutor(autor) {
     biografia.textContent =
       "Não foi possível carregar as informações deste autor.";
 
-    document.getElementById("nascimentoAutor").textContent =
-      "Não disponível";
-
-    document.getElementById("naturalidadeAutor").textContent =
-      "Não disponível";
+    nascimento.textContent = "Não disponível";
+    falecimento.textContent = "Não disponível";
+    idade.textContent = "Não disponível";
+    naturalidade.textContent = "Não disponível";
   }
 }
   
