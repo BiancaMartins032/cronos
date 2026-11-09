@@ -623,17 +623,22 @@ if (idNaturalidade) {
       `na qual retrata poeticamente episódios da Inconfidência Mineira. ` +
       `Também se destacou na literatura infantil com Ou isto ou aquilo.`;
   }
+    } catch (erro) {
+    fontes.wikidata = "erro: " + erro.message;
+    console.warn("Wikidata:", erro);
+  }
+
   return Response.json({
-  name: nome,
-  display_name: nomeConhecido,
-  full_name: nomeCompleto,
-  birth_date: nascimento,
-  death_date: falecimento,
-  location: naturalidade,
-  resumo: resumo,
-  bio: resumo,
-  fontes
-});
+    name: nome,
+    display_name: nomeConhecido,
+    full_name: nomeCompleto,
+    birth_date: nascimento,
+    death_date: falecimento,
+    location: naturalidade,
+    resumo: resumo,
+    bio: resumo,
+    fontes
+  });
 }
 
 
@@ -649,30 +654,27 @@ if (idNaturalidade) {
         }
 
         const resposta = await fetch(
-          "https://api.xbl.io/v2/account",
-          {
-            headers: {
-              "X-Authorization": env.OPENXBL_API_KEY
-            }
-          }
-        );
-
-        const dados = await resposta.json();
-        if (dados.full_name) {
-  nomePerfil.textContent = dados.full_name;
-}
-
-        return Response.json(dados, {
-          status: resposta.status
-        });
-
-      } catch (error) {
-        return Response.json(
-          { error: "Erro ao consultar o perfil Xbox." },
-          { status: 500 }
-        );
-      }
+  "https://api.xbl.io/v2/account",
+  {
+    headers: {
+      "X-Authorization": env.OPENXBL_API_KEY
     }
+  }
+);
+
+const dados = await resposta.json();
+
+return Response.json(dados, {
+  status: resposta.status
+});
+
+} catch (error) {
+  return Response.json(
+    { error: "Erro ao consultar o perfil Xbox." },
+    { status: 500 }
+  );
+}
+}
 
     // API do Xbox — conquistas de um jogo
     if (url.pathname === "/api/xbox/achievements" && request.method === "GET") {
