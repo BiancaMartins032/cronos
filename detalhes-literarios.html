@@ -1058,21 +1058,19 @@ async function carregarBiografiaAutor(autor) {
 
     const partes = data.match(/^(\d{4})-(\d{2})-(\d{2})$/);
 
-    if (partes) {
-      const dataFormatada = new Date(
-        Number(partes[1]),
-        Number(partes[2]) - 1,
-        Number(partes[3])
-      );
+    if (!partes) return data;
 
-      return dataFormatada.toLocaleDateString("pt-BR", {
-        day: "numeric",
-        month: "long",
-        year: "numeric"
-      });
-    }
+    const dataFormatada = new Date(
+      Number(partes[1]),
+      Number(partes[2]) - 1,
+      Number(partes[3])
+    );
 
-    return data;
+    return dataFormatada.toLocaleDateString("pt-BR", {
+      day: "numeric",
+      month: "long",
+      year: "numeric"
+    });
   }
 
   function calcularIdade(nascimento, falecimento) {
@@ -1112,6 +1110,7 @@ async function carregarBiografiaAutor(autor) {
 
     nascimento.textContent = formatarData(dados.birth_date);
     falecimento.textContent = formatarData(dados.death_date);
+
     idade.textContent = calcularIdade(
       dados.birth_date,
       dados.death_date
@@ -1119,13 +1118,29 @@ async function carregarBiografiaAutor(autor) {
 
     naturalidade.textContent = dados.location || "Não informado";
 
-    biografia.textContent =
-  (dados.full_name
-    ? "Nome completo: " + dados.full_name + "\n\n"
-    : "") +
-  (dados.resumo ||
-    "Informações sobre a carreira ainda não disponíveis.");
-      "Informações sobre a carreira ainda não disponíveis.";
+    let textoCarreira = (
+      dados.resumo ||
+      "Informações sobre a carreira ainda não disponíveis."
+    ).trim();
+
+    const nomeCompleto = (dados.full_name || "").trim();
+
+    if (nomeCompleto) {
+      if (
+        textoCarreira.toLocaleLowerCase().startsWith(
+          nomeCompleto.toLocaleLowerCase()
+        )
+      ) {
+        textoCarreira = textoCarreira
+          .slice(nomeCompleto.length)
+          .replace(/^[\s,.:;-]+/, "");
+      }
+
+      biografia.textContent =
+        nomeCompleto + (textoCarreira ? " " + textoCarreira : "");
+    } else {
+      biografia.textContent = textoCarreira;
+    }
 
   } catch (erro) {
     console.error("Erro ao carregar biografia:", erro);
