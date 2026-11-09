@@ -1237,21 +1237,13 @@ async function carregarLivrosAutor(autor) {
       });
     }
 
-    if (
+        if (
       resultados.length < 100 ||
       pagina * 100 >= dados.numFound
     ) {
       break;
     }
   }
-
-      if (
-        resultados.length < 100 ||
-        pagina * 100 >= dados.numFound
-      ) {
-        break;
-      }
-    }
 
     const titulosVistos = new Set();
 
