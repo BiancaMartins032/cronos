@@ -62,11 +62,17 @@ export default {
         );
 
         const parametros = new URLSearchParams({
-          author: "Stephen King",
-          page: String(pagina),
-          limit: "100",
-          fields: "key,title,author_name,first_publish_year,cover_i,edition_count"
-        });
+  author: "Stephen King",
+  page: String(pagina),
+  limit: "100",
+  fields: "key,title,author_name,first_publish_year,cover_i,edition_count"
+});
+
+const titulo = url.searchParams.get("title");
+
+if (titulo) {
+  parametros.set("title", titulo);
+}
 
         const resposta = await fetch(
           "https://openlibrary.org/search.json?" +
