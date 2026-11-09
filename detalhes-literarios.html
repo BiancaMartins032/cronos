@@ -389,7 +389,7 @@ section h2 {
 }
 
 #botaoFavoritarAutor.favorito-ativo {
-  background: #8F3545;
+  background: #7654A8;
   color: white;
 }
   #indicacaoRolagem {
@@ -706,8 +706,8 @@ function obterFavorito() {
     const favorito = obterFavorito();
 
     botao.textContent = favorito
-  ? "♥ Autor favoritado"
-  : "♡ Favoritar autor";
+  ? "Autor favoritado ♥"
+  : "Favoritar autor ♡";
 
     botao.classList.toggle("favorito-ativo", !!favorito);
   };
