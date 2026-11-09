@@ -391,6 +391,28 @@ section h2 {
   background: #8F3545;
   color: white;
 }
+  #indicacaoRolagem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  margin: 14px 0 20px;
+  color: #737585;
+  font-size: 12px;
+  animation: aparecerRolagem 1.5s infinite;
+}
+
+.seta-rolagem {
+  font-size: 22px;
+  color: #5267D8;
+}
+
+@keyframes aparecerRolagem {
+  50% {
+    opacity: 0.45;
+    transform: translateY(5px);
+  }
+}
 </style>
 </head>
 <body>
@@ -401,6 +423,10 @@ section h2 {
     Favoritar autor
   </button>
 </header>
+  <div id="indicacaoRolagem">
+  <span>Role para descobrir mais</span>
+  <span class="seta-rolagem">↓</span>
+</div>
 
  <main>
   <div class="perfil">
@@ -530,8 +556,8 @@ function obterFavorito() {
     const favorito = obterFavorito();
 
     botao.textContent = favorito
-      ? "Autor favoritado"
-      : "Favoritar autor";
+  ? "♥ Autor favoritado"
+  : "♡ Favoritar autor";
 
     botao.classList.toggle("favorito-ativo", !!favorito);
   };
@@ -570,6 +596,13 @@ function obterFavorito() {
 
   atualizar();
 }
+  window.addEventListener("scroll", () => {
+  const indicacao = document.getElementById("indicacaoRolagem");
+
+  if (indicacao && window.scrollY > 40) {
+    indicacao.style.display = "none";
+  }
+}, { once: true });
 function configurarPerfil() {
   if (!nome || !["autor", "editora"].includes(tipo)) {
     nomePerfil.textContent = "Informação indisponível";
