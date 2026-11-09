@@ -469,7 +469,7 @@ resumo = frasesCarreira
   try {
     const parametros = new URLSearchParams({
       action: "wbsearchentities",
-      search: nome,
+      search: nomeConhecido || nome,
       language: "pt",
       uselang: "pt",
       type: "item",
@@ -495,8 +495,10 @@ resumo = frasesCarreira
     const entidades = dados.search || [];
 
     const entidade = entidades.find(item =>
-      normalizar(item.label) === nomeNormalizado
-    );
+  normalizar(item.label) === normalizar(nomeConhecido) ||
+  normalizar(item.label) === nomeNormalizado ||
+  normalizar(item.label) === normalizar(nomeCompleto)
+);
 
     if (!entidade) {
       fontes.wikidata = "autor não encontrado";
