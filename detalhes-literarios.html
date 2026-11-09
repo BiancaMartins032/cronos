@@ -715,28 +715,103 @@ async function carregarBiografiaAutor(autor) {
 
 /* Livros do autor */
 
+
 async function carregarLivrosAutor(autor) {
   listaLivros.innerHTML =
-    '<p class="mensagem">Buscando livros em português...</p>';
+    '<p class="mensagem">Buscando obras de Stephen King...</p>';
+
+  const consultas = [
+    "",
+    "Salem's Lot",
+    "Carrie",
+    "Joyland",
+    "The Shining",
+    "The Stand",
+    "Misery",
+    "Cujo",
+    "The Dark Tower",
+    "The Drawing of the Three"
+  ];
+
+  const obras = new Map();
 
   try {
-    const livrosGoogle = await buscarLivrosGoogle(
-      "inauthor:" + (autor.name || nome)
-    );
+    for (const titulo of consultas) {
+      const maxPaginas = titulo ? 1 : 10;
 
-    if (!livrosGoogle.length) {
+      for (let pagina = 1; pagina <= maxPaginas; pagina++) {
+        let url = "/api/openlibrary/books?page=" + pagina;
+
+        if (titulo) {
+          url += "&title=" + encodeURIComponent(titulo);
+        }
+
+        const resposta = await fetch(url);
+
+        if (!resposta.ok) {
+          throw new Error("Erro ao consultar Open Library.");
+        }
+
+        const dados = await resposta.json();
+        const resultados = dados.docs || [];
+
+        for (const obra of resultados) {
+          if (obra.key && !obras.has(obra.key)) {
+            obras.set(obra.key, obra);
+          }
+        }
+
+        if (
+          titulo ||
+          resultados.length < 100 ||
+          pagina * 100 >= dados.numFound
+        ) {
+          break;
+        }
+      }
+    }
+
+    const livros = Array.from(obras.values())
+      .filter(obra =>
+        obra.author_name?.some(autor =>
+          autor.toLowerCase() === "stephen king"
+        ) &&
+        obra.cover_i
+      )
+      .map(obra => {
+        let ano = Number(obra.first_publish_year) || 0;
+
+        if (obra.key === "/works/OL81632W") ano = 1975;
+        if (obra.key === "/works/OL81616W") ano = 1987;
+
+        return {
+          obraId: obra.key,
+          title: obra.title,
+          author: "Stephen King",
+          cover_i: obra.cover_i,
+          capa: "",
+          first_publish_year: ano ? String(ano) : "",
+          anoOrdenacao: ano
+        };
+      })
+      .sort((a, b) =>
+        b.anoOrdenacao - a.anoOrdenacao ||
+        a.title.localeCompare(b.title, "pt-BR")
+      );
+
+    if (!livros.length) {
       listaLivros.innerHTML =
-        '<p class="mensagem">Não encontramos livros em português para este autor.</p>';
+        '<p class="mensagem">Não encontramos obras para este autor.</p>';
       return;
     }
 
-    await mostrarLivros(livrosGoogle);
+    await mostrarLivros(livros);
 
   } catch (erro) {
-    console.error("Erro ao consultar Google Books:", erro);
+    console.error("Erro ao consultar Open Library:", erro);
 
     listaLivros.innerHTML =
-      '<p class="mensagem">Não foi possível carregar os livros. Tente novamente mais tarde.</p>';
+      '<p class="mensagem">Não foi possível carregar as obras. Tente novamente.</p>';
   }
 }
 
