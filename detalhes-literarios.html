@@ -595,8 +595,11 @@ section h2 {
 
       <div class="detalhes-autor">
   <p><strong>Nascimento:</strong> <span id="nascimentoAutor">Carregando...</span></p>
-  <p><strong>Falecimento:</strong> <span id="falecimentoAutor">Carregando...</span></p>
-  <p><strong>Idade ao falecer:</strong> <span id="idadeAutor">Carregando...</span></p>
+  <p>
+  <strong>Falecimento:</strong>
+  <span id="falecimentoAutor">Carregando...</span>
+  (<span id="idadeAutor">...</span>)
+</p>
   <p><strong>Naturalidade:</strong> <span id="naturalidadeAutor">Carregando...</span></p>
 </div>
     </div>
@@ -1257,7 +1260,7 @@ async function carregarLivrosAutor(autor) {
 /* Perfil do autor */
 
 async function carregarAutor() {
-  nomePerfil.textContent = nome;
+  nomePerfil.textContent = nomeCompletoAutor || nome;
 
   document.getElementById("nascimentoAutor").textContent =
     "Consultando informações...";
