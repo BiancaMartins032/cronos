@@ -63,20 +63,22 @@ main {
 .perfil {
   display: flex;
   align-items: center;
-  gap: 24px;
+  gap: 20px;
   padding: 22px;
   background: var(--branco);
   border: 1px solid var(--borda);
   border-radius: 16px;
 }
 
-.foto {
+.perfil > .foto {
+  display: block;
   width: 125px;
+  min-width: 125px;
+  max-width: 125px;
   height: 150px;
-  flex-shrink: 0;
+  flex: 0 0 125px;
   object-fit: cover;
   border-radius: 12px;
-  background: transparent;
 }
 
 .dados-perfil {
@@ -86,47 +88,35 @@ main {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  #biografia {
-  line-height: 1.7;
-  color: var(--muted);
-  white-space: pre-line;
   text-align: justify;
 }
 
 .perfil h1 {
-  margin: 0;
-  font-size: 24px;
+  margin: 4px 0;
+  font-size: 23px;
+  line-height: 1.2;
   color: var(--texto);
-  text-align: justify;
 }
 
 .tipo {
   color: var(--roxo-claro);
   font-size: 13px;
   font-weight: 600;
-  text-align: justify;
 }
 
 .detalhes-autor {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  text-align: justify;
 }
 
 .detalhes-autor p {
   margin: 0;
   color: var(--muted);
   font-size: 14px;
-  line-height: 1.5;
+  line-height: 1.4;
   text-align: justify;
-}
-
-.detalhes-autor p {
-  margin: 0;
-  color: var(--muted);
-  font-size: 14px;
-  line-height: 1.5;
+  overflow-wrap: anywhere;
 }
 
 .detalhes-autor strong {
@@ -151,8 +141,8 @@ section h2 {
   line-height: 1.7;
   color: var(--muted);
   white-space: pre-line;
+  text-align: justify;
 }
-
 /* Grade e cartões dos livros */
 
 .livros {
@@ -327,11 +317,18 @@ section h2 {
 
   .foto {
     width: 100px;
+    min-width: 100px;
+    max-width: 100px;
+    height: 125px;
+    flex: 0 0 100px;
+  }
+
+  .dados-perfil {
     height: 125px;
   }
 
   .perfil h1 {
-    font-size: 19px;
+    font-size: 18px;
   }
 
   section {
