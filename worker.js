@@ -52,7 +52,67 @@ export default {
       }
     }
 
-    
+       // API do Open Library — obras com edições em português
+    if (url.pathname === "/api/openlibrary/books" && request.method === "GET") {
+      try {
+        const pagina = Math.max(
+          1,
+          Number(url.searchParams.get("page")) || 1
+        );
+
+        const autor = url.searchParams.get("author");
+
+        if (!autor) {
+          return Response.json(
+            { error: "Informe o nome do autor." },
+            { status: 400 }
+          );
+        }
+
+        const parametros = new URLSearchParams({
+          q: `author:"${autor}" AND language:por`,
+          page: String(pagina),
+          limit: "100",
+          fields: [
+            "key",
+            "title",
+            "author_name",
+            "author_key",
+            "first_publish_year",
+            "cover_i",
+            "edition_count",
+            "editions",
+            "editions.key",
+            "editions.title",
+            "editions.language",
+            "editions.cover_i"
+          ].join(",")
+        });
+
+        const resposta = await fetch(
+          "https://openlibrary.org/search.json?" +
+          parametros.toString()
+        );
+
+        if (!resposta.ok) {
+          throw new Error("Open Library retornou erro: " + resposta.status);
+        }
+
+        const dados = await resposta.json();
+
+        return Response.json(dados, {
+          status: resposta.status
+        });
+
+      } catch (error) {
+        console.error("Erro Open Library:", error);
+
+        return Response.json(
+          { error: "Erro ao consultar o Open Library." },
+          { status: 500 }
+        );
+      }
+    } 
     
     // API — informações biográficas do autor
     if (url.pathname === "/api/openlibrary/author" && request.method === "GET") {
