@@ -813,9 +813,6 @@ async function buscarEdicaoPortugues(livro) {
     if (!resposta.ok) return null;
 
     const dados = await resposta.json();
-    if (dados.full_name) {
-  nomePerfil.textContent = dados.full_name;
-}
 
     const edicoes = (dados.entries || []).filter(edicao => {
       const idiomas = (edicao.languages || []).map(item =>
@@ -1122,7 +1119,12 @@ async function carregarBiografiaAutor(autor) {
 
     naturalidade.textContent = dados.location || "Não informado";
 
-    biografia.textContent = dados.resumo ||
+    biografia.textContent =
+  (dados.full_name
+    ? "Nome completo: " + dados.full_name + "\n\n"
+    : "") +
+  (dados.resumo ||
+    "Informações sobre a carreira ainda não disponíveis.");
       "Informações sobre a carreira ainda não disponíveis.";
 
   } catch (erro) {
