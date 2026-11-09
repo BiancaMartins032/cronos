@@ -324,6 +324,7 @@ if (url.pathname === "/api/openlibrary/author" && request.method === "GET") {
   let falecimento = "";
   let naturalidade = "";
   let resumo = "";
+  let nomeCompleto = nome;
 
   const fontes = {
     openLibrary: "não consultada",
@@ -360,6 +361,8 @@ if (url.pathname === "/api/openlibrary/author" && request.method === "GET") {
 
     if (encontrado) {
       nascimento = normalizarData(encontrado.birth_date);
+        nomeCompleto =
+    encontrado.personal_name || encontrado.name || nome;
 
       fontes.openLibrary = nascimento
         ? "encontrado"
@@ -550,14 +553,15 @@ if (url.pathname === "/api/openlibrary/author" && request.method === "GET") {
   }
 
   return Response.json({
-    name: nome,
-    birth_date: nascimento,
-    death_date: falecimento,
-    location: naturalidade,
-    resumo: resumo,
-    bio: resumo,
-    fontes
-  });
+  name: nome,
+  full_name: nomeCompleto,
+  birth_date: nascimento,
+  death_date: falecimento,
+  location: naturalidade,
+  resumo: resumo,
+  bio: resumo,
+  fontes
+});
 }
 
 
@@ -582,6 +586,9 @@ if (url.pathname === "/api/openlibrary/author" && request.method === "GET") {
         );
 
         const dados = await resposta.json();
+        if (dados.full_name) {
+  nomePerfil.textContent = dados.full_name;
+}
 
         return Response.json(dados, {
           status: resposta.status
