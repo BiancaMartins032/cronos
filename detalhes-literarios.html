@@ -718,81 +718,90 @@ async function carregarBiografiaAutor(autor) {
 
 async function carregarLivrosAutor(autor) {
   listaLivros.innerHTML =
-    '<p class="mensagem">Buscando obras de Stephen King...</p>';
-
-  const consultas = [
-    "",
-    "Salem's Lot",
-    "Carrie",
-    "Joyland",
-    "The Shining",
-    "The Stand",
-    "Misery",
-    "Cujo",
-    "The Dark Tower",
-    "The Drawing of the Three"
-  ];
+    '<p class="mensagem">Buscando obras em português...</p>';
 
   const obras = new Map();
 
   try {
-    for (const titulo of consultas) {
-      const maxPaginas = titulo ? 1 : 10;
+    for (let pagina = 1; pagina <= 10; pagina++) {
+      const resposta = await fetch(
+        "/api/openlibrary/books?page=" + pagina
+      );
 
-      for (let pagina = 1; pagina <= maxPaginas; pagina++) {
-        let url = "/api/openlibrary/books?page=" + pagina;
+      if (!resposta.ok) {
+        throw new Error("Erro ao consultar Open Library.");
+      }
 
-        if (titulo) {
-          url += "&title=" + encodeURIComponent(titulo);
+      const dados = await resposta.json();
+      const resultados = dados.docs || [];
+
+      for (const obra of resultados) {
+        if (!obra.key || obras.has(obra.key)) continue;
+
+        const edicoes = obra.editions?.docs || [];
+
+        const edicaoPortugues = edicoes.find(edicao =>
+          (edicao.language || []).includes("por")
+        );
+
+        if (!edicaoPortugues) continue;
+
+        const autores = obra.author_name || [];
+
+        if (!autores.some(nomeAutor =>
+          nomeAutor.toLowerCase() === "stephen king"
+        )) {
+          continue;
         }
 
-        const resposta = await fetch(url);
+        obras.set(obra.key, {
+          obra,
+          edicaoPortugues
+        });
+      }
 
-        if (!resposta.ok) {
-          throw new Error("Erro ao consultar Open Library.");
-        }
-
-        const dados = await resposta.json();
-        const resultados = dados.docs || [];
-
-        for (const obra of resultados) {
-          if (obra.key && !obras.has(obra.key)) {
-            obras.set(obra.key, obra);
-          }
-        }
-
-        if (
-          titulo ||
-          resultados.length < 100 ||
-          pagina * 100 >= dados.numFound
-        ) {
-          break;
-        }
+      if (
+        resultados.length < 100 ||
+        pagina * 100 >= dados.numFound
+      ) {
+        break;
       }
     }
 
+    const titulosVistos = new Set();
+
     const livros = Array.from(obras.values())
-      .filter(obra =>
-        obra.author_name?.some(autor =>
-          autor.toLowerCase() === "stephen king"
-        ) &&
-        obra.cover_i
-      )
-      .map(obra => {
+      .map(({ obra, edicaoPortugues }) => {
         let ano = Number(obra.first_publish_year) || 0;
 
+        // Correção de ano original confirmado
         if (obra.key === "/works/OL81632W") ano = 1975;
         if (obra.key === "/works/OL81616W") ano = 1987;
 
         return {
           obraId: obra.key,
-          title: obra.title,
+          title: edicaoPortugues.title || obra.title,
           author: "Stephen King",
-          cover_i: obra.cover_i,
+          cover_i: edicaoPortugues.cover_i || obra.cover_i,
           capa: "",
           first_publish_year: ano ? String(ano) : "",
           anoOrdenacao: ano
         };
+      })
+      .filter(livro => {
+        const tituloNormalizado = livro.title
+          .normalize("NFD")
+          .replace(/[\u0300-\u036f]/g, "")
+          .toLowerCase()
+          .replace(/[^a-z0-9]/g, "");
+
+        if (!tituloNormalizado || titulosVistos.has(tituloNormalizado)) {
+          return false;
+        }
+
+        titulosVistos.add(tituloNormalizado);
+
+        return livro.cover_i && livro.anoOrdenacao > 0;
       })
       .sort((a, b) =>
         b.anoOrdenacao - a.anoOrdenacao ||
@@ -801,7 +810,7 @@ async function carregarLivrosAutor(autor) {
 
     if (!livros.length) {
       listaLivros.innerHTML =
-        '<p class="mensagem">Não encontramos obras para este autor.</p>';
+        '<p class="mensagem">Não encontramos obras em português com capa disponível.</p>';
       return;
     }
 
