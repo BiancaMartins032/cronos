@@ -519,14 +519,12 @@ async function buscarEdicaoPortugues(livro) {
   
 /* Consulta alternativa: Google Books */
 
+
 async function buscarLivrosGoogle(termo) {
-  const url =
-    "https://www.googleapis.com/books/v1/volumes?q=" +
-    encodeURIComponent(termo) +
-    "&langRestrict=pt&printType=books&maxResults=40";
+  const url = "/api/books?q=" + encodeURIComponent(termo);
 
   const controlador = new AbortController();
-  const limite = setTimeout(() => controlador.abort(), 15000);
+  const limite = setTimeout(() => controlador.abort(), 20000);
 
   try {
     const resposta = await fetch(url, {
@@ -534,7 +532,7 @@ async function buscarLivrosGoogle(termo) {
     });
 
     if (!resposta.ok) {
-      throw new Error("Não foi possível consultar o Google Books.");
+      throw new Error("Não foi possível consultar o Google Books. Código: " + resposta.status);
     }
 
     const dados = await resposta.json();
@@ -552,18 +550,13 @@ async function buscarLivrosGoogle(termo) {
         first_publish_year:
           (info.publishedDate || "").match(/\d{4}/)?.[0] || ""
       };
-    }).filter(livro =>
-  livro.capa &&
-  (dados.items || []).some(item =>
-    "google:" + item.id === livro.obraId &&
-    item.volumeInfo?.language === "pt"
-  )
-);
+    }).filter(livro => livro.capa);
 
   } finally {
     clearTimeout(limite);
   }
 }
+
 
 
 /* Exibe os livros */
