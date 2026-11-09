@@ -1149,28 +1149,13 @@ async function carregarLivrosAutor(autor) {
 /* Perfil do autor */
 
 async function carregarAutor() {
-  nomePerfil.textContent = "Stephen Edwin King";
+  nomePerfil.textContent = nome;
 
-  const nascimento = new Date(1947, 8, 21);
-const hoje = new Date();
-
-let idade = hoje.getFullYear() - nascimento.getFullYear();
-
-if (
-  hoje.getMonth() < nascimento.getMonth() ||
-  (
-    hoje.getMonth() === nascimento.getMonth() &&
-    hoje.getDate() < nascimento.getDate()
-  )
-) {
-  idade--;
-}
-
-document.getElementById("nascimentoAutor").textContent =
-  "21 de setembro de 1947 (atualmente com " + idade + " anos)";
+  document.getElementById("nascimentoAutor").textContent =
+    "Consultando informações...";
 
   document.getElementById("naturalidadeAutor").textContent =
-    "Portland, Maine, Estados Unidos";
+    "Consultando informações...";
 
   await Promise.allSettled([
     carregarBiografiaAutor({ name: nome }),
