@@ -39,8 +39,7 @@ export default {
         );
 
         const dados = await resposta.json();
-        nomePerfil.textContent = dados.display_name || nome;
-
+        
         return Response.json(dados, {
           status: resposta.status
         });
@@ -610,23 +609,24 @@ if (idNaturalidade) {
   }
 }
 
-    // Biografia específica de Cecília Meireles
-  if (
-  normalizar(nome).includes("cecilia") &&
-  normalizar(nome).includes("meireles")
-) {
-    resumo =
-      `${nomeCompleto} foi uma escritora, poeta, jornalista e professora brasileira. ` +
-      `Publicou seu primeiro livro, Espectros, em 1919. ` +
-      `Em 1939, publicou Viagem, obra importante para o reconhecimento de sua poesia. ` +
-      `Sua obra mais conhecida é Romanceiro da Inconfidência, publicada em 1953, ` +
-      `na qual retrata poeticamente episódios da Inconfidência Mineira. ` +
-      `Também se destacou na literatura infantil com Ou isto ou aquilo.`;
-  }
+          // Biografia específica de Cecília Meireles
+      if (
+        normalizar(nome).includes("cecilia") &&
+        normalizar(nome).includes("meireles")
+      ) {
+        resumo =
+          `${nomeCompleto} foi uma escritora, poeta, jornalista e professora brasileira. ` +
+          `Publicou seu primeiro livro, Espectros, em 1919. ` +
+          `Em 1939, publicou Viagem, obra importante para o reconhecimento de sua poesia. ` +
+          `Sua obra mais conhecida é Romanceiro da Inconfidência, publicada em 1953, ` +
+          `na qual retrata poeticamente episódios da Inconfidência Mineira. ` +
+          `Também se destacou na literatura infantil com Ou isto ou aquilo.`;
+      }
+
     } catch (erro) {
-    fontes.wikidata = "erro: " + erro.message;
-    console.warn("Wikidata:", erro);
-  }
+      fontes.wikidata = "erro: " + erro.message;
+      console.warn("Wikidata:", erro);
+    }
 
   return Response.json({
     name: nome,
