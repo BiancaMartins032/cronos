@@ -155,15 +155,19 @@ if (url.pathname === "/api/openlibrary/books" && request.method === "GET") {
           }, { status: 404 });
         }
 
-        const respostaAutor = await fetch(
-          "https://openlibrary.org" + autorEncontrado.key + ".json"
-        );
+        const chaveAutor = normalizar(nome).includes("cecilia meireles")
+  ? "/authors/OL122243A"
+  : autorEncontrado.key;
 
-        if (!respostaAutor.ok) {
-          throw new Error("Erro ao carregar autor: " + respostaAutor.status);
-        }
+const respostaAutor = await fetch(
+  "https://openlibrary.org" + chaveAutor + ".json"
+);
 
-        const autor = await respostaAutor.json();
+if (!respostaAutor.ok) {
+  throw new Error("Erro ao carregar autor: " + respostaAutor.status);
+}
+
+const autor = await respostaAutor.json();
 
         return Response.json({
           name: autor.name || nome,
