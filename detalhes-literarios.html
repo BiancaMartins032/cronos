@@ -520,57 +520,90 @@ async function buscarEdicaoPortugues(livro) {
 /* Consulta alternativa: Google Books */
 
 
+
 async function buscarLivrosGoogle(termo) {
-  const todosLivros = [];
+  const consultas = [
+    termo,
+    'intitle:"A Hora do Vampiro" inauthor:"Stephen King"',
+    'intitle:"Salem\'s Lot" inauthor:"Stephen King"',
+    'intitle:"Carrie" inauthor:"Stephen King"',
+    'intitle:"Joyland" inauthor:"Stephen King"'
+  ];
+
+  const livrosEncontrados = new Map();
   const quantidadePorPagina = 40;
   const maxPaginas = 10;
 
-  for (let pagina = 0; pagina < maxPaginas; pagina++) {
-    const inicio = pagina * quantidadePorPagina;
+  for (const consulta of consultas) {
+    for (let pagina = 0; pagina < maxPaginas; pagina++) {
+      const inicio = pagina * quantidadePorPagina;
 
-    const url = "/api/books?q=" +
-      encodeURIComponent(termo) +
-      "&startIndex=" + inicio;
+      const url = "/api/books?q=" +
+        encodeURIComponent(consulta) +
+        "&startIndex=" + inicio;
 
-    const resposta = await fetch(url);
+      const controlador = new AbortController();
+      const limite = setTimeout(
+        () => controlador.abort(),
+        20000
+      );
 
-    if (!resposta.ok) {
-      throw new Error("Erro ao consultar Google Books: " + resposta.status);
-    }
+      try {
+        const resposta = await fetch(url, {
+          signal: controlador.signal
+        });
 
-    const dados = await resposta.json();
-    const itens = dados.items || [];
+        if (!resposta.ok) {
+          throw new Error(
+            "Erro ao consultar Google Books: " + resposta.status
+          );
+        }
 
-    todosLivros.push(...itens);
+        const dados = await resposta.json();
+        const itens = dados.items || [];
 
-    if (
-      itens.length < quantidadePorPagina ||
-      todosLivros.length >= (dados.totalItems || 0)
-    ) {
-      break;
+        for (const item of itens) {
+          if (!livrosEncontrados.has(item.id)) {
+            livrosEncontrados.set(item.id, item);
+          }
+        }
+
+        if (
+          itens.length < quantidadePorPagina ||
+          inicio + itens.length >= (dados.totalItems || 0)
+        ) {
+          break;
+        }
+
+      } finally {
+        clearTimeout(limite);
+      }
     }
   }
 
-  return todosLivros.map(item => {
-    const info = item.volumeInfo || {};
-    const idioma = (info.language || "").toLowerCase();
-    const imagem = info.imageLinks?.thumbnail || "";
+  return Array.from(livrosEncontrados.values())
+    .map(item => {
+      const info = item.volumeInfo || {};
+      const idioma = (info.language || "").toLowerCase();
+      const imagem = info.imageLinks?.thumbnail || "";
 
-    return {
-      obraId: "google:" + item.id,
-      title: info.title || "Título não informado",
-      author: (info.authors || [nome]).join(", "),
-      capa: imagem.replace(/^http:/, "https:"),
-      cover_i: null,
-      first_publish_year:
-        (info.publishedDate || "").match(/\d{4}/)?.[0] || "",
-      idioma
-    };
-  }).filter(livro =>
-    livro.capa &&
-    livro.idioma.startsWith("pt")
-  );
+      return {
+        obraId: "google:" + item.id,
+        title: info.title || "Título não informado",
+        author: (info.authors || [nome]).join(", "),
+        capa: imagem.replace(/^http:/, "https:"),
+        cover_i: null,
+        first_publish_year:
+          (info.publishedDate || "").match(/\d{4}/)?.[0] || "",
+        idioma
+      };
+    })
+    .filter(livro =>
+      livro.capa &&
+      livro.idioma.startsWith("pt")
+    );
 }
+
 
 
 
