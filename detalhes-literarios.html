@@ -950,52 +950,52 @@ async function buscarLivrosGoogle(termo) {
 
 /* Exibe os livros */
 
+
 async function mostrarLivros(livros) {
   listaLivros.innerHTML = "";
 
-  const livrosComCapa = livros.filter(
-    livro => livro.capa || livro.cover_i
-  );
-
-  if (!livrosComCapa.length) {
-    listaLivros.innerHTML =
-      '<p class="mensagem">Nenhuma edição em português com capa foi encontrada.</p>';
-    return;
-  }
-
   const livrosSalvos = lerLivrosLocais();
 
-  livrosComCapa.forEach(livro => {
+  livros.forEach(livro => {
     const card = document.createElement("div");
     card.className = "livro";
     card.dataset.obraId = livro.obraId;
 
-    const capa = document.createElement("img");
-    capa.alt = "Capa de " + livro.title;
-    capa.loading = "lazy";
-    capa.src = livro.capa ||
-      "https://covers.openlibrary.org/b/id/" +
-      livro.cover_i + "-M.jpg";
+    if (livro.capa || livro.cover_i) {
+      const capa = document.createElement("img");
+      capa.alt = "Capa de " + livro.title;
+      capa.loading = "lazy";
+      capa.src = livro.capa ||
+        "https://covers.openlibrary.org/b/id/" +
+        livro.cover_i + "-M.jpg";
 
-    capa.onerror = () => {
-  if (livro.cover_i && !capa.dataset.tentouCapaMaior) {
-    capa.dataset.tentouCapaMaior = "sim";
-    capa.src = "https://covers.openlibrary.org/b/id/" +
-      livro.cover_i + "-L.jpg";
-    return;
-  }
+      capa.onerror = () => {
+        if (livro.cover_i && !capa.dataset.tentouCapaMaior) {
+          capa.dataset.tentouCapaMaior = "sim";
+          capa.src = "https://covers.openlibrary.org/b/id/" +
+            livro.cover_i + "-L.jpg";
+          return;
+        }
 
-  const alternativa = document.createElement("div");
-  alternativa.className = "capa-indisponivel";
-  alternativa.textContent = "Capa indisponível";
-  card.replaceChild(alternativa, capa);
-};
+        const alternativa = document.createElement("div");
+        alternativa.className = "capa-indisponivel";
+        alternativa.textContent = "Capa indisponível";
+        card.replaceChild(alternativa, capa);
+      };
+
+      card.appendChild(capa);
+    } else {
+      const alternativa = document.createElement("div");
+      alternativa.className = "capa-indisponivel";
+      alternativa.textContent = "Capa indisponível";
+      card.appendChild(alternativa);
+    }
 
     const titulo = document.createElement("strong");
     titulo.textContent = livro.title;
 
     const ano = document.createElement("small");
-    ano.textContent = livro.first_publish_year || "";
+    ano.textContent = livro.first_publish_year || "Ano não informado";
 
     const botao = document.createElement("button");
     botao.type = "button";
@@ -1014,7 +1014,7 @@ async function mostrarLivros(livros) {
       botao.addEventListener("click", () => abrirModalLivro(livro));
     }
 
-    card.append(capa, titulo, ano, botao);
+    card.append(titulo, ano, botao);
     listaLivros.appendChild(card);
   });
 }
@@ -1066,8 +1066,8 @@ async function carregarBiografiaAutor(autor) {
   }
 }
   
-/* Livros do autor */
 
+/* Livros do autor */
 
 async function carregarLivrosAutor(autor) {
   listaLivros.innerHTML =
@@ -1078,9 +1078,9 @@ async function carregarLivrosAutor(autor) {
   try {
     for (let pagina = 1; pagina <= 10; pagina++) {
       const resposta = await fetch(
-  "/api/openlibrary/books?page=" + pagina +
-  "&author=" + encodeURIComponent(autor.name)
-);
+        "/api/openlibrary/books?page=" + pagina +
+        "&author=" + encodeURIComponent(autor.name)
+      );
 
       if (!resposta.ok) {
         throw new Error("Erro ao consultar Open Library.");
@@ -1102,20 +1102,20 @@ async function carregarLivrosAutor(autor) {
 
         const autores = obra.author_name || [];
 
-        const autorNormalizado = autor.name
-  .normalize("NFD")
-  .replace(/[\u0300-\u036f]/g, "")
-  .toLowerCase()
-  .trim();
+        const normalizar = texto => (texto || "")
+          .normalize("NFD")
+          .replace(/[\u0300-\u036f]/g, "")
+          .toLowerCase()
+          .trim();
 
-if (!autores.some(nomeAutor =>
-  nomeAutor.normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toLowerCase()
-    .trim() === autorNormalizado
-)) {
-  continue;
-}
+        const autorNormalizado = normalizar(autor.name);
+
+        if (!autores.some(nomeAutor =>
+          normalizar(nomeAutor) === autorNormalizado
+        )) {
+          continue;
+        }
+
         obras.set(obra.key, {
           obra,
           edicaoPortugues
@@ -1136,7 +1136,7 @@ if (!autores.some(nomeAutor =>
       .map(({ obra, edicaoPortugues }) => {
         let ano = Number(obra.first_publish_year) || 0;
 
-        // Correção de ano original confirmado
+        // Correções de anos originais já existentes
         if (obra.key === "/works/OL81632W") ano = 1975;
         if (obra.key === "/works/OL81616W") ano = 1987;
 
@@ -1144,9 +1144,9 @@ if (!autores.some(nomeAutor =>
           obraId: obra.key,
           title: edicaoPortugues.title || obra.title,
           author: autor.name,
-          cover_i: edicaoPortugues.cover_i || obra.cover_i,
+          cover_i: edicaoPortugues.cover_i || obra.cover_i || null,
           capa: "",
-          first_publish_year: ano ? String(ano) : "",
+          first_publish_year: ano ? String(ano) : "Ano não informado",
           anoOrdenacao: ano
         };
       })
@@ -1163,7 +1163,7 @@ if (!autores.some(nomeAutor =>
 
         titulosVistos.add(tituloNormalizado);
 
-        return livro.cover_i && livro.anoOrdenacao > 0;
+        return true;
       })
       .sort((a, b) =>
         b.anoOrdenacao - a.anoOrdenacao ||
@@ -1172,7 +1172,7 @@ if (!autores.some(nomeAutor =>
 
     if (!livros.length) {
       listaLivros.innerHTML =
-        '<p class="mensagem">Não encontramos obras em português com capa disponível.</p>';
+        '<p class="mensagem">Não encontramos obras em português.</p>';
       return;
     }
 
@@ -1185,6 +1185,7 @@ if (!autores.some(nomeAutor =>
       '<p class="mensagem">Não foi possível carregar as obras. Tente novamente.</p>';
   }
 }
+
 
 
 /* Perfil do autor */
