@@ -589,7 +589,10 @@ resumo = frasesCarreira
   }
 
     // Biografia específica de Cecília Meireles
-  if (normalizar(nome).includes("cecilia meireles")) {
+  if (
+  normalizar(nome).includes("cecilia") &&
+  normalizar(nome).includes("meireles")
+) {
     resumo =
       `${nomeCompleto} foi uma escritora, poeta, jornalista e professora brasileira. ` +
       `Publicou seu primeiro livro, Espectros, em 1919. ` +
