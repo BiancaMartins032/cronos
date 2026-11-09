@@ -325,6 +325,7 @@ if (url.pathname === "/api/openlibrary/author" && request.method === "GET") {
   let naturalidade = "";
   let resumo = "";
   let nomeCompleto = nome;
+  let nomeConhecido = nome;
 
   const fontes = {
     openLibrary: "não consultada",
@@ -361,8 +362,8 @@ if (url.pathname === "/api/openlibrary/author" && request.method === "GET") {
 
     if (encontrado) {
       nascimento = normalizarData(encontrado.birth_date);
-        nomeCompleto =
-    encontrado.personal_name || encontrado.name || nome;
+        nomeConhecido = encontrado.name || nome;
+nomeCompleto = encontrado.personal_name || encontrado.name || nome;
 
       fontes.openLibrary = nascimento
         ? "encontrado"
@@ -422,6 +423,7 @@ const frases = texto
 
 const nomesParaRemover = [
   nomeCompleto,
+  nomeConhecido,
   nome
 ].filter(Boolean).sort((a, b) => b.length - a.length);
 
@@ -583,6 +585,7 @@ resumo = frasesCarreira
 
   return Response.json({
   name: nome,
+  display_name: nomeConhecido,
   full_name: nomeCompleto,
   birth_date: nascimento,
   death_date: falecimento,
