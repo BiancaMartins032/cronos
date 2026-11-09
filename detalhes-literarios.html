@@ -1099,11 +1099,13 @@ async function carregarBiografiaAutor(autor) {
 
   try {
     const resposta = await fetch(
-      "/api/openlibrary/author?name=" +
-      encodeURIComponent(autor.name)
-    );
+  "/api/openlibrary/author?name=" +
+  encodeURIComponent(autor.name) +
+  "&versao=3"
+);
 
     const dados = await resposta.json();
+    nomePerfil.textContent = dados.display_name || autor.name;
 
     if (!resposta.ok) {
       throw new Error(dados.error || "Erro ao consultar autor.");
