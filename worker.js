@@ -383,8 +383,8 @@ export default {
 
                 if (valorNascimento) {
                   const partes = valorNascimento.match(
-                    /[+-](\d{4})-(\d{2})-(\d{2})/
-                  );
+  /[+-](\d{4})-(\d{2})-(\d{2})/
+);
 
                   if (partes) {
                     nascimento = `${partes[3]}/${partes[2]}/${partes[1]}`;
