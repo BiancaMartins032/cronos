@@ -53,6 +53,8 @@ export default {
     }
 
        // API do Open Library — obras com edições em português
+    
+    // API do Open Library — obras com edições em português
     if (url.pathname === "/api/openlibrary/books" && request.method === "GET") {
       try {
         const pagina = Math.max(
@@ -100,19 +102,22 @@ export default {
 
         const dados = await resposta.json();
 
-        return Response.json(dados, {
-          status: resposta.status
-        });
+        return Response.json(dados);
 
       } catch (error) {
         console.error("Erro Open Library:", error);
 
         return Response.json(
-          { error: "Erro ao consultar o Open Library." },
+          {
+            error: "Erro ao consultar o Open Library.",
+            detalhe: error.message
+          },
           { status: 500 }
         );
       }
-    } 
+    }
+
+
     
     // API — informações biográficas do autor
     if (url.pathname === "/api/openlibrary/author" && request.method === "GET") {
