@@ -594,7 +594,11 @@ section h2 {
       <h1 id="nomePerfil">Carregando...</h1>
 
       <div class="detalhes-autor">
-  <p><strong>Nascimento:</strong> <span id="nascimentoAutor">Carregando...</span></p>
+  <p>
+  <strong>Nascimento:</strong>
+  <span id="nascimentoAutor">Carregando...</span>
+  <span id="idadeAtualAutor"></span>
+</p>
   <p id="linhaFalecimento" style="display: none;">
   <strong>Falecimento:</strong>
   <span id="falecimentoAutor"></span>
@@ -1043,6 +1047,7 @@ async function mostrarLivros(livros) {
 
 async function carregarBiografiaAutor(autor) {
   const nascimento = document.getElementById("nascimentoAutor");
+  const idadeAtual = document.getElementById("idadeAtualAutor");
   const falecimento = document.getElementById("falecimentoAutor");
   const idade = document.getElementById("idadeAutor");
   const linhaFalecimento = document.getElementById("linhaFalecimento");
@@ -1051,6 +1056,7 @@ async function carregarBiografiaAutor(autor) {
   biografia.textContent = "Buscando informações sobre a carreira...";
 
   nascimento.textContent = "Consultando...";
+  idadeAtual.textContent = "";
   linhaFalecimento.style.display = "none";
   naturalidade.textContent = "Consultando...";
 
@@ -1096,6 +1102,34 @@ async function carregarBiografiaAutor(autor) {
 
     return anos + " anos";
   }
+    
+  // CALCULA A IDADE ATUAL
+  function calcularIdadeAtual(data) {
+    const partes = data?.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+
+    if (!partes) return "";
+
+    const nascimento = new Date(
+      Number(partes[1]),
+      Number(partes[2]) - 1,
+      Number(partes[3])
+    );
+
+    const hoje = new Date();
+    let anos = hoje.getFullYear() - nascimento.getFullYear();
+
+    if (
+      hoje.getMonth() < nascimento.getMonth() ||
+      (
+        hoje.getMonth() === nascimento.getMonth() &&
+        hoje.getDate() < nascimento.getDate()
+      )
+    ) {
+      anos--;
+    }
+
+    return ` (${anos} anos)`;
+  }
 
   try {
     const resposta = await fetch(
@@ -1112,6 +1146,9 @@ async function carregarBiografiaAutor(autor) {
     }
 
     nascimento.textContent = formatarData(dados.birth_date);
+    idadeAtual.textContent = dados.death_date
+  ? ""
+  : calcularIdadeAtual(dados.birth_date);
     if (dados.death_date) {
   falecimento.textContent = formatarData(dados.death_date);
 
