@@ -1136,8 +1136,13 @@ async function carregarBiografiaAutor(autor) {
           .replace(/^[\s,.:;-]+/, "");
       }
 
-      biografia.textContent =
-        nomeCompleto + (textoCarreira ? " " + textoCarreira : "");
+      if (textoCarreira) {
+  textoCarreira =
+    textoCarreira.charAt(0).toLowerCase() + textoCarreira.slice(1);
+}
+
+biografia.textContent =
+  nomeCompleto + (textoCarreira ? " " + textoCarreira : "");
     } else {
       biografia.textContent = textoCarreira;
     }
