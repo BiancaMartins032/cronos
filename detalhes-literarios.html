@@ -414,6 +414,155 @@ section h2 {
     transform: translateY(5px);
   }
 }
+  
+/* AJUSTES VISUAIS DA PÁGINA */
+
+main {
+  margin-top: 28px;
+}
+
+/* Cartão do autor */
+.perfil {
+  align-items: center;
+  gap: 18px;
+  padding: 18px;
+  border-radius: 20px;
+}
+
+.dados-perfil {
+  height: auto;
+  min-height: 125px;
+  justify-content: center;
+  gap: 12px;
+  text-align: left;
+}
+
+.perfil h1 {
+  margin: 5px 0 0;
+  line-height: 1.3;
+}
+
+/* Informações */
+section {
+  margin-top: 20px;
+  padding: 22px 20px;
+  border-radius: 20px;
+}
+
+section h2 {
+  margin-bottom: 16px;
+  font-size: 20px;
+}
+
+#biografia {
+  font-size: 13px;
+  line-height: 1.75;
+  text-align: left;
+}
+
+/* Indicação de rolagem */
+#indicacaoRolagem {
+  margin: 12px 0 14px;
+  gap: 2px;
+}
+
+/* Livros */
+.livros {
+  gap: 26px 16px;
+}
+
+.livro img {
+  height: 170px;
+}
+
+.livro strong {
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+/* Ajustes para celulares */
+@media (max-width: 480px) {
+  main {
+    margin-top: 20px;
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .perfil {
+    gap: 14px;
+    padding: 16px;
+  }
+
+  /* Corrige o tamanho real da foto no celular */
+  .perfil > .foto {
+    width: 100px;
+    min-width: 100px;
+    max-width: 100px;
+    height: 125px;
+    flex: 0 0 100px;
+  }
+
+  .dados-perfil {
+    min-height: 125px;
+    gap: 9px;
+  }
+
+  .perfil h1 {
+    font-size: 16px;
+  }
+
+  .tipo {
+    font-size: 12px;
+  }
+
+  .detalhes-autor {
+    gap: 7px;
+  }
+
+  .detalhes-autor p {
+    font-size: 11px;
+    line-height: 1.4;
+  }
+
+  section {
+    padding: 20px 16px;
+    margin-top: 18px;
+  }
+
+  #biografia {
+    font-size: 13px;
+    line-height: 1.7;
+  }
+
+  /* Capas maiores e melhor distribuídas */
+  .livros {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 24px 12px;
+  }
+
+  .livro img {
+    height: 145px;
+  }
+
+  .livro strong {
+    min-height: 48px;
+    font-size: 12px;
+  }
+
+  .livro small {
+    font-size: 10px;
+  }
+
+  .botao-adicionar-livro {
+    font-size: 10px;
+    padding: 7px 5px;
+  }
+
+  .capa-indisponivel {
+    height: 145px;
+  }
+}
+
 </style>
 </head>
 <body>
