@@ -1046,8 +1046,9 @@ async function carregarLivrosAutor(autor) {
   try {
     for (let pagina = 1; pagina <= 10; pagina++) {
       const resposta = await fetch(
-        "/api/openlibrary/books?page=" + pagina
-      );
+  "/api/openlibrary/books?page=" + pagina +
+  "&author=" + encodeURIComponent(autor.name)
+);
 
       if (!resposta.ok) {
         throw new Error("Erro ao consultar Open Library.");
@@ -1069,12 +1070,20 @@ async function carregarLivrosAutor(autor) {
 
         const autores = obra.author_name || [];
 
-        if (!autores.some(nomeAutor =>
-          nomeAutor.toLowerCase() === "stephen king"
-        )) {
-          continue;
-        }
+        const autorNormalizado = autor.name
+  .normalize("NFD")
+  .replace(/[\u0300-\u036f]/g, "")
+  .toLowerCase()
+  .trim();
 
+if (!autores.some(nomeAutor =>
+  nomeAutor.normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .trim() === autorNormalizado
+)) {
+  continue;
+}
         obras.set(obra.key, {
           obra,
           edicaoPortugues
