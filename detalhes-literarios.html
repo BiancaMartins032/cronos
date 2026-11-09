@@ -1158,7 +1158,7 @@ async function carregarLivrosAutor(autor) {
           title: edicaoPortugues.title || obra.title,
           author: autor.name,
           cover_i: edicaoPortugues.cover_i || obra.cover_i || null,
-          capa: "",
+          capa: edicaoPortugues.cover_url || "",
           first_publish_year: ano ? String(ano) : "Ano não informado",
           anoOrdenacao: ano
         };
