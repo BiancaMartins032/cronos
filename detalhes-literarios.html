@@ -414,6 +414,11 @@ async function mostrarLivros(livros) {
   );
 
   const cards = livrosComCapa.map(livro => {
+    livro = {
+      ...livro,
+      obraId: livro.obraId || livro.key,
+      author: livro.author || livro.author_name?.[0] || nome
+    };
     const card = document.createElement("div");
     card.className = "livro";
 
