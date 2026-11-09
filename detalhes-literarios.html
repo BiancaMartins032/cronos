@@ -1172,61 +1172,78 @@ async function carregarLivrosAutor(autor) {
 
   const obras = new Map();
 
-  try {
-    for (let pagina = 1; pagina <= 10; pagina++) {
-      const resposta = await fetch(
-        "/api/openlibrary/books?page=" + pagina +
-        "&author=" + encodeURIComponent(autor.name)
-      );
+ try {
+  for (let pagina = 1; pagina <= 10; pagina++) {
+    const resposta = await fetch(
+      "/api/openlibrary/books?page=" + pagina +
+      "&author=" + encodeURIComponent(autor.name)
+    );
 
-      if (!resposta.ok) {
-        throw new Error("Erro ao consultar Open Library.");
+    if (!resposta.ok) {
+      throw new Error("Erro ao consultar Open Library.");
+    }
+
+    const dados = await resposta.json();
+    const resultados = dados.docs || [];
+
+    for (const obra of resultados) {
+      if (!obra.key || obras.has(obra.key)) continue;
+
+      // Ignora títulos com caracteres corrompidos
+      if (/[\u0080-\u009F]/.test(obra.title || "")) {
+        continue;
       }
 
-      const dados = await resposta.json();
-      const resultados = dados.docs || [];
+      const autores = obra.author_name || [];
 
-      for (const obra of resultados) {
-        if (!obra.key || obras.has(obra.key)) continue;
+      // Ignora registros com coautores
+      if (autores.length !== 1) continue;
 
-        const edicoes = obra.editions?.docs || [];
+      const normalizar = texto => (texto || "")
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .toLowerCase()
+        .trim();
 
-const edicaoPortugues =
-  edicoes.find(edicao =>
-    (edicao.language || []).includes("por")
-  ) ||
-  (
-    (obra.language || []).includes("por")
-      ? {
-          title: obra.title,
-          language: ["por"],
-          cover_i: obra.cover_i
-        }
-      : null
-  );
+      const autorNormalizado = normalizar(autor.name);
 
-if (!edicaoPortugues) continue;
-        const autores = obra.author_name || [];
-
-        const normalizar = texto => (texto || "")
-          .normalize("NFD")
-          .replace(/[\u0300-\u036f]/g, "")
-          .toLowerCase()
-          .trim();
-
-        const autorNormalizado = normalizar(autor.name);
-
-        if (!autores.some(nomeAutor =>
-          normalizar(nomeAutor) === autorNormalizado
-        )) {
-          continue;
-        }
-
-        obras.set(obra.key, {
-          obra,
-          edicaoPortugues
-        });
+      if (!autores.some(nomeAutor =>
+        normalizar(nomeAutor) === autorNormalizado
+      )) {
+        continue;
       }
+
+      const edicoes = obra.editions?.docs || [];
+
+      const edicaoPortugues =
+        edicoes.find(edicao =>
+          (edicao.language || []).includes("por")
+        ) ||
+        (
+          (obra.language || []).includes("por")
+            ? {
+                title: obra.title,
+                language: ["por"],
+                cover_i: obra.cover_i
+              }
+            : null
+        );
+
+      if (!edicaoPortugues) continue;
+
+      obras.set(obra.key, {
+        obra,
+        edicaoPortugues
+      });
+    }
+
+    if (
+      resultados.length < 100 ||
+      pagina * 100 >= dados.numFound
+    ) {
+      break;
+    }
+  }
 
       if (
         resultados.length < 100 ||
