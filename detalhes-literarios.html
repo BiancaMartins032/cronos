@@ -138,7 +138,8 @@ section h2 {
 }
 
 #biografia {
-  line-height: 1.7;
+  font-size: 13px;
+  line-height: 1.6;
   color: var(--muted);
   white-space: pre-line;
   text-align: justify;
@@ -423,10 +424,6 @@ section h2 {
     Favoritar autor
   </button>
 </header>
-  <div id="indicacaoRolagem">
-  <span>Role para descobrir mais</span>
-  <span class="seta-rolagem">↓</span>
-</div>
 
  <main>
   <div class="perfil">
@@ -449,6 +446,10 @@ section h2 {
       Buscando informações sobre as obras...
     </div>
   </section>
+   <div id="indicacaoRolagem">
+  <span>Role para descobrir mais</span>
+  <span class="seta-rolagem">↓</span>
+</div>
 
     <section>
       <h2 id="tituloLivros">Obras publicadas</h2>
@@ -599,10 +600,13 @@ function obterFavorito() {
   window.addEventListener("scroll", () => {
   const indicacao = document.getElementById("indicacaoRolagem");
 
-  if (indicacao && window.scrollY > 40) {
+  if (
+    indicacao &&
+    indicacao.getBoundingClientRect().bottom < 0
+  ) {
     indicacao.style.display = "none";
   }
-}, { once: true });
+});
 function configurarPerfil() {
   if (!nome || !["autor", "editora"].includes(tipo)) {
     nomePerfil.textContent = "Informação indisponível";
