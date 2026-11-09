@@ -54,69 +54,7 @@ export default {
 
     
     
-// API do Open Library — obras com edições em português
-if (url.pathname === "/api/openlibrary/books" && request.method === "GET") {
-  try {
-    const pagina = Math.max(
-      1,
-      Number(url.searchParams.get("page")) || 1
-    );
-
-    const autor = url.searchParams.get("author");
-
-    if (!autor) {
-      return Response.json(
-        { error: "Informe o nome do autor." },
-        { status: 400 }
-      );
-    }
-
-    const parametros = new URLSearchParams({
-      q: `author:"${autor}" AND language:por`,
-      page: String(pagina),
-      limit: "100",
-      fields: [
-        "key",
-        "title",
-        "author_name",
-        "author_key",
-        "first_publish_year",
-        "cover_i",
-        "edition_count",
-        "editions",
-        "editions.key",
-        "editions.title",
-        "editions.language",
-        "editions.cover_i"
-      ].join(",")
-    });
-
-    const resposta = await fetch(
-      "https://openlibrary.org/search.json?" +
-      parametros.toString()
-    );
-
-    if (!resposta.ok) {
-      throw new Error("Open Library retornou erro: " + resposta.status);
-    }
-
-    const dados = await resposta.json();
-
-    return Response.json(dados, {
-      status: resposta.status
-    });
-
-  } catch (error) {
-    console.error("Erro Open Library:", error);
-
-    return Response.json(
-      { error: "Erro ao consultar o Open Library." },
-      { status: 500 }
-    );
-  }
-}
-
-        // API do Open Library — informações biográficas do autor
+    // API — informações biográficas do autor
     if (url.pathname === "/api/openlibrary/author" && request.method === "GET") {
       try {
         const nome = url.searchParams.get("name");
@@ -128,62 +66,180 @@ if (url.pathname === "/api/openlibrary/books" && request.method === "GET") {
           );
         }
 
-        const busca = await fetch(
-          "https://openlibrary.org/search/authors.json?q=" +
-          encodeURIComponent(nome)
-        );
-
-        if (!busca.ok) {
-          throw new Error("Erro ao buscar autor: " + busca.status);
-        }
-
-        const dadosBusca = await busca.json();
-
-        const normalizar = texto => texto
+        const normalizar = texto => (texto || "")
           .normalize("NFD")
           .replace(/[\u0300-\u036f]/g, "")
           .toLowerCase()
           .trim();
 
-        const autorEncontrado = (dadosBusca.docs || []).find(item =>
-          normalizar(item.name || "") === normalizar(nome)
-        );
+        const nomeTokens = normalizar(nome).split(/\s+/);
 
-        if (!autorEncontrado) {
-          return Response.json({
-            error: "Autor não encontrado."
-          }, { status: 404 });
+        const combinaNome = texto => {
+          const tokens = normalizar(texto).split(/\s+/);
+          return tokens.length >= 2 &&
+            tokens.every(token => nomeTokens.includes(token));
+        };
+
+        let nascimento = "";
+        let naturalidade = "";
+        let biografia = "";
+
+        // 1. Busca de nascimento no Open Library
+        try {
+          const busca = await fetch(
+            "https://openlibrary.org/search/authors.json?q=" +
+            encodeURIComponent(nome)
+          );
+
+          if (busca.ok) {
+            const dados = await busca.json();
+            const autores = dados.docs || [];
+
+            const encontrado = autores.find(item =>
+              normalizar(item.name) === normalizar(nome)
+            ) || autores.find(item => combinaNome(item.name));
+
+            if (encontrado) {
+              nascimento = encontrado.birth_date || "";
+            }
+          }
+        } catch (erro) {
+          console.warn("Open Library indisponível:", erro);
         }
 
-        const chaveAutor = normalizar(nome).includes("cecilia meireles")
-  ? "/authors/OL122243A"
-  : autorEncontrado.key;
+        // 2. Busca da biografia na Wikipédia
+        try {
+          const parametrosWiki = new URLSearchParams({
+            action: "query",
+            generator: "search",
+            gsrsearch: nome,
+            gsrlimit: "5",
+            prop: "extracts",
+            exintro: "1",
+            explaintext: "1",
+            format: "json"
+          });
 
-const respostaAutor = await fetch(
-  "https://openlibrary.org" + chaveAutor + ".json"
-);
+          const respostaWiki = await fetch(
+            "https://pt.wikipedia.org/w/api.php?" +
+            parametrosWiki.toString()
+          );
 
-if (!respostaAutor.ok) {
-  throw new Error("Erro ao carregar autor: " + respostaAutor.status);
-}
+          if (respostaWiki.ok) {
+            const dadosWiki = await respostaWiki.json();
+            const paginas = Object.values(
+              dadosWiki.query?.pages || {}
+            );
 
-const autor = await respostaAutor.json();
+            const pagina = paginas.find(item =>
+              normalizar(item.title) === normalizar(nome)
+            ) || paginas.find(item => combinaNome(item.title));
+
+            if (pagina) {
+              biografia = pagina.extract || "";
+            }
+          }
+        } catch (erro) {
+          console.warn("Wikipédia indisponível:", erro);
+        }
+
+        // 3. Busca de nascimento e naturalidade no Wikidata
+        try {
+          const parametrosBusca = new URLSearchParams({
+            action: "wbsearchentities",
+            search: nome,
+            language: "pt",
+            uselang: "pt",
+            type: "item",
+            format: "json"
+          });
+
+          const respostaBusca = await fetch(
+            "https://www.wikidata.org/w/api.php?" +
+            parametrosBusca.toString()
+          );
+
+          if (respostaBusca.ok) {
+            const dadosBusca = await respostaBusca.json();
+            const entidades = dadosBusca.search || [];
+
+            const entidade = entidades.find(item =>
+              normalizar(item.label) === normalizar(nome)
+            ) || entidades.find(item => combinaNome(item.label));
+
+            if (entidade) {
+              const respostaDados = await fetch(
+                "https://www.wikidata.org/w/api.php?" +
+                new URLSearchParams({
+                  action: "wbgetentities",
+                  ids: entidade.id,
+                  props: "claims",
+                  format: "json"
+                }).toString()
+              );
+
+              if (respostaDados.ok) {
+                const dadosEntidade = await respostaDados.json();
+                const claims = dadosEntidade.entities?.[entidade.id]?.claims || {};
+
+                const valorNascimento =
+                  claims.P569?.[0]?.mainsnak?.datavalue?.value?.time;
+
+                if (valorNascimento) {
+                  const partes = valorNascimento.match(
+                    /[+-](\d{4})-(\d{2})-(\d{2})/
+                  );
+
+                  if (partes) {
+                    nascimento = `${partes[3]}/${partes[2]}/${partes[1]}`;
+                  }
+                }
+
+                const idNaturalidade =
+                  claims.P19?.[0]?.mainsnak?.datavalue?.value?.id;
+
+                if (idNaturalidade) {
+                  const respostaLocal = await fetch(
+                    "https://www.wikidata.org/w/api.php?" +
+                    new URLSearchParams({
+                      action: "wbgetentities",
+                      ids: idNaturalidade,
+                      props: "labels",
+                      languages: "pt|en",
+                      format: "json"
+                    }).toString()
+                  );
+
+                  if (respostaLocal.ok) {
+                    const dadosLocal = await respostaLocal.json();
+                    const local = dadosLocal.entities?.[idNaturalidade];
+
+                    naturalidade =
+                      local?.labels?.pt?.value ||
+                      local?.labels?.en?.value ||
+                      "";
+                  }
+                }
+              }
+            }
+          }
+        } catch (erro) {
+          console.warn("Wikidata indisponível:", erro);
+        }
 
         return Response.json({
-          name: autor.name || nome,
-          bio: typeof autor.bio === "string"
-            ? autor.bio
-            : autor.bio?.value || "",
-          birth_date: autor.birth_date || "",
-          location: autor.location || ""
+          name: nome,
+          bio: biografia,
+          birth_date: nascimento,
+          location: naturalidade
         });
 
-            } catch (error) {
+      } catch (error) {
         console.error("Erro ao consultar biografia:", error);
 
-               return Response.json(
+        return Response.json(
           {
-            error: "Não foi possível consultar a biografia.",
+            error: "Não foi possível consultar as informações.",
             detalhe: error.message
           },
           { status: 500 }
