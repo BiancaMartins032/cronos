@@ -414,7 +414,9 @@ nomeCompleto = encontrado.personal_name || encontrado.name || nome;
     );
 
     if (pagina) {
-      const texto = pagina.extract
+  nomeConhecido = pagina.title || nomeConhecido;
+
+  const texto = pagina.extract
         .replace(/\s+/g, " ")
         .trim();
 
