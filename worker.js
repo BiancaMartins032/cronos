@@ -29,6 +29,7 @@ export default {
           langRestrict: "pt",
           printType: "books",
           maxResults: "40",
+          startIndex: url.searchParams.get("startIndex") || "0",
           key: env.GOOGLE_BOOKS_API_KEY
         });
 
