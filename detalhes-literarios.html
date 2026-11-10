@@ -1302,6 +1302,12 @@ if (!autores.some(nomeAutor =>
           language: ["por"],
           cover_url: "https://livrarialoyola.fbitsstatic.net/img/p/passaro-branco-uma-historia-de-extraordinario-215642/410386.jpg?h=800&qs=ignore&v=no-change&w=800"
         }
+        : obra.key === "/works/OL26595760W"
+  ? {
+      title: "Uma Jornada Sem Fim",
+      language: ["por"],
+      cover_url: "https://covers.openlibrary.org/b/isbn/9786555605761-M.jpg"
+    }
       : obra.key === "/works/OL26418245W"
         ? {
             title: "Somos Todos Extraordinários",
@@ -1352,6 +1358,7 @@ if (obra.key === "/works/OL16142094W") ano = 2012;
 if (obra.key === "/works/OL17310714W") ano = 2015;
 if (obra.key === "/works/OL26418245W") ano = 2017;
 if (obra.key === "/works/OL20200892W") ano = 2022;
+if (obra.key === "/works/OL26595760W") ano = 2022;
 
         return {
           obraId: obra.key,
