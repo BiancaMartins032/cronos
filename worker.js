@@ -316,6 +316,13 @@ if (url.pathname === "/api/openlibrary/author" && request.method === "GET") {
 
   const nomeNormalizado = normalizar(nome);
 
+const ehRJPalacio = [
+  normalizar("R. J. Palacio"),
+  normalizar("Raquel Jaramillo Palacio"),
+  normalizar("Raquel Jaramillo")
+].includes(nomeNormalizado);
+
+  let fotoAutor = "";
   let nascimento = "";
   let falecimento = "";
   let naturalidade = "";
@@ -329,8 +336,32 @@ if (url.pathname === "/api/openlibrary/author" && request.method === "GET") {
     wikidata: "não consultada"
   };
 
-  // 1. Open Library — nascimento
-  try {
+  // 1. Open Library — nascimento e foto
+try {
+  if (ehRJPalacio) {
+    const resposta = await fetch(
+      "https://openlibrary.org/authors/OL6995566A.json",
+      {
+        headers: {
+          "User-Agent": "Cronos/1.0"
+        }
+      }
+    );
+
+    if (!resposta.ok) {
+      throw new Error("HTTP " + resposta.status);
+    }
+
+    const dadosAutor = await resposta.json();
+
+    nascimento = normalizarData(dadosAutor.birth_date);
+    nomeConhecido = "R. J. Palacio";
+    nomeCompleto = "Raquel Jaramillo Palacio";
+    fotoAutor = "https://covers.openlibrary.org/a/olid/OL6995566A-L.jpg";
+
+    fontes.openLibrary = "encontrado pelo identificador do autor";
+
+  } else {
     const resposta = await fetch(
       "https://openlibrary.org/search/authors.json?q=" +
       encodeURIComponent(nome),
@@ -358,8 +389,8 @@ if (url.pathname === "/api/openlibrary/author" && request.method === "GET") {
 
     if (encontrado) {
       nascimento = normalizarData(encontrado.birth_date);
-        nomeConhecido = encontrado.name || nome;
-nomeCompleto = encontrado.personal_name || encontrado.name || nome;
+      nomeConhecido = encontrado.name || nome;
+      nomeCompleto = encontrado.personal_name || encontrado.name || nome;
 
       fontes.openLibrary = nascimento
         ? "encontrado"
@@ -367,17 +398,17 @@ nomeCompleto = encontrado.personal_name || encontrado.name || nome;
     } else {
       fontes.openLibrary = "autor não encontrado";
     }
-
-  } catch (erro) {
-    fontes.openLibrary = "erro: " + erro.message;
-    console.warn("Open Library:", erro);
   }
 
+} catch (erro) {
+  fontes.openLibrary = "erro: " + erro.message;
+  console.warn("Open Library:", erro);
+}
   // 2. Wikipédia — informações sobre a carreira
   try {
     const parametros = new URLSearchParams({
       action: "query",
-      titles: nome,
+      titles: ehRJPalacio ? "R. J. Palacio" : nome,
       redirects: "1",
       prop: "extracts",
       exintro: "1",
@@ -491,11 +522,13 @@ resumo = frasesCarreira
     const dados = await resposta.json();
     const entidades = dados.search || [];
 
-    const entidade = entidades.find(item =>
-  normalizar(item.label) === normalizar(nomeConhecido) ||
-  normalizar(item.label) === nomeNormalizado ||
-  normalizar(item.label) === normalizar(nomeCompleto)
-);
+    const entidade = ehRJPalacio
+  ? { id: "Q2123852" }
+  : entidades.find(item =>
+      normalizar(item.label) === normalizar(nomeConhecido) ||
+      normalizar(item.label) === nomeNormalizado ||
+      normalizar(item.label) === normalizar(nomeCompleto)
+    );
 
     if (!entidade) {
       fontes.wikidata = "autor não encontrado";
@@ -629,17 +662,29 @@ if (idNaturalidade) {
       console.warn("Wikidata:", erro);
     }
 
-  return Response.json({
-    name: nome,
-    display_name: nomeConhecido,
-    full_name: nomeCompleto,
-    birth_date: nascimento,
-    death_date: falecimento,
-    location: naturalidade,
-    resumo: resumo,
-    bio: resumo,
-    fontes
-  });
+  // Biografia específica de R. J. Palacio
+if (ehRJPalacio) {
+  resumo =
+    "Raquel Jaramillo Palacio, conhecida como R. J. Palacio, " +
+    "é uma escritora e designer gráfica americana. " +
+    "Alcançou reconhecimento internacional com seu romance de estreia, " +
+    "Extraordinário (Wonder), publicado em 2012. " +
+    "Também escreveu Auggie & Eu, Somos Todos Extraordinários, " +
+    "Pássaro Branco e Uma Jornada Sem Fim.";
+}
+
+return Response.json({
+  name: nome,
+  display_name: nomeConhecido,
+  full_name: nomeCompleto,
+  birth_date: nascimento,
+  death_date: falecimento,
+  location: naturalidade,
+  photo_url: fotoAutor,
+  resumo: resumo,
+  bio: resumo,
+  fontes
+});
 }
 
 
