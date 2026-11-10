@@ -1167,6 +1167,23 @@ if (dados.photo_url) {
 } else {
   fotoPerfil.style.display = "none";
 }
+    // Atualiza também a foto do autor já salvo nos favoritos
+const favoritos = JSON.parse(
+  localStorage.getItem("mn_autores_favoritos") || "[]"
+);
+
+const favorito = favoritos.find(
+  item => item.nome?.toLowerCase() === nome?.toLowerCase()
+);
+
+if (favorito) {
+  favorito.imagem = dados.photo_url;
+
+  localStorage.setItem(
+    "mn_autores_favoritos",
+    JSON.stringify(favoritos)
+  );
+}
 
     nascimento.textContent = formatarData(dados.birth_date);
     idadeAtual.textContent = dados.death_date
