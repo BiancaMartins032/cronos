@@ -1250,7 +1250,7 @@ async function carregarLivrosAutor(autor) {
     const resposta = await fetch(
       "/api/openlibrary/books?page=" + pagina +
       "&author=" + encodeURIComponent(nomeBusca) +
-"&versao=5"
+"&versao=7"
     );
 
     if (!resposta.ok) {
