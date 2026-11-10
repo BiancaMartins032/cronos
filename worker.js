@@ -84,7 +84,7 @@ export default {
         // 2. Tenta consultar primeiro a Open Library
         try {
           const parametros = new URLSearchParams({
-            q: `author:"${autor}" AND language:por`,
+            q: `author:"${autor}"`,
             page: String(pagina),
             limit: "100",
             fields: [
