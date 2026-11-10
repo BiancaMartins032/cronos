@@ -81,6 +81,7 @@ export default {
           return respostaCache;
         }
 
+        const livrosOpenLibrary = [];
         // 2. Tenta consultar primeiro a Open Library
         try {
           const parametros = new URLSearchParams({
@@ -112,15 +113,7 @@ export default {
 
           const dados = await resposta.json();
 
-          const resultado = Response.json(dados, {
-            headers: {
-              "Cache-Control": "public, max-age=21600"
-            }
-          });
-
-          await cache.put(cacheKey, resultado.clone());
-
-          return resultado;
+         livrosOpenLibrary.push(...(dados.docs || []));
 
         } catch (erroOpenLibrary) {
           console.error(
@@ -134,6 +127,7 @@ export default {
         const idsVistos = new Set();
         let totalEncontrado = 0;
 
+        try {
         for (let parte = 0; parte < 3; parte++) {
           const inicio = (pagina - 1) * 100 + (parte * 40);
 
@@ -216,12 +210,30 @@ export default {
           }
         }
 
-        // 4. Mantém o mesmo formato de resposta da Open Library
-        const dadosAlternativos = {
-          numFound: totalEncontrado,
-          docs: livros
-        };
+          } catch (erroGoogle) {
+  console.error("Google Books indisponível:", erroGoogle);
+}
+        // 4. Combina os resultados das duas fontes
+const todosLivros = [
+  ...livrosOpenLibrary,
+  ...livros
+];
 
+const chavesVistas = new Set();
+
+const livrosCombinados = todosLivros.filter(livro => {
+  if (!livro.key || chavesVistas.has(livro.key)) {
+    return false;
+  }
+
+  chavesVistas.add(livro.key);
+  return true;
+});
+
+const dadosAlternativos = {
+  numFound: livrosCombinados.length,
+  docs: livrosCombinados
+};
         const resultado = Response.json(dadosAlternativos, {
           headers: {
             "Cache-Control": "public, max-age=21600"
