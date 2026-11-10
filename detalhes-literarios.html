@@ -752,7 +752,7 @@ function obterFavorito() {
     } else {
       favoritos.push({
         nome: nome,
-        imagem: fotoPerfil.getAttribute("src") || ""
+        imagem: fotoPerfil.src || ""
       });
     }
 
