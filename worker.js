@@ -82,136 +82,151 @@ export default {
         }
 
         const livrosOpenLibrary = [];
-        // 2. Tenta consultar primeiro a Open Library
-        try {
-          const parametros = new URLSearchParams({
-            q: `author:"${autor}"`,
-            page: String(pagina),
-            limit: "100",
-            fields: [
-  "key",
-  "title",
-  "author_name",
-  "author_key",
-  "first_publish_year",
-  "cover_i",
-  "edition_count",
-  "language"
-].join(",")
-          });
 
-          const resposta = await fetch(
-            "https://openlibrary.org/search.json?" +
-            parametros.toString()
-          );
+const nomeNormalizado = autor
+  .normalize("NFD")
+  .replace(/[\u0300-\u036f]/g, "")
+  .toLowerCase()
+  .replace(/[^a-z0-9]/g, "");
 
-          if (!resposta.ok) {
-            throw new Error(
-              "Open Library retornou erro: " + resposta.status
-            );
-          }
+const ehRJPalacio = [
+  "rjpalacio",
+  "raqueljaramillopalacio",
+  "raqueljaramillo"
+].includes(nomeNormalizado);
 
-          const dados = await resposta.json();
+const autoresBusca = ehRJPalacio
+  ? ["R. J. Palacio", "Raquel Jaramillo Palacio"]
+  : [autor];
 
-         livrosOpenLibrary.push(...(dados.docs || []));
+// Consulta cada nome na Open Library
+for (const nomeAutor of autoresBusca) {
+  try {
+    const parametros = new URLSearchParams({
+      q: `author:"${nomeAutor}"`,
+      page: String(pagina),
+      limit: "100",
+      fields: [
+        "key",
+        "title",
+        "author_name",
+        "author_key",
+        "first_publish_year",
+        "cover_i",
+        "edition_count",
+        "language"
+      ].join(",")
+    });
 
-        } catch (erroOpenLibrary) {
-          console.error(
-            "Open Library indisponível:",
-            erroOpenLibrary
-          );
-        }
+    const resposta = await fetch(
+      "https://openlibrary.org/search.json?" +
+      parametros.toString()
+    );
+
+    if (!resposta.ok) {
+      throw new Error(
+        "Open Library retornou erro: " + resposta.status
+      );
+    }
+
+    const dados = await resposta.json();
+
+    livrosOpenLibrary.push(...(dados.docs || []));
+
+  } catch (erroOpenLibrary) {
+    console.error(
+      "Erro na busca por " + nomeAutor + ":",
+      erroOpenLibrary
+    );
+  }
+}
 
         // 3. Se a Open Library falhar, tenta o Google Books
         const livros = [];
-        const idsVistos = new Set();
-        let totalEncontrado = 0;
+const idsVistos = new Set();
+let totalEncontrado = 0;
 
-        try {
-        for (let parte = 0; parte < 3; parte++) {
-          const inicio = (pagina - 1) * 100 + (parte * 40);
+for (const nomeAutor of autoresBusca) {
+  try {
+    for (let parte = 0; parte < 3; parte++) {
+      const inicio = (pagina - 1) * 100 + (parte * 40);
 
-          const parametrosGoogle = new URLSearchParams({
-            q: `inauthor:"${autor}"`,
-            langRestrict: "pt",
-            startIndex: String(inicio),
-            maxResults: "40",
-            printType: "books"
-          });
+      const parametrosGoogle = new URLSearchParams({
+        q: `inauthor:"${nomeAutor}"`,
+        langRestrict: "pt",
+        startIndex: String(inicio),
+        maxResults: "40",
+        printType: "books"
+      });
 
-          const respostaGoogle = await fetch(
-            "https://www.googleapis.com/books/v1/volumes?" +
-            parametrosGoogle.toString()
-          );
+      const respostaGoogle = await fetch(
+        "https://www.googleapis.com/books/v1/volumes?" +
+        parametrosGoogle.toString()
+      );
 
-          if (!respostaGoogle.ok) {
-  const detalheGoogle = await respostaGoogle.text();
+      if (!respostaGoogle.ok) {
+        throw new Error(
+          "Google Books retornou erro: " + respostaGoogle.status
+        );
+      }
 
-  throw new Error(
-    "Google Books retornou erro: " +
-    respostaGoogle.status +
-    " - " +
-    detalheGoogle
-  );
-}
+      const dadosGoogle = await respostaGoogle.json();
+      totalEncontrado = dadosGoogle.totalItems || 0;
 
-          const dadosGoogle = await respostaGoogle.json();
+      const itens = dadosGoogle.items || [];
 
-          totalEncontrado = dadosGoogle.totalItems || 0;
+      for (const item of itens) {
+        if (!item.id || idsVistos.has(item.id)) continue;
 
-          const itens = dadosGoogle.items || [];
+        idsVistos.add(item.id);
 
-          for (const item of itens) {
-            if (!item.id || idsVistos.has(item.id)) continue;
+        const info = item.volumeInfo || {};
 
-            idsVistos.add(item.id);
+        const dataPublicacao = (
+          info.publishedDate || ""
+        ).match(/^\d{4}/);
 
-            const info = item.volumeInfo || {};
+        const capaGoogle =
+          info.imageLinks?.thumbnail ||
+          info.imageLinks?.smallThumbnail ||
+          "";
 
-            const dataPublicacao = (
-              info.publishedDate || ""
-            ).match(/^\d{4}/);
-
-            const capaGoogle =
-              info.imageLinks?.thumbnail ||
-              info.imageLinks?.smallThumbnail ||
-              "";
-
-            livros.push({
-              key: "/works/GOOGLE_" + item.id,
+        livros.push({
+          key: "/works/GOOGLE_" + item.id,
+          title: info.title || "Título não informado",
+          author_name: info.authors?.length
+            ? info.authors
+            : [nomeAutor],
+          author_key: [],
+          first_publish_year: dataPublicacao
+            ? Number(dataPublicacao[0])
+            : null,
+          cover_i: null,
+          edition_count: 1,
+          editions: {
+            docs: [{
               title: info.title || "Título não informado",
-              author_name: info.authors?.length
-                ? info.authors
-                : [autor],
-              author_key: [],
-              first_publish_year: dataPublicacao
-                ? Number(dataPublicacao[0])
-                : null,
+              language: ["por"],
               cover_i: null,
-              edition_count: 1,
-              editions: {
-                docs: [
-                  {
-                    title: info.title || "Título não informado",
-                    language: ["por"],
-                    cover_i: null,
-                    cover_url: capaGoogle.replace(/^http:/, "https:")
-                  }
-                ]
-              }
-            });
+              cover_url: capaGoogle.replace(/^http:/, "https:")
+            }]
           }
+        });
+      }
 
-          if (
-            itens.length < 40 ||
-            inicio + 40 >= totalEncontrado
-          ) {
-            break;
-          }
-        }
-
-          } catch (erroGoogle) {
-  console.error("Google Books indisponível:", erroGoogle);
+      if (
+        itens.length < 40 ||
+        inicio + 40 >= totalEncontrado
+      ) {
+        break;
+      }
+    }
+  } catch (erroGoogle) {
+    console.error(
+      "Erro na busca do Google Books por " + nomeAutor + ":",
+      erroGoogle
+    );
+  }
 }
         // 4. Combina os resultados das duas fontes
 const todosLivros = [
