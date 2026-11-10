@@ -1325,13 +1325,16 @@ if (!autores.some(nomeAutor =>
       .map(({ obra, edicaoPortugues }) => {
         let ano = Number(obra.first_publish_year) || 0;
 
-        // Correções de anos originais já existentes
-        if (obra.key === "/works/OL81632W") ano = 1975;
-        if (obra.key === "/works/OL81616W") ano = 1987;
+// Correções de anos originais
+if (obra.key === "/works/OL81632W") ano = 1975;
+if (obra.key === "/works/OL81616W") ano = 1987;
+if (obra.key === "/works/OL16142094W") ano = 2012;
 
         return {
           obraId: obra.key,
-          title: edicaoPortugues.title || obra.title,
+          title: obra.key === "/works/OL16142094W"
+  ? "Extraordinário"
+  : (edicaoPortugues.title || obra.title),
           author: autor.name,
           cover_i: edicaoPortugues.cover_i || obra.cover_i || null,
           capa: edicaoPortugues.cover_url || "",
