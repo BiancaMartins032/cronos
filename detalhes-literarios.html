@@ -818,10 +818,16 @@ async function buscarEdicaoPortugues(livro) {
 
     const dados = await resposta.json();
     nomePerfil.textContent = dados.display_name || nome;
-    if (dados.photo_url) {
+    fotoPerfil.onerror = () => {
+  console.error("Erro ao carregar foto:", fotoPerfil.src);
+};
+
+fotoPerfil.onload = () => {
   fotoPerfil.style.display = "block";
-  fotoPerfil.src = dados.photo_url;
-}
+};
+
+fotoPerfil.src = dados.photo_url || "";
+fotoPerfil.style.display = dados.photo_url ? "block" : "none";
 
     const edicoes = (dados.entries || []).filter(edicao => {
       const idiomas = (edicao.languages || []).map(item =>
