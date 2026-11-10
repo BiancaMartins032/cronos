@@ -1290,26 +1290,32 @@ if (!autores.some(nomeAutor =>
       const edicoes = obra.editions?.docs || [];
 
       const edicaoPortugues =
-  obra.key === "/works/OL26418245W"
+  obra.key === "/works/OL17310714W"
     ? {
-        title: "Somos Todos Extraordinários",
+        title: "Auggie & eu",
         language: ["por"],
-        cover_i: 12373789
+        cover_url: "https://covers.openlibrary.org/b/isbn/9788580578416-M.jpg"
       }
-    : (
-        edicoes.find(edicao =>
-          (edicao.language || []).includes("por")
-        ) ||
-        (
-          (obra.language || []).includes("por")
-            ? {
-                title: obra.title,
-                language: ["por"],
-                cover_i: obra.cover_i
-              }
-            : null
-        )
-      );
+    : obra.key === "/works/OL26418245W"
+      ? {
+          title: "Somos Todos Extraordinários",
+          language: ["por"],
+          cover_i: 12373789
+        }
+      : (
+          edicoes.find(edicao =>
+            (edicao.language || []).includes("por")
+          ) ||
+          (
+            (obra.language || []).includes("por")
+              ? {
+                  title: obra.title,
+                  language: ["por"],
+                  cover_i: obra.cover_i
+                }
+              : null
+          )
+        );
 
       if (!edicaoPortugues) continue;
 
@@ -1337,6 +1343,7 @@ if (!autores.some(nomeAutor =>
 if (obra.key === "/works/OL81632W") ano = 1975;
 if (obra.key === "/works/OL81616W") ano = 1987;
 if (obra.key === "/works/OL16142094W") ano = 2012;
+if (obra.key === "/works/OL17310714W") ano = 2015;
 if (obra.key === "/works/OL26418245W") ano = 2017;
 
         return {
