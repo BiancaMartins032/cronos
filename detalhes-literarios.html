@@ -1245,11 +1245,17 @@ async function carregarLivrosAutor(autor) {
 
       const autorNormalizado = normalizar(autor.name);
 
-      if (!autores.some(nomeAutor =>
-        normalizar(nomeAutor) === autorNormalizado
-      )) {
-        continue;
-      }
+      const nomesAceitos = [autorNormalizado];
+
+if (autorNormalizado === normalizar("R. J. Palacio")) {
+  nomesAceitos.push(normalizar("Raquel Jaramillo Palacio"));
+}
+
+if (!autores.some(nomeAutor =>
+  nomesAceitos.includes(normalizar(nomeAutor))
+)) {
+  continue;
+}
 
       const edicoes = obra.editions?.docs || [];
 
