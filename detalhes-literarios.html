@@ -1141,16 +1141,22 @@ async function carregarBiografiaAutor(autor) {
     return ` (${anos} anos atualmente)`;
   }
 
+  const nomeBusca = (autor.name || "")
+  .normalize("NFD")
+  .replace(/[\u0300-\u036f]/g, "")
+  .toLowerCase()
+  .replace(/[^a-z]/g, "") === "rjpalacio"
+    ? "Raquel Jaramillo Palacio"
+    : autor.name;
   try {
     const resposta = await fetch(
   "/api/openlibrary/author?name=" +
-  encodeURIComponent(autor.name) +
-  "&versao=3"
+  encodeURIComponent(nomeBusca) +
+  "&versao=4"
 );
 
     const dados = await resposta.json();
-    nomePerfil.textContent = dados.display_name || autor.name;
-
+    nomePerfil.textContent = autor.name;
     if (!resposta.ok) {
       throw new Error(dados.error || "Erro ao consultar autor.");
     }
@@ -1179,7 +1185,9 @@ async function carregarBiografiaAutor(autor) {
       "Informações sobre a carreira ainda não disponíveis."
     ).trim();
 
-    const nomeCompleto = (dados.full_name || "").trim();
+    const nomeCompleto = nomeBusca === "Raquel Jaramillo Palacio"
+  ? "Raquel Jaramillo Palacio"
+  : (dados.full_name || "").trim();
 
     if (nomeCompleto) {
       if (
@@ -1227,8 +1235,8 @@ async function carregarLivrosAutor(autor) {
   for (let pagina = 1; pagina <= 10; pagina++) {
     const resposta = await fetch(
       "/api/openlibrary/books?page=" + pagina +
-      "&author=" + encodeURIComponent(autor.name) +
-"&versao=4"
+      "&author=" + encodeURIComponent(nomeBusca) +
+"&versao=5"
     );
 
     if (!resposta.ok) {
@@ -1258,7 +1266,11 @@ async function carregarLivrosAutor(autor) {
 
       const nomesAceitos = [autorNormalizado];
 
-if (autorNormalizado === normalizar("R. J. Palacio")) {
+if (
+  autorNormalizado === normalizar("R. J. Palacio") ||
+  autorNormalizado === normalizar("Raquel Jaramillo Palacio")
+) {
+  nomesAceitos.push(normalizar("R. J. Palacio"));
   nomesAceitos.push(normalizar("Raquel Jaramillo Palacio"));
 }
 
