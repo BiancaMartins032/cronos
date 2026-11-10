@@ -1234,6 +1234,21 @@ async function carregarLivrosAutor(autor) {
     if (!resposta.ok) {
       throw new Error("Erro ao consultar Open Library.");
     }
+    // CARREGA A FOTO DO AUTOR
+fotoPerfil.onload = () => {
+  fotoPerfil.style.display = "block";
+};
+
+fotoPerfil.onerror = () => {
+  console.error("Não foi possível carregar a foto:", fotoPerfil.src);
+};
+
+if (dados.photo_url) {
+  fotoPerfil.src = dados.photo_url;
+  fotoPerfil.style.display = "block";
+} else {
+  fotoPerfil.style.display = "none";
+}
 
     const dados = await resposta.json();
     const resultados = dados.docs || [];
