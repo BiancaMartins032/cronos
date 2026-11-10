@@ -817,17 +817,6 @@ async function buscarEdicaoPortugues(livro) {
     if (!resposta.ok) return null;
 
     const dados = await resposta.json();
-    nomePerfil.textContent = dados.display_name || nome;
-    fotoPerfil.onerror = () => {
-  console.error("Erro ao carregar foto:", fotoPerfil.src);
-};
-
-fotoPerfil.onload = () => {
-  fotoPerfil.style.display = "block";
-};
-
-fotoPerfil.src = dados.photo_url || "";
-fotoPerfil.style.display = dados.photo_url ? "block" : "none";
 
     const edicoes = (dados.entries || []).filter(edicao => {
       const idiomas = (edicao.languages || []).map(item =>
@@ -1156,10 +1145,28 @@ async function carregarBiografiaAutor(autor) {
 );
 
     const dados = await resposta.json();
-    nomePerfil.textContent = autor.name;
-    if (!resposta.ok) {
-      throw new Error(dados.error || "Erro ao consultar autor.");
-    }
+
+if (!resposta.ok) {
+  throw new Error(dados.error || "Erro ao consultar autor.");
+}
+
+nomePerfil.textContent = autor.name;
+
+// Carrega a foto do autor
+if (dados.photo_url) {
+  fotoPerfil.onload = () => {
+    fotoPerfil.style.display = "block";
+  };
+
+  fotoPerfil.onerror = () => {
+    console.error("Erro ao carregar foto:", fotoPerfil.src);
+    fotoPerfil.style.display = "none";
+  };
+
+  fotoPerfil.src = dados.photo_url;
+} else {
+  fotoPerfil.style.display = "none";
+}
 
     nascimento.textContent = formatarData(dados.birth_date);
     idadeAtual.textContent = dados.death_date
