@@ -818,6 +818,10 @@ async function buscarEdicaoPortugues(livro) {
 
     const dados = await resposta.json();
     nomePerfil.textContent = dados.display_name || nome;
+    if (dados.photo_url) {
+  fotoPerfil.style.display = "block";
+  fotoPerfil.src = dados.photo_url;
+}
 
     const edicoes = (dados.entries || []).filter(edicao => {
       const idiomas = (edicao.languages || []).map(item =>
