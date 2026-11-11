@@ -299,6 +299,98 @@ movieForm.addEventListener("submit", function(event) {
   renderMovies();
 });
 
+let selectedMedia = null;
+let mediaSearchTimer = null;
+
+const mediaResults = document.getElementById("mediaResults");
+const movieName = document.getElementById("movieName");
+const movieType = document.getElementById("movieType");
+
+async function searchMedia(term) {
+  if (term.length < 2) {
+    mediaResults.innerHTML = "";
+    return;
+  }
+
+  mediaResults.innerHTML = "<p>Pesquisando no catálogo...</p>";
+
+  const type = movieType.value === "Filme" ? "movie" : "tv";
+
+  try {
+    const response = await fetch(
+      `/api/media?search=${encodeURIComponent(term)}&type=${type}`
+    );
+
+    if (!response.ok) {
+      throw new Error("Falha na pesquisa");
+    }
+
+    const results = await response.json();
+    mediaResults.innerHTML = "";
+
+    if (!results.length) {
+      mediaResults.innerHTML = "<p>Nenhum resultado encontrado.</p>";
+      return;
+    }
+
+    results.forEach(item => {
+      const card = document.createElement("button");
+      card.type = "button";
+      card.className = "media-result";
+
+      if (item.poster) {
+        const image = document.createElement("img");
+        image.src = item.poster;
+        image.alt = "Cartaz de " + item.name;
+        image.loading = "lazy";
+        card.appendChild(image);
+      }
+
+      const title = document.createElement("strong");
+      title.textContent = item.name;
+
+      const year = document.createElement("small");
+      year.textContent = item.year || "Ano não informado";
+
+      card.append(title, year);
+
+      card.addEventListener("click", () => {
+        selectedMedia = item;
+        movieName.value = item.name;
+
+        mediaResults.querySelectorAll(".media-result")
+          .forEach(result => result.classList.remove("selected"));
+
+        card.classList.add("selected");
+      });
+
+      mediaResults.appendChild(card);
+    });
+
+  } catch (error) {
+    console.error(error);
+    mediaResults.innerHTML =
+      "<p>Não foi possível pesquisar. Tente novamente.</p>";
+  }
+}
+
+movieName.addEventListener("input", () => {
+  selectedMedia = null;
+  clearTimeout(mediaSearchTimer);
+
+  const term = movieName.value.trim();
+
+  mediaSearchTimer = setTimeout(() => {
+    searchMedia(term);
+  }, 500);
+});
+
+movieType.addEventListener("change", () => {
+  selectedMedia = null;
+  clearTimeout(mediaSearchTimer);
+  searchMedia(movieName.value.trim());
+});
+
 renderMovies();
 </script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
