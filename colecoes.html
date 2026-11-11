@@ -1180,18 +1180,30 @@ main {
 </section>
 
   
+
 <!-- FILMES -->
 <section id="filmes" class="collection-page">
 
   <div class="section">
-    <h2>Buscar filmes</h2>
-    <input
-      type="search"
-      id="buscarFilme"
-      placeholder="Digite o nome de um filme..."
-      autocomplete="off"
-    >
-    <div id="resultadosFilmes" class="media-list"></div>
+    <h2>Encontrar filmes</h2>
+
+    <div class="search-books">
+      <svg viewBox="0 0 24 24" width="22" height="22"
+           fill="none" stroke="currentColor"
+           stroke-width="1.8" stroke-linecap="round">
+        <circle cx="11" cy="11" r="7"></circle>
+        <path d="m16 16 4 4"></path>
+      </svg>
+
+      <input
+        type="search"
+        id="buscarFilme"
+        placeholder="Pesquise pelo título do filme..."
+        autocomplete="off"
+      >
+    </div>
+
+    <div id="resultadosFilmes"></div>
   </div>
 
   <div class="section">
@@ -1210,14 +1222,25 @@ main {
 <section id="series" class="collection-page">
 
   <div class="section">
-    <h2>Buscar séries</h2>
-    <input
-      type="search"
-      id="buscarSerie"
-      placeholder="Digite o nome de uma série..."
-      autocomplete="off"
-    >
-    <div id="resultadosSeries" class="media-list"></div>
+    <h2>Encontrar séries</h2>
+
+    <div class="search-books">
+      <svg viewBox="0 0 24 24" width="22" height="22"
+           fill="none" stroke="currentColor"
+           stroke-width="1.8" stroke-linecap="round">
+        <circle cx="11" cy="11" r="7"></circle>
+        <path d="m16 16 4 4"></path>
+      </svg>
+
+      <input
+        type="search"
+        id="buscarSerie"
+        placeholder="Pesquise pelo título da série..."
+        autocomplete="off"
+      >
+    </div>
+
+    <div id="resultadosSeries"></div>
   </div>
 
   <div class="section">
@@ -1241,6 +1264,7 @@ main {
   </div>
 
 </section>
+
 
   <!-- HISTÓRIA -->
   <section id="historia" class="collection-page">
@@ -1423,6 +1447,7 @@ function salvarMidia(midia, tipo, status) {
   renderMediaCollection();
 }
 
+
 function buscarMidias(termo, tipoApi, tipoLista, containerId) {
   const container = document.getElementById(containerId);
   if (!container) return;
@@ -1433,6 +1458,7 @@ function buscarMidias(termo, tipoApi, tipoLista, containerId) {
   }
 
   container.innerHTML = "<div class='empty'>Buscando...</div>";
+  container.style.cssText = "margin-top:16px;";
 
   fetch("/api/media?search=" + encodeURIComponent(termo) +
         "&type=" + tipoApi)
@@ -1442,8 +1468,6 @@ function buscarMidias(termo, tipoApi, tipoLista, containerId) {
     })
     .then(resultados => {
       container.innerHTML = "";
-      container.style.cssText =
-        "display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:14px;";
 
       if (!resultados.length) {
         container.innerHTML =
@@ -1453,28 +1477,32 @@ function buscarMidias(termo, tipoApi, tipoLista, containerId) {
 
       resultados.forEach(midia => {
         const card = document.createElement("div");
-        card.className = "item";
-        card.style.cssText = "overflow:hidden;";
+        card.className = "item book-result";
 
         if (midia.poster) {
           const poster = document.createElement("img");
           poster.src = midia.poster;
           poster.alt = "Capa de " + midia.name;
-          poster.style.cssText =
-            "width:100%;aspect-ratio:2/3;object-fit:cover;border-radius:10px;";
+          poster.loading = "lazy";
           card.appendChild(poster);
         }
 
+        const info = document.createElement("div");
+        info.className = "book-result-info";
+
         const title = document.createElement("strong");
         title.textContent = midia.name;
-        title.style.display = "block";
-        card.appendChild(title);
+        info.appendChild(title);
 
         if (midia.year) {
           const year = document.createElement("small");
           year.textContent = midia.year;
-          card.appendChild(year);
+          info.appendChild(year);
         }
+
+        const actions = document.createElement("div");
+        actions.style.cssText =
+          "display:flex;flex-wrap:wrap;gap:6px;margin-top:5px;";
 
         const statuses = tipoLista === "Filme"
           ? ["Já assisti", "Quero assistir"]
@@ -1483,18 +1511,21 @@ function buscarMidias(termo, tipoApi, tipoLista, containerId) {
         statuses.forEach(status => {
           const button = document.createElement("button");
           button.type = "button";
+          button.className = "botao-adicionar-livro";
           button.textContent = status;
-          button.style.cssText =
-            "display:block;width:100%;margin-top:6px;cursor:pointer;";
 
           button.addEventListener("click", () => {
             salvarMidia(midia, tipoLista, status);
             button.textContent = "Adicionado!";
+            button.classList.add("livro-ja-adicionado");
+            button.disabled = true;
           });
 
-          card.appendChild(button);
+          actions.appendChild(button);
         });
 
+        info.appendChild(actions);
+        card.appendChild(info);
         container.appendChild(card);
       });
     })
@@ -1503,6 +1534,7 @@ function buscarMidias(termo, tipoApi, tipoLista, containerId) {
         "<div class='empty'>Não foi possível buscar. Tente novamente.</div>";
     });
 }
+
 
 document.addEventListener("DOMContentLoaded", function () {
   function configurarBusca(inputId, tipoApi, tipoLista, resultadosId) {
