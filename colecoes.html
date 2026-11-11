@@ -298,6 +298,27 @@ main {
   font-weight: 600;
   cursor: pointer;
 }
+  
+.botao-adicionar-midia {
+  background: #E9E2FF;
+  color: #6650A4;
+  border: none;
+  border-radius: 9px;
+  padding: 9px 13px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.botao-adicionar-midia.midia-ja-adicionada {
+  background: #6650A4;
+  color: #FFFFFF;
+  cursor: default;
+}
+
 
 .botao-adicionar-livro.livro-ja-adicionado {
   background: #236B3A;
@@ -1332,6 +1353,7 @@ function showCollection(collectionId, button) {
   button.classList.add("active");
 }
   
+
 function renderMediaCollection() {
   let movies = [];
 
@@ -1350,8 +1372,6 @@ function renderMediaCollection() {
     );
 
     container.innerHTML = "";
-    container.style.cssText =
-      "display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:14px;align-items:start;";
 
     if (items.length === 0) {
       const empty = document.createElement("div");
@@ -1363,34 +1383,41 @@ function renderMediaCollection() {
 
     items.forEach(item => {
       const card = document.createElement("div");
-      card.className = "item";
-      card.style.cssText = "overflow:hidden;";
+      card.className = "item book-result";
 
       if (item.poster) {
         const poster = document.createElement("img");
         poster.src = item.poster;
         poster.alt = "Capa de " + item.name;
-        poster.style.cssText =
-          "width:100%;aspect-ratio:2/3;object-fit:cover;border-radius:10px;";
+        poster.loading = "lazy";
         card.appendChild(poster);
       }
 
+      const info = document.createElement("div");
+      info.className = "book-result-info";
+
       const title = document.createElement("strong");
       title.textContent = item.name;
-      title.style.display = "block";
-      card.appendChild(title);
+      info.appendChild(title);
 
-      const info = document.createElement("small");
-      info.textContent = status;
-      card.appendChild(info);
+      if (item.year) {
+        const year = document.createElement("small");
+        year.textContent = item.year;
+        info.appendChild(year);
+      }
+
+      const statusInfo = document.createElement("small");
+      statusInfo.textContent = status;
+      info.appendChild(statusInfo);
 
       if (status === "Já assisti" && item.rating > 0) {
         const rating = document.createElement("small");
-        rating.textContent = "Sua avaliação: " + "★".repeat(item.rating);
-        rating.style.display = "block";
-        card.appendChild(rating);
+        rating.textContent =
+          "Sua avaliação: " + "★".repeat(item.rating);
+        info.appendChild(rating);
       }
 
+      card.appendChild(info);
       container.appendChild(card);
     });
   }
@@ -1410,6 +1437,7 @@ function renderMediaCollection() {
   renderGroup("series-desejadas", "Série", "Quero assistir",
     "Sua lista de séries que deseja assistir está vazia.");
 }
+
 
 function salvarMidia(midia, tipo, status) {
   let lista = [];
@@ -1448,6 +1476,7 @@ function salvarMidia(midia, tipo, status) {
 }
 
 
+
 function buscarMidias(termo, tipoApi, tipoLista, containerId) {
   const container = document.getElementById(containerId);
   if (!container) return;
@@ -1469,23 +1498,31 @@ function buscarMidias(termo, tipoApi, tipoLista, containerId) {
     .then(resultados => {
       container.innerHTML = "";
 
+      resultados = resultados.filter(midia => midia.poster);
+
       if (!resultados.length) {
         container.innerHTML =
-          "<div class='empty'>Nenhum resultado encontrado.</div>";
+          "<div class='empty'>Nenhum resultado com capa encontrado.</div>";
         return;
+      }
+
+      let lista = [];
+
+      try {
+        lista = JSON.parse(localStorage.getItem("cronosMovies") || "[]");
+      } catch (error) {
+        lista = [];
       }
 
       resultados.forEach(midia => {
         const card = document.createElement("div");
         card.className = "item book-result";
 
-        if (midia.poster) {
-          const poster = document.createElement("img");
-          poster.src = midia.poster;
-          poster.alt = "Capa de " + midia.name;
-          poster.loading = "lazy";
-          card.appendChild(poster);
-        }
+        const poster = document.createElement("img");
+        poster.src = midia.poster;
+        poster.alt = "Capa de " + midia.name;
+        poster.loading = "lazy";
+        card.appendChild(poster);
 
         const info = document.createElement("div");
         info.className = "book-result-info";
@@ -1511,13 +1548,25 @@ function buscarMidias(termo, tipoApi, tipoLista, containerId) {
         statuses.forEach(status => {
           const button = document.createElement("button");
           button.type = "button";
-          button.className = "botao-adicionar-livro";
-          button.textContent = status;
+          button.className = "botao-adicionar-midia";
+
+          const existente = lista.find(item =>
+            String(item.id) === String(midia.id) &&
+            item.type === tipoLista &&
+            item.status === status
+          );
+
+          button.textContent = existente ? "Adicionado!" : status;
+
+          if (existente) {
+            button.classList.add("midia-ja-adicionada");
+            button.disabled = true;
+          }
 
           button.addEventListener("click", () => {
             salvarMidia(midia, tipoLista, status);
             button.textContent = "Adicionado!";
-            button.classList.add("livro-ja-adicionado");
+            button.classList.add("midia-ja-adicionada");
             button.disabled = true;
           });
 
@@ -1534,6 +1583,7 @@ function buscarMidias(termo, tipoApi, tipoLista, containerId) {
         "<div class='empty'>Não foi possível buscar. Tente novamente.</div>";
     });
 }
+
 
 
 document.addEventListener("DOMContentLoaded", function () {
