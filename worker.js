@@ -1,5 +1,6 @@
 
 import { onRequestGet as buscarJogos } from "./functions/api/games.js";
+import { onRequestGet as buscarMidia } from "./functions/api/media.js";
 
 export default {
   async fetch(request, env) {
@@ -864,6 +865,9 @@ return Response.json(dados, {
     if (url.pathname === "/api/games" && request.method === "GET") {
       return buscarJogos({ request, env });
     }
+    if (url.pathname === "/api/media" && request.method === "GET") {
+  return buscarMidia({ request, env });
+}
 
     // Mantém todas as páginas e arquivos atuais do site
     return env.ASSETS.fetch(request);
