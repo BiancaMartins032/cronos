@@ -6,7 +6,7 @@ export async function onRequestGet({ request, env }) {
     const type = url.searchParams.get("type");
     const id = url.searchParams.get("id");
 
-    if (!["movie", "tv"].includes(type)) {
+    if (!["movie", "tv"].includes(type)) { 
       return Response.json(
         { error: "Tipo de conteúdo inválido." },
         { status: 400 }
