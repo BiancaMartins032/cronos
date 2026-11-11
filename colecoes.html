@@ -1439,6 +1439,7 @@ function renderMediaCollection() {
 }
 
 
+
 function salvarMidia(midia, tipo, status) {
   let lista = [];
 
@@ -1458,6 +1459,11 @@ function salvarMidia(midia, tipo, status) {
     existente.poster = midia.poster || existente.poster;
     existente.year = midia.year || existente.year;
     existente.overview = midia.overview || existente.overview;
+    existente.directors = midia.directors || existente.directors || [];
+    existente.writers = midia.writers || existente.writers || [];
+    existente.producers = midia.producers || existente.producers || [];
+    existente.creators = midia.creators || existente.creators || [];
+    existente.awards = midia.awards ?? existente.awards ?? null;
   } else {
     lista.push({
       id: midia.id,
@@ -1467,6 +1473,11 @@ function salvarMidia(midia, tipo, status) {
       poster: midia.poster,
       year: midia.year,
       overview: midia.overview,
+      directors: midia.directors || [],
+      writers: midia.writers || [],
+      producers: midia.producers || [],
+      creators: midia.creators || [],
+      awards: midia.awards ?? null,
       rating: 0
     });
   }
@@ -1477,59 +1488,56 @@ function salvarMidia(midia, tipo, status) {
 
 
 
+
+
+let midiaModalAtual = null;
+
 async function abrirModalMidia(midia) {
   const modal = document.getElementById("modalMidia");
-
   if (!modal) return;
+
+  midiaModalAtual = { ...midia };
 
   modal.style.display = "flex";
 
-  document.getElementById("modalMidiaPoster").src =
-    midia.poster || "";
-
-  document.getElementById("modalMidiaTitulo").textContent =
-    midia.name;
-
+  document.getElementById("modalMidiaPoster").src = midia.poster || "";
+  document.getElementById("modalMidiaTitulo").textContent = midia.name;
   document.getElementById("modalMidiaAno").textContent =
     midia.year || "Ano não informado";
-
   document.getElementById("modalMidiaSinopse").textContent =
     midia.overview || "Sinopse não disponível.";
 
-  document.getElementById("modalMidiaDiretores").textContent =
-    "Carregando...";
+  const campos = [
+    "modalMidiaDiretores",
+    "modalMidiaRoteiristas",
+    "modalMidiaProdutores",
+    "modalMidiaCriadores"
+  ];
 
-  document.getElementById("modalMidiaRoteiristas").textContent =
-    "Carregando...";
-
-  document.getElementById("modalMidiaProdutores").textContent =
-    "Carregando...";
-
-  document.getElementById("modalMidiaCriadores").textContent =
-    "Carregando...";
+  campos.forEach(id => {
+    document.getElementById(id).textContent = "Carregando...";
+  });
 
   document.getElementById("modalMidiaPremiacoes").textContent =
     "Informações de premiações não disponíveis.";
 
   const parametros = new URLSearchParams({
-    type: midia.type === "movie" ? "movie" : "tv",
+    type: midia.type,
     id: String(midia.id)
   });
 
   try {
     const resposta = await fetch("/api/media?" + parametros);
 
-    if (!resposta.ok) {
-      throw new Error("Não foi possível carregar os detalhes.");
-    }
+    if (!resposta.ok) throw new Error("Erro ao carregar detalhes.");
 
     const detalhes = await resposta.json();
 
+    midiaModalAtual = { ...midia, ...detalhes };
+
     function mostrarNomes(id, nomes) {
       document.getElementById(id).textContent =
-        nomes && nomes.length
-          ? nomes.join(", ")
-          : "Não informado.";
+        nomes && nomes.length ? nomes.join(", ") : "Não informado.";
     }
 
     mostrarNomes("modalMidiaDiretores", detalhes.directors);
@@ -1538,29 +1546,49 @@ async function abrirModalMidia(midia) {
     mostrarNomes("modalMidiaCriadores", detalhes.creators);
 
   } catch (erro) {
-    document.getElementById("modalMidiaDiretores").textContent =
-      "Não foi possível carregar.";
-
-    document.getElementById("modalMidiaRoteiristas").textContent =
-      "Não foi possível carregar.";
-
-    document.getElementById("modalMidiaProdutores").textContent =
-      "Não foi possível carregar.";
-
-    document.getElementById("modalMidiaCriadores").textContent =
-      "Não foi possível carregar.";
+    campos.forEach(id => {
+      document.getElementById(id).textContent =
+        "Não foi possível carregar.";
+    });
   }
 
   document.getElementById("modalMidiaFavoritos").innerHTML = "";
 }
 
-document.getElementById("fecharModalMidia").addEventListener("click", () => {
-  document.getElementById("modalMidia").style.display = "none";
-});
+document.addEventListener("DOMContentLoaded", () => {
+  const modal = document.getElementById("modalMidia");
+  const fechar = document.getElementById("fecharModalMidia");
 
-document.getElementById("modalMidia").addEventListener("click", event => {
-  if (event.target.id === "modalMidia") {
-    event.currentTarget.style.display = "none";
+  if (fechar && modal) {
+    fechar.addEventListener("click", () => {
+      modal.style.display = "none";
+    });
+
+    modal.addEventListener("click", event => {
+      if (event.target === modal) {
+        modal.style.display = "none";
+      }
+    });
+  }
+
+  if (modal) {
+    modal.querySelectorAll(".modal-midia-acoes button").forEach(botao => {
+      botao.addEventListener("click", () => {
+        if (!midiaModalAtual) return;
+
+        const tipo = midiaModalAtual.type === "movie"
+          ? "Filme"
+          : "Série";
+
+        salvarMidia(
+          midiaModalAtual,
+          tipo,
+          botao.dataset.status
+        );
+
+        modal.style.display = "none";
+      });
+    });
   }
 });
 
@@ -1660,11 +1688,8 @@ function buscarMidias(termo, tipoApi, tipoLista, containerId) {
           }
 
           button.addEventListener("click", () => {
-            salvarMidia(midia, tipoLista, status);
-            button.textContent = "Adicionado!";
-            button.classList.add("midia-ja-adicionada");
-            button.disabled = true;
-          });
+  abrirModalMidia(midia);
+});
 
           actions.appendChild(button);
         });
