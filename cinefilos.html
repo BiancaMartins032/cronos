@@ -94,6 +94,46 @@
     @media (max-width: 500px) {
       .categories { grid-template-columns: 1fr; }
     }
+    #mediaResults {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.media-result {
+  border: 1px solid #E8E1D5;
+  border-radius: 12px;
+  background: #fff;
+  padding: 8px;
+  text-align: left;
+  cursor: pointer;
+  color: #343746;
+}
+
+.media-result img {
+  width: 100%;
+  aspect-ratio: 2 / 3;
+  object-fit: cover;
+  border-radius: 8px;
+  background: #F7F4ED;
+}
+
+.media-result strong {
+  display: block;
+  margin-top: 7px;
+  font-size: 13px;
+}
+
+.media-result small {
+  display: block;
+  margin-top: 4px;
+  color: #737585;
+}
+
+.media-result.selected {
+  border: 2px solid #5267D8;
+}
   </style>
 </head>
 <body>
