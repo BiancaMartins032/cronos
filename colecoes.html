@@ -1179,8 +1179,20 @@ main {
 
 </section>
 
-  <!-- FILMES -->
+  
+<!-- FILMES -->
 <section id="filmes" class="collection-page">
+
+  <div class="section">
+    <h2>Buscar filmes</h2>
+    <input
+      type="search"
+      id="buscarFilme"
+      placeholder="Digite o nome de um filme..."
+      autocomplete="off"
+    >
+    <div id="resultadosFilmes" class="media-list"></div>
+  </div>
 
   <div class="section">
     <h2>Assistidos</h2>
@@ -1194,30 +1206,41 @@ main {
 
 </section>
 
-  <!-- SÉRIES -->
-  <section id="series" class="collection-page">
+<!-- SÉRIES -->
+<section id="series" class="collection-page">
 
-    <div class="section">
-      <h2>Assistindo atualmente</h2>
-      <div class="empty">As séries que você está acompanhando aparecerão aqui.</div>
-    </div>
+  <div class="section">
+    <h2>Buscar séries</h2>
+    <input
+      type="search"
+      id="buscarSerie"
+      placeholder="Digite o nome de uma série..."
+      autocomplete="off"
+    >
+    <div id="resultadosSeries" class="media-list"></div>
+  </div>
 
-    <div class="section">
-      <h2>Concluídas</h2>
-      <div class="empty">Séries que você já terminou.</div>
-    </div>
+  <div class="section">
+    <h2>Assistindo atualmente</h2>
+    <div id="series-assistindo" class="media-list"></div>
+  </div>
 
-    <div class="section">
-      <h2>Quero assistir</h2>
-      <div class="empty">Sua lista de séries desejadas aparecerá aqui.</div>
-    </div>
+  <div class="section">
+    <h2>Concluídas</h2>
+    <div id="series-concluidas" class="media-list"></div>
+  </div>
 
-    <div class="section">
-      <h2>Favoritas</h2>
-      <div class="empty">Suas séries favoritas aparecerão aqui.</div>
-    </div>
+  <div class="section">
+    <h2>Quero assistir</h2>
+    <div id="series-desejadas" class="media-list"></div>
+  </div>
 
-  </section>
+  <div class="section">
+    <h2>Favoritas</h2>
+    <div class="empty">Suas séries favoritas aparecerão aqui.</div>
+  </div>
+
+</section>
 
   <!-- HISTÓRIA -->
   <section id="historia" class="collection-page">
@@ -1284,7 +1307,8 @@ function showCollection(collectionId, button) {
   document.getElementById(collectionId).classList.add("active");
   button.classList.add("active");
 }
-  function renderMediaCollection() {
+  
+function renderMediaCollection() {
   let movies = [];
 
   try {
@@ -1302,13 +1326,8 @@ function showCollection(collectionId, button) {
     );
 
     container.innerHTML = "";
-    container.classList.remove("media-list");
-
     container.style.cssText =
-    "display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;align-items:start;";
-    container.style.cssText =
-    "display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;align-items:start;";
-    
+      "display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:14px;align-items:start;";
 
     if (items.length === 0) {
       const empty = document.createElement("div");
@@ -1321,19 +1340,30 @@ function showCollection(collectionId, button) {
     items.forEach(item => {
       const card = document.createElement("div");
       card.className = "item";
+      card.style.cssText = "overflow:hidden;";
+
+      if (item.poster) {
+        const poster = document.createElement("img");
+        poster.src = item.poster;
+        poster.alt = "Capa de " + item.name;
+        poster.style.cssText =
+          "width:100%;aspect-ratio:2/3;object-fit:cover;border-radius:10px;";
+        card.appendChild(poster);
+      }
 
       const title = document.createElement("strong");
       title.textContent = item.name;
+      title.style.display = "block";
+      card.appendChild(title);
 
       const info = document.createElement("small");
       info.textContent = status;
-
-      card.appendChild(title);
       card.appendChild(info);
 
       if (status === "Já assisti" && item.rating > 0) {
         const rating = document.createElement("small");
         rating.textContent = "Sua avaliação: " + "★".repeat(item.rating);
+        rating.style.display = "block";
         card.appendChild(rating);
       }
 
@@ -1357,8 +1387,150 @@ function showCollection(collectionId, button) {
     "Sua lista de séries que deseja assistir está vazia.");
 }
 
+function salvarMidia(midia, tipo, status) {
+  let lista = [];
+
+  try {
+    lista = JSON.parse(localStorage.getItem("cronosMovies") || "[]");
+  } catch (error) {
+    lista = [];
+  }
+
+  const existente = lista.find(item =>
+    String(item.id) === String(midia.id) &&
+    item.type === tipo
+  );
+
+  if (existente) {
+    existente.status = status;
+    existente.poster = midia.poster || existente.poster;
+    existente.year = midia.year || existente.year;
+    existente.overview = midia.overview || existente.overview;
+  } else {
+    lista.push({
+      id: midia.id,
+      name: midia.name,
+      type: tipo,
+      status: status,
+      poster: midia.poster,
+      year: midia.year,
+      overview: midia.overview,
+      rating: 0
+    });
+  }
+
+  localStorage.setItem("cronosMovies", JSON.stringify(lista));
+  renderMediaCollection();
+}
+
+function buscarMidias(termo, tipoApi, tipoLista, containerId) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+
+  if (termo.length < 2) {
+    container.innerHTML = "";
+    return;
+  }
+
+  container.innerHTML = "<div class='empty'>Buscando...</div>";
+
+  fetch("/api/media?search=" + encodeURIComponent(termo) +
+        "&type=" + tipoApi)
+    .then(response => {
+      if (!response.ok) throw new Error("Erro na busca");
+      return response.json();
+    })
+    .then(resultados => {
+      container.innerHTML = "";
+      container.style.cssText =
+        "display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:14px;";
+
+      if (!resultados.length) {
+        container.innerHTML =
+          "<div class='empty'>Nenhum resultado encontrado.</div>";
+        return;
+      }
+
+      resultados.forEach(midia => {
+        const card = document.createElement("div");
+        card.className = "item";
+        card.style.cssText = "overflow:hidden;";
+
+        if (midia.poster) {
+          const poster = document.createElement("img");
+          poster.src = midia.poster;
+          poster.alt = "Capa de " + midia.name;
+          poster.style.cssText =
+            "width:100%;aspect-ratio:2/3;object-fit:cover;border-radius:10px;";
+          card.appendChild(poster);
+        }
+
+        const title = document.createElement("strong");
+        title.textContent = midia.name;
+        title.style.display = "block";
+        card.appendChild(title);
+
+        if (midia.year) {
+          const year = document.createElement("small");
+          year.textContent = midia.year;
+          card.appendChild(year);
+        }
+
+        const statuses = tipoLista === "Filme"
+          ? ["Já assisti", "Quero assistir"]
+          : ["Assistindo", "Já assisti", "Quero assistir"];
+
+        statuses.forEach(status => {
+          const button = document.createElement("button");
+          button.type = "button";
+          button.textContent = status;
+          button.style.cssText =
+            "display:block;width:100%;margin-top:6px;cursor:pointer;";
+
+          button.addEventListener("click", () => {
+            salvarMidia(midia, tipoLista, status);
+            button.textContent = "Adicionado!";
+          });
+
+          card.appendChild(button);
+        });
+
+        container.appendChild(card);
+      });
+    })
+    .catch(() => {
+      container.innerHTML =
+        "<div class='empty'>Não foi possível buscar. Tente novamente.</div>";
+    });
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+  function configurarBusca(inputId, tipoApi, tipoLista, resultadosId) {
+    const input = document.getElementById(inputId);
+    if (!input) return;
+
+    let temporizador;
+
+    input.addEventListener("input", function () {
+      clearTimeout(temporizador);
+
+      const termo = this.value.trim();
+
+      temporizador = setTimeout(() => {
+        buscarMidias(termo, tipoApi, tipoLista, resultadosId);
+      }, 500);
+    });
+  }
+
+  configurarBusca("buscarFilme", "movie", "Filme", "resultadosFilmes");
+  configurarBusca("buscarSerie", "tv", "Série", "resultadosSeries");
+
+  renderMediaCollection();
+});
+
 renderMediaCollection();
 window.addEventListener("pageshow", renderMediaCollection);
+
 
 const formLivro = document.getElementById("formLivro");
 
