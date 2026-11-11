@@ -1477,6 +1477,94 @@ function salvarMidia(midia, tipo, status) {
 
 
 
+async function abrirModalMidia(midia) {
+  const modal = document.getElementById("modalMidia");
+
+  if (!modal) return;
+
+  modal.style.display = "flex";
+
+  document.getElementById("modalMidiaPoster").src =
+    midia.poster || "";
+
+  document.getElementById("modalMidiaTitulo").textContent =
+    midia.name;
+
+  document.getElementById("modalMidiaAno").textContent =
+    midia.year || "Ano não informado";
+
+  document.getElementById("modalMidiaSinopse").textContent =
+    midia.overview || "Sinopse não disponível.";
+
+  document.getElementById("modalMidiaDiretores").textContent =
+    "Carregando...";
+
+  document.getElementById("modalMidiaRoteiristas").textContent =
+    "Carregando...";
+
+  document.getElementById("modalMidiaProdutores").textContent =
+    "Carregando...";
+
+  document.getElementById("modalMidiaCriadores").textContent =
+    "Carregando...";
+
+  document.getElementById("modalMidiaPremiacoes").textContent =
+    "Informações de premiações não disponíveis.";
+
+  const parametros = new URLSearchParams({
+    type: midia.type === "movie" ? "movie" : "tv",
+    id: String(midia.id)
+  });
+
+  try {
+    const resposta = await fetch("/api/media?" + parametros);
+
+    if (!resposta.ok) {
+      throw new Error("Não foi possível carregar os detalhes.");
+    }
+
+    const detalhes = await resposta.json();
+
+    function mostrarNomes(id, nomes) {
+      document.getElementById(id).textContent =
+        nomes && nomes.length
+          ? nomes.join(", ")
+          : "Não informado.";
+    }
+
+    mostrarNomes("modalMidiaDiretores", detalhes.directors);
+    mostrarNomes("modalMidiaRoteiristas", detalhes.writers);
+    mostrarNomes("modalMidiaProdutores", detalhes.producers);
+    mostrarNomes("modalMidiaCriadores", detalhes.creators);
+
+  } catch (erro) {
+    document.getElementById("modalMidiaDiretores").textContent =
+      "Não foi possível carregar.";
+
+    document.getElementById("modalMidiaRoteiristas").textContent =
+      "Não foi possível carregar.";
+
+    document.getElementById("modalMidiaProdutores").textContent =
+      "Não foi possível carregar.";
+
+    document.getElementById("modalMidiaCriadores").textContent =
+      "Não foi possível carregar.";
+  }
+
+  document.getElementById("modalMidiaFavoritos").innerHTML = "";
+}
+
+document.getElementById("fecharModalMidia").addEventListener("click", () => {
+  document.getElementById("modalMidia").style.display = "none";
+});
+
+document.getElementById("modalMidia").addEventListener("click", event => {
+  if (event.target.id === "modalMidia") {
+    event.currentTarget.style.display = "none";
+  }
+});
+
+
 function buscarMidias(termo, tipoApi, tipoLista, containerId) {
   const container = document.getElementById(containerId);
   if (!container) return;
@@ -1517,6 +1605,7 @@ function buscarMidias(termo, tipoApi, tipoLista, containerId) {
       resultados.forEach(midia => {
         const card = document.createElement("div");
         card.className = "item book-result";
+        card.style.cursor = "pointer";
 
         const poster = document.createElement("img");
         poster.src = midia.poster;
@@ -1537,13 +1626,20 @@ function buscarMidias(termo, tipoApi, tipoLista, containerId) {
           info.appendChild(year);
         }
 
+        const abrirDetalhes = () => abrirModalMidia(midia);
+
+        poster.addEventListener("click", abrirDetalhes);
+        title.addEventListener("click", abrirDetalhes);
+
         const actions = document.createElement("div");
         actions.style.cssText =
           "display:flex;flex-wrap:wrap;gap:6px;margin-top:5px;";
 
-        const statuses = tipoLista === "Filme"
-          ? ["Já assisti", "Quero assistir"]
-          : ["Assistindo", "Já assisti", "Quero assistir"];
+        const statuses = [
+          "Assistindo",
+          "Já assisti",
+          "Quero assistir"
+        ];
 
         statuses.forEach(status => {
           const button = document.createElement("button");
@@ -1583,6 +1679,7 @@ function buscarMidias(termo, tipoApi, tipoLista, containerId) {
         "<div class='empty'>Não foi possível buscar. Tente novamente.</div>";
     });
 }
+
 
 
 
