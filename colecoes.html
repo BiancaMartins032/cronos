@@ -3432,5 +3432,56 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 });
 </script>
+  
+<!-- MODAL DE FILMES E SÉRIES -->
+<div id="modalMidia" class="book-modal">
+  <div class="book-modal-content">
+    <button type="button" id="fecharModalMidia" class="close-modal">×</button>
+
+    <img id="modalMidiaPoster" src="" alt="Capa da obra">
+
+    <h2 id="modalMidiaTitulo"></h2>
+    <p id="modalMidiaAno"></p>
+    <p id="modalMidiaSinopse"></p>
+
+    <div class="midia-equipe">
+      <h3>Direção</h3>
+      <p id="modalMidiaDiretores">Não informado.</p>
+
+      <h3>Roteiro</h3>
+      <p id="modalMidiaRoteiristas">Não informado.</p>
+
+      <h3>Produção</h3>
+      <p id="modalMidiaProdutores">Não informado.</p>
+
+      <h3>Criação</h3>
+      <p id="modalMidiaCriadores">Não informado.</p>
+
+      <h3>Premiações</h3>
+      <p id="modalMidiaPremiacoes">
+        Informações de premiações não disponíveis.
+      </p>
+    </div>
+
+    <div id="modalMidiaFavoritos"></div>
+
+    <h3>Adicionar à minha coleção</h3>
+
+    <div class="modal-midia-acoes">
+      <button type="button" data-status="Assistindo">
+        Assistindo
+      </button>
+
+      <button type="button" data-status="Já assisti">
+        Já assisti
+      </button>
+
+      <button type="button" data-status="Quero assistir">
+        Quero assistir
+      </button>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
