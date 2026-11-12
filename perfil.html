@@ -1134,6 +1134,7 @@ async function saveInterests() {
   renderInterestDisplay();
 
   document.getElementById("interessesModal").classList.remove("aberto");
+  sessionStorage.removeItem("mn_ultima_tela_perfil");
 
   button.disabled = false;
   button.textContent = "Salvar interesses";
@@ -1238,20 +1239,23 @@ document.addEventListener("DOMContentLoaded", async () => {
   const saveButton = document.getElementById("salvarInteresses");
 
   if (openButton && modal) {
-    openButton.addEventListener("click", () => {
-      if (!currentIsOwnProfile) return;
+  openButton.addEventListener("click", () => {
+    if (!currentIsOwnProfile) return;
 
-      draftInterestIds = [...selectedInterestIds];
-      renderInterestOptions();
-      modal.classList.add("aberto");
-    });
-  }
+    draftInterestIds = [...selectedInterestIds];
+    renderInterestOptions();
+    modal.classList.add("aberto");
+
+    sessionStorage.setItem("mn_ultima_tela_perfil", "interesses");
+  });
+}
 
   function closeInterestModal() {
-    draftInterestIds = [...selectedInterestIds];
-    modal.classList.remove("aberto");
-    renderInterestOptions();
-  }
+  draftInterestIds = [...selectedInterestIds];
+  modal.classList.remove("aberto");
+  sessionStorage.removeItem("mn_ultima_tela_perfil");
+  renderInterestOptions();
+}
 
   if (closeButton) {
     closeButton.addEventListener("click", closeInterestModal);
@@ -1272,6 +1276,15 @@ document.addEventListener("DOMContentLoaded", async () => {
   if (saveButton) {
     saveButton.addEventListener("click", saveInterests);
   }
+  if (
+  sessionStorage.getItem("mn_ultima_tela_perfil") === "interesses" &&
+  currentIsOwnProfile &&
+  modal
+) {
+  draftInterestIds = [...selectedInterestIds];
+  renderInterestOptions();
+  modal.classList.add("aberto");
+}
 });
 </script>
 
