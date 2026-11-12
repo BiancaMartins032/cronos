@@ -652,9 +652,20 @@ label {display:block;font-size:13px;margin:15px 0 7px}
 </nav>
 
 
+
 <script>
-const defaultBio =
-  "Apaixonado por história antiga, mitologia, jogos de estratégia e ficção científica. Sempre em busca de novos conhecimentos.";
+let currentProfileId = null;
+let currentIsOwnProfile = false;
+let interestCatalog = [];
+let selectedInterestIds = [];
+
+const interestGroups = {
+  ciencias_conhecimento: "Ciências e conhecimento",
+  literatura_linguagem: "Literatura e linguagem",
+  artes_entretenimento: "Artes e entretenimento",
+  mitologia_cultura: "Mitologia e cultura",
+  tecnologia_jogos: "Tecnologia e jogos"
+};
 
 function showProfileTab(tabName, button) {
   document.querySelectorAll(".tab-content").forEach(tab => {
@@ -675,29 +686,95 @@ function toggleCollections() {
 }
 
 function toggleEditor() {
+  if (!currentIsOwnProfile) return;
+
   const editor = document.getElementById("editor");
   editor.classList.toggle("open");
 
   if (editor.classList.contains("open")) {
     document.getElementById("nameInput").value =
-      localStorage.getItem("mn_profile_name") || "RafaelNerd";
+      document.getElementById("profileName").textContent;
 
     document.getElementById("bioInput").value =
-      localStorage.getItem("mn_profile_bio") || defaultBio;
-
-    const saved = JSON.parse(
-      localStorage.getItem("mn_profile_interests") || "[]"
-    );
+      document.getElementById("bioDisplay").textContent;
 
     document.querySelectorAll(
-      '#editor input[type="checkbox"]'
+      '#interestOptions input[type="checkbox"]'
     ).forEach(input => {
-      input.checked = saved.includes(input.value);
+      input.checked = selectedInterestIds.includes(Number(input.value));
     });
   }
 }
 
-function saveProfile() {
+function renderInterestOptions() {
+  const container = document.getElementById("interestOptions");
+  if (!container) return;
+
+  container.replaceChildren();
+
+  Object.entries(interestGroups).forEach(([universe, groupName]) => {
+    const groupInterests = interestCatalog.filter(
+      item => item.universe === universe
+    );
+
+    if (!groupInterests.length) return;
+
+    const group = document.createElement("div");
+    group.style.cssText = "width:100%;margin-bottom:16px;";
+
+    const heading = document.createElement("h4");
+    heading.textContent = groupName;
+    heading.style.cssText =
+      "margin:0 0 10px;color:var(--text);font-size:14px;";
+
+    const options = document.createElement("div");
+    options.style.cssText =
+      "display:flex;flex-wrap:wrap;gap:8px;";
+
+    groupInterests.forEach(item => {
+      const label = document.createElement("label");
+      label.className = "choice";
+
+      const checkbox = document.createElement("input");
+      checkbox.type = "checkbox";
+      checkbox.value = item.id;
+      checkbox.checked = selectedInterestIds.includes(item.id);
+
+      label.append(checkbox, document.createTextNode(" " + item.name));
+      options.appendChild(label);
+    });
+
+    group.append(heading, options);
+    container.appendChild(group);
+  });
+}
+
+function renderInterestDisplay() {
+  const container = document.getElementById("interestDisplay");
+  if (!container) return;
+
+  container.replaceChildren();
+
+  const selected = interestCatalog.filter(item =>
+    selectedInterestIds.includes(item.id)
+  );
+
+  if (!selected.length) {
+    container.textContent = "Nenhum interesse selecionado.";
+    return;
+  }
+
+  selected.forEach(item => {
+    const tag = document.createElement("span");
+    tag.className = "tag";
+    tag.textContent = item.name;
+    container.appendChild(tag);
+  });
+}
+
+async function saveProfile() {
+  if (!currentIsOwnProfile) return;
+
   const name = document.getElementById("nameInput").value.trim();
   const bio = document.getElementById("bioInput").value.trim();
 
@@ -706,64 +783,147 @@ function saveProfile() {
     return;
   }
 
-  const interests = Array.from(
+  const interestIds = Array.from(
     document.querySelectorAll(
-      '#editor input[type="checkbox"]:checked'
+      '#interestOptions input[type="checkbox"]:checked'
     )
-  ).map(input => input.value);
+  ).map(input => Number(input.value));
 
-  localStorage.setItem("mn_profile_name", name);
-  localStorage.setItem("mn_profile_bio", bio);
-  localStorage.setItem(
-    "mn_profile_interests",
-    JSON.stringify(interests)
-  );
+  const { error: profileError } = await window.mnSupabaseClient
+    .from("mn_profiles")
+    .update({
+      display_name: name,
+      bio: bio
+    })
+    .eq("id", currentProfileId);
 
-  renderProfile();
+  if (profileError) {
+    alert("Erro ao salvar o perfil: " + profileError.message);
+    return;
+  }
+
+  const { error: deleteError } = await window.mnSupabaseClient
+    .from("mn_profile_interests")
+    .delete()
+    .eq("profile_id", currentProfileId);
+
+  if (deleteError) {
+    alert("Erro ao atualizar os interesses: " + deleteError.message);
+    return;
+  }
+
+  if (interestIds.length) {
+    const relations = interestIds.map(interestId => ({
+      profile_id: currentProfileId,
+      interest_id: interestId
+    }));
+
+    const { error: insertError } = await window.mnSupabaseClient
+      .from("mn_profile_interests")
+      .insert(relations);
+
+    if (insertError) {
+      alert("Erro ao salvar os interesses: " + insertError.message);
+      return;
+    }
+  }
+
+  selectedInterestIds = interestIds;
+
+  document.getElementById("profileName").textContent = name;
+  document.getElementById("bioDisplay").textContent =
+    bio || "Ainda não adicionou uma biografia.";
+
+  renderInterestDisplay();
+
   document.getElementById("editor").classList.remove("open");
-  alert("Perfil atualizado neste navegador!");
+
+  alert("Perfil atualizado com sucesso!");
 }
 
-function escapeText(value) {
-  return String(value).replace(/[&<>"']/g, char => ({
-    "&": "&amp;",
-    "<": "&lt;",
-    ">": "&gt;",
-    '"': "&quot;",
-    "'": "&#39;"
-  })[char]);
-}
+document.addEventListener("DOMContentLoaded", async () => {
+  const session = await window.verificarAcesso();
+  if (!session) return;
 
-function renderProfile() {
-  const profileName = document.getElementById("profileName");
-  const bioDisplay = document.getElementById("bioDisplay");
+  const params = new URLSearchParams(window.location.search);
+  currentProfileId = params.get("id") || session.user.id;
+  currentIsOwnProfile = currentProfileId === session.user.id;
 
-  if (profileName) {
-    profileName.textContent =
-      localStorage.getItem("mn_profile_name") || "RafaelNerd";
+  const { data: profile, error: profileError } =
+    await window.mnSupabaseClient
+      .from("mn_profiles")
+      .select("id, username, display_name, bio, avatar_url")
+      .eq("id", currentProfileId)
+      .maybeSingle();
+
+  if (profileError || !profile) {
+    alert(profileError
+      ? "Erro ao carregar perfil: " + profileError.message
+      : "Este perfil não foi encontrado.");
+    return;
   }
 
-  if (bioDisplay) {
-    bioDisplay.textContent =
-      localStorage.getItem("mn_profile_bio") || defaultBio;
+  document.getElementById("profileName").textContent =
+    profile.display_name || profile.username || "Pessoa";
+
+  document.querySelector(".handle").textContent =
+    profile.username ? "@" + profile.username : "";
+
+  document.getElementById("bioDisplay").textContent =
+    profile.bio || "Ainda não adicionou uma biografia.";
+
+  const avatar = document.querySelector(".profile-top .avatar");
+  if (avatar && profile.avatar_url) {
+    avatar.src = profile.avatar_url;
   }
 
-  const interests = JSON.parse(
-    localStorage.getItem("mn_profile_interests") || "[]"
+  const editButton = document.querySelector(".profile-top button");
+  const editor = document.getElementById("editor");
+
+  if (editButton) editButton.hidden = !currentIsOwnProfile;
+  if (editor) editor.hidden = !currentIsOwnProfile;
+
+  const { data: catalog, error: catalogError } =
+    await window.mnSupabaseClient
+      .from("mn_interests")
+      .select("id, universe, name")
+      .order("name");
+
+  if (catalogError) {
+    alert("Erro ao carregar interesses: " + catalogError.message);
+    return;
+  }
+
+  interestCatalog = (catalog || []).map(item => ({
+    ...item,
+    id: Number(item.id)
+  }));
+
+  const { data: relations, error: relationsError } =
+    await window.mnSupabaseClient
+      .from("mn_profile_interests")
+      .select("interest_id")
+      .eq("profile_id", currentProfileId);
+
+  if (relationsError) {
+    alert("Erro ao carregar interesses do perfil: " + relationsError.message);
+    return;
+  }
+
+  selectedInterestIds = (relations || []).map(
+    item => Number(item.interest_id)
   );
 
-  const interestDisplay = document.getElementById("interestDisplay");
+  renderInterestOptions();
+  renderInterestDisplay();
 
-  if (interestDisplay) {
-    interestDisplay.innerHTML = interests.length
-      ? interests.map(item =>
-          `<span class="tag">${escapeText(item)}</span>`
-        ).join("")
-      : "Nenhum interesse selecionado.";
+  if (currentIsOwnProfile) {
+    document.getElementById("nameInput").value =
+      profile.display_name || profile.username || "";
+
+    document.getElementById("bioInput").value = profile.bio || "";
   }
-}
-
-renderProfile();
+});
 </script>
 
 
