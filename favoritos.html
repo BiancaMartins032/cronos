@@ -1,0 +1,328 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Meus Favoritos - Multiverso Nerd</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: #1a1a1d;
+      color: #f1f0ed;
+      font-family: Arial, sans-serif;
+    }
+
+    .pagina-favoritos {
+      width: 100%;
+      max-width: 650px;
+      min-height: 100vh;
+      margin: 0 auto;
+      padding: 24px 18px;
+    }
+
+    .cabecalho {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 25px;
+    }
+
+    .cabecalho h1 {
+      flex: 1;
+      margin: 0;
+      font-size: 23px;
+    }
+
+    .botao-icone {
+      width: 40px;
+      height: 40px;
+      border: none;
+      background: transparent;
+      color: #f1f0ed;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      border-radius: 50%;
+    }
+
+    .botao-icone:active {
+      background: #343438;
+    }
+
+    .botao-icone svg {
+      width: 22px;
+      height: 22px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 1.8;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .campo-busca {
+      display: none;
+      width: 100%;
+      margin-bottom: 18px;
+    }
+
+    .campo-busca input {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid #45454a;
+      border-radius: 12px;
+      background: #27272b;
+      color: #f1f0ed;
+      font-size: 15px;
+      outline: none;
+    }
+
+    .abas {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .aba {
+      flex: 1;
+      padding: 12px;
+      border: 1px solid #45454a;
+      border-radius: 12px;
+      background: #27272b;
+      color: #c9c8c5;
+      font-size: 15px;
+      cursor: pointer;
+    }
+
+    .aba.ativa {
+      background: #45454a;
+      border-color: #77777d;
+      color: #ffffff;
+    }
+
+    .lista {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .favorito-literario {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 13px;
+      padding: 11px;
+      border: 1px solid #38383d;
+      border-radius: 13px;
+      background: #242428;
+      color: #f1f0ed;
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .favorito-literario img,
+    .favorito-inicial {
+      width: 48px;
+      height: 48px;
+      flex-shrink: 0;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .favorito-inicial {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #45454a;
+      color: #f1f0ed;
+      font-size: 19px;
+    }
+
+    .nome-favorito {
+      flex: 1;
+      font-size: 15px;
+    }
+
+    .seta {
+      color: #aaa9a5;
+      font-size: 25px;
+    }
+
+    .mensagem-vazia {
+      padding: 25px 10px;
+      color: #aaa9a5;
+      text-align: center;
+      font-size: 14px;
+    }
+  </style>
+</head>
+
+<body>
+  <main class="pagina-favoritos">
+
+    <header class="cabecalho">
+      <h1>Meus Favoritos</h1>
+
+      <button class="botao-icone" id="abrirBusca"
+              aria-label="Pesquisar">
+        <svg viewBox="0 0 24 24">
+          <circle cx="11" cy="11" r="7"></circle>
+          <path d="m16 16 4 4"></path>
+        </svg>
+      </button>
+
+      <button class="botao-icone" id="voltarColecoes"
+              aria-label="Voltar às coleções">
+        <svg viewBox="0 0 24 24">
+          <path d="M18 6 6 18M6 6l12 12"></path>
+        </svg>
+      </button>
+    </header>
+
+    <div class="campo-busca" id="campoBusca">
+      <input type="search" id="pesquisaFavoritos"
+             placeholder="Pesquisar..."
+             autocomplete="off">
+    </div>
+
+    <nav class="abas">
+      <button class="aba ativa" data-tipo="autor">
+        Escritores
+      </button>
+
+      <button class="aba" data-tipo="editora">
+        Editoras
+      </button>
+    </nav>
+
+    <section id="listaFavoritos" class="lista"></section>
+
+  </main>
+
+  <script>
+    let categoriaAtual = "autor";
+
+    const lista = document.getElementById("listaFavoritos");
+    const pesquisa = document.getElementById("pesquisaFavoritos");
+
+    function obterFavoritos(tipo) {
+      const chave = tipo === "autor"
+        ? "mn_autores_favoritos"
+        : "mn_editoras_favoritas";
+
+      try {
+        return JSON.parse(localStorage.getItem(chave) || "[]");
+      } catch {
+        return [];
+      }
+    }
+
+    function renderizarFavoritos() {
+      lista.innerHTML = "";
+
+      const termo = pesquisa.value
+        .trim()
+        .toLocaleLowerCase("pt-BR");
+
+      const favoritos = obterFavoritos(categoriaAtual)
+        .sort((a, b) => a.nome.localeCompare(b.nome, "pt-BR"))
+        .filter(item =>
+          item.nome.toLocaleLowerCase("pt-BR").includes(termo)
+        );
+
+      if (!favoritos.length) {
+        const mensagem = document.createElement("p");
+        mensagem.className = "mensagem-vazia";
+        mensagem.textContent = termo
+          ? "Nenhum resultado encontrado."
+          : "Você ainda não adicionou favoritos aqui.";
+
+        lista.appendChild(mensagem);
+        return;
+      }
+
+      favoritos.forEach(item => {
+        const linha = document.createElement("button");
+        linha.type = "button";
+        linha.className = "favorito-literario";
+
+        if (item.imagem) {
+          const imagem = document.createElement("img");
+          imagem.src = item.imagem;
+          imagem.alt = item.nome;
+          linha.appendChild(imagem);
+        } else {
+          const inicial = document.createElement("div");
+          inicial.className = "favorito-inicial";
+          inicial.textContent = item.nome.charAt(0).toUpperCase();
+          linha.appendChild(inicial);
+        }
+
+        const nome = document.createElement("span");
+        nome.className = "nome-favorito";
+        nome.textContent = item.nome;
+        linha.appendChild(nome);
+
+        const seta = document.createElement("span");
+        seta.className = "seta";
+        seta.textContent = "›";
+        linha.appendChild(seta);
+
+        linha.addEventListener("click", () => {
+          const parametros = new URLSearchParams({
+            tipo: categoriaAtual,
+            nome: item.nome
+          });
+
+          window.location.href =
+            "detalhes-literarios.html?" + parametros.toString();
+        });
+
+        lista.appendChild(linha);
+      });
+    }
+
+    document.querySelectorAll(".aba").forEach(aba => {
+      aba.addEventListener("click", () => {
+        document.querySelectorAll(".aba").forEach(item =>
+          item.classList.remove("ativa")
+        );
+
+        aba.classList.add("ativa");
+        categoriaAtual = aba.dataset.tipo;
+        pesquisa.value = "";
+        renderizarFavoritos();
+      });
+    });
+
+    document.getElementById("abrirBusca").addEventListener("click", () => {
+      const campo = document.getElementById("campoBusca");
+      const aberto = campo.style.display === "block";
+
+      campo.style.display = aberto ? "none" : "block";
+
+      if (aberto) {
+        pesquisa.value = "";
+        renderizarFavoritos();
+      } else {
+        pesquisa.focus();
+      }
+    });
+
+    pesquisa.addEventListener("input", renderizarFavoritos);
+
+    document.getElementById("voltarColecoes").addEventListener("click", () => {
+      window.location.href = "colecoes.html";
+    });
+
+    renderizarFavoritos();
+  </script>
+</body>
+</html>
