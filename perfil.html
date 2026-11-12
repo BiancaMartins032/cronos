@@ -1136,7 +1136,10 @@ async function saveInterests() {
   return;
 }
 
-  containers.forEach(container => {
+document.getElementById("postCount").textContent =
+  (posts || []).length;
+
+containers.forEach(container => {
     if (!container) return;
 
     container.replaceChildren();
