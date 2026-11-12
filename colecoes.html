@@ -1203,6 +1203,30 @@ main {
   right: 10px;
   z-index: 2;
 }
+  .colecoes-titulo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.botao-favoritos-literarios {
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  border: none;
+  border-radius: 50%;
+  background: #FCE4E8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+}
+
+.botao-favoritos-literarios svg {
+  display: block;
+}
 </style>
 </head>
 
@@ -1210,7 +1234,22 @@ main {
 
 <header>
   <a class="back" href="perfil.html">← Voltar ao perfil</a>
-  <h1>Minhas coleções</h1>
+
+  <div class="colecoes-titulo">
+    <h1>Minhas coleções</h1>
+
+    <button type="button"
+            id="abrirFavoritosLiterarios"
+            class="botao-favoritos-literarios"
+            aria-label="Meus favoritos">
+      <svg viewBox="0 0 24 24" width="25" height="25"
+           fill="#E53950" stroke="#E53950"
+           stroke-width="1.5">
+        <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.5 1.1-1.1a5.5 5.5 0 0 0-.1-7.8z"/>
+      </svg>
+    </button>
+  </div>
+
   <p>Organize suas descobertas e acompanhe sua jornada.</p>
 </header>
 
