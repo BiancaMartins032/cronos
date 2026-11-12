@@ -1154,6 +1154,10 @@ document.addEventListener("DOMContentLoaded", async () => {
   const params = new URLSearchParams(window.location.search);
   currentProfileId = params.get("id") || session.user.id;
   currentIsOwnProfile = currentProfileId === session.user.id;
+  alert(
+  "ID do perfil aberto: " + currentProfileId +
+  "\nID da sua conta: " + session.user.id
+);
 
   const { data: profile, error: profileError } =
     await window.mnSupabaseClient
