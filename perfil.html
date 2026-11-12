@@ -604,6 +604,43 @@ label {display:block;font-size:13px;margin:15px 0 7px}
 .profile-actions button:hover {
   opacity: 0.85;
 }
+  .profile-actions {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  margin: 20px 0 8px;
+}
+
+.profile-actions[hidden] {
+  display: none;
+}
+
+.profile-actions button {
+  flex: 1 1 0;
+  width: 50%;
+  min-width: 0;
+  min-height: 44px;
+  padding: 10px 8px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.friend-button {
+  background: var(--purple);
+  color: #fff;
+  border: 1px solid var(--purple);
+}
+
+.message-button {
+  background: transparent;
+  color: var(--text);
+  border: 1px solid var(--purple);
+}
   
 </style>
 </head>
@@ -696,7 +733,8 @@ if (sessionStorage.getItem("mn_ultima_tela_perfil") === "interesses") {
   <div class="stat"><strong id="friendCount">0</strong><span>Amigos</span></div>
   <div class="stat"><strong id="collectionCount">0</strong><span>Coleções</span></div>
 </div>
-  <div class="profile-actions" id="profileActions" hidden>
+  
+ <div class="profile-actions" id="profileActions" hidden>
   <button type="button" id="addFriendButton" class="friend-button">
     Adicionar amigo
   </button>
