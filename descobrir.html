@@ -1,0 +1,232 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Descobrir leitores | Multiverso Nerd</title>
+
+  <style>
+    :root {
+      --bg: #080808;
+      --card: #191919;
+      --purple: #8064D8;
+      --text: #FFFFFF;
+      --muted: #A1A1A1;
+      --border: #292929;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 24px 16px;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Arial, sans-serif;
+    }
+
+    main {
+      max-width: 650px;
+      margin: auto;
+    }
+
+    h1 {
+      font-size: 25px;
+      margin: 8px 0;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      font-size: 14px;
+      margin-bottom: 24px;
+    }
+
+    .search {
+      width: 100%;
+      padding: 15px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: var(--card);
+      color: var(--text);
+      font-size: 15px;
+      outline: none;
+    }
+
+    .search:focus {
+      border-color: var(--purple);
+    }
+
+    #status {
+      color: var(--muted);
+      font-size: 14px;
+      margin: 20px 2px;
+    }
+
+    .reader {
+      display: flex;
+      align-items: center;
+      gap: 13px;
+      padding: 15px;
+      margin-bottom: 10px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 13px;
+      cursor: pointer;
+      text-decoration: none;
+      color: var(--text);
+    }
+
+    .reader:hover {
+      border-color: var(--purple);
+    }
+
+    .avatar {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      object-fit: cover;
+      background: #292929;
+      flex-shrink: 0;
+    }
+
+    .reader-info {
+      min-width: 0;
+    }
+
+    .reader-name {
+      font-size: 15px;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    .reader-username {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .reader-bio {
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 7px;
+      line-height: 1.4;
+    }
+  </style>
+</head>
+
+<body>
+  <main>
+    <h1>Descobrir leitores</h1>
+    <p class="subtitle">
+      Conheça pessoas que compartilham seus interesses.
+    </p>
+
+    <input
+      class="search"
+      id="searchInput"
+      type="search"
+      placeholder="Buscar por nome ou @usuário..."
+      autocomplete="off"
+    >
+
+    <div id="status">Carregando leitores...</div>
+    <div id="readerResults"></div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="auth.js"></script>
+
+  <script>
+    let allReaders = [];
+
+    const results = document.getElementById("readerResults");
+    const status = document.getElementById("status");
+    const searchInput = document.getElementById("searchInput");
+
+    function createReaderCard(reader) {
+      const card = document.createElement("a");
+      card.className = "reader";
+      card.href = "perfil.html?id=" + encodeURIComponent(reader.id);
+
+      const avatar = document.createElement("img");
+      avatar.className = "avatar";
+      avatar.alt = "Foto do leitor";
+      avatar.src = reader.avatar_url || "https://i.pravatar.cc/100";
+      avatar.onerror = () => {
+        avatar.src = "https://i.pravatar.cc/100";
+      };
+
+      const info = document.createElement("div");
+      info.className = "reader-info";
+
+      const name = document.createElement("div");
+      name.className = "reader-name";
+      name.textContent = reader.display_name || reader.username || "Leitor";
+
+      const username = document.createElement("div");
+      username.className = "reader-username";
+      username.textContent = reader.username ? "@" + reader.username : "";
+
+      const bio = document.createElement("div");
+      bio.className = "reader-bio";
+      bio.textContent = reader.bio || "";
+
+      info.append(name, username, bio);
+      card.append(avatar, info);
+
+      return card;
+    }
+
+    function renderReaders(readers) {
+      results.replaceChildren();
+
+      if (!readers.length) {
+        status.textContent = "Nenhum leitor encontrado.";
+        return;
+      }
+
+      status.textContent = readers.length + " leitor(es) encontrado(s).";
+
+      readers.forEach(reader => {
+        results.appendChild(createReaderCard(reader));
+      });
+    }
+
+    async function loadReaders() {
+      const session = await verificarAcesso();
+
+      if (!session) return;
+
+      const { data, error } = await window.mnSupabaseClient
+        .from("mn_profiles")
+        .select("id, username, display_name, bio, avatar_url, created_at")
+        .neq("id", session.user.id)
+        .order("created_at", { ascending: false });
+
+      if (error) {
+        console.error("Erro ao carregar leitores:", error);
+        status.textContent = "Não foi possível carregar os leitores. Verifique as permissões da tabela.";
+        return;
+      }
+
+      allReaders = data || [];
+      renderReaders(allReaders);
+    }
+
+    searchInput.addEventListener("input", () => {
+      const term = searchInput.value.trim().toLowerCase();
+
+      const filtered = allReaders.filter(reader =>
+        (reader.display_name || "").toLowerCase().includes(term) ||
+        (reader.username || "").toLowerCase().includes(term)
+      );
+
+      renderReaders(filtered);
+    });
+
+    loadReaders();
+  </script>
+</body>
+</html>
