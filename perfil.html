@@ -567,11 +567,12 @@ label {display:block;font-size:13px;margin:15px 0 7px}
   }
 }
 .profile-actions {
-  display: grid !important;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: row;
   gap: 12px;
   width: 100%;
-  margin: 20px 0 8px;
+  margin-top: 18px;
 }
 
 .profile-actions[hidden] {
@@ -579,16 +580,14 @@ label {display:block;font-size:13px;margin:15px 0 7px}
 }
 
 .profile-actions button {
-  display: block;
-  width: 100%;
+  flex: 1;
+  width: 0;
   min-width: 0;
   min-height: 44px;
-  padding: 10px 6px;
+  padding: 10px 5px;
   border-radius: 12px;
   font-size: 13px;
   font-weight: 600;
-  white-space: normal;
-  cursor: pointer;
 }
 
 .friend-button {
