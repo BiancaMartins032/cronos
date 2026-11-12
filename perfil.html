@@ -567,31 +567,33 @@ label {display:block;font-size:13px;margin:15px 0 7px}
   }
 }
 .profile-actions {
-  display: flex;
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px;
   width: 100%;
-  margin: 18px 0;
+  margin: 20px 0 8px;
 }
 
 .profile-actions[hidden] {
-  display: none;
+  display: none !important;
 }
 
 .profile-actions button {
-  flex: 1;
+  display: block;
+  width: 100%;
   min-width: 0;
   min-height: 44px;
-  padding: 10px 12px;
+  padding: 10px 6px;
   border-radius: 12px;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
+  white-space: normal;
   cursor: pointer;
-  transition: opacity 0.2s ease;
 }
 
 .friend-button {
   background: var(--purple);
-  color: #FFFFFF;
+  color: #fff;
   border: 1px solid var(--purple);
 }
 
