@@ -518,7 +518,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   if (error) {
     console.error("Erro ao buscar leitores:", error);
-    status.textContent = "Não foi possível carregar os leitores.";
+    status.textContent = "Erro do Supabase: " + error.message;
     return;
   }
 
