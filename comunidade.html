@@ -394,9 +394,20 @@ button {
     </div>
   </article>
 
-  <h2 class="section-title">Pessoas que combinam com você</h2>
+  <h2 class="section-title">Descubra leitores</h2>
 
-  <section class="people-grid">
+<input
+  type="search"
+  id="readerSearch"
+  placeholder="Buscar por nome ou @usuário..."
+  style="width:100%;padding:14px;border-radius:12px;border:1px solid var(--border);background:var(--card);color:white;font-size:14px;margin-bottom:14px;"
+>
+
+<div id="readerStatus" style="color:var(--muted);font-size:13px;margin-bottom:12px;">
+  Carregando leitores...
+</div>
+
+<section class="people-grid" id="peopleGrid">
 
     <div class="person">
       <img src="https://i.pravatar.cc/150?img=44" alt="Luna">
