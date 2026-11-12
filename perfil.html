@@ -1178,6 +1178,38 @@ containers.forEach(container => {
     });
   });
 }
+  async function carregarAmizades() {
+  const { data: amizades, error } = await window.mnSupabaseClient
+    .from("mn_friendships")
+    .select("requester_id, recipient_id")
+    .eq("status", "accepted")
+    .or(
+      `requester_id.eq.${currentProfileId},recipient_id.eq.${currentProfileId}`
+    );
+
+  if (error) {
+    alert(
+      "Erro ao carregar amizades:\n" +
+      error.message +
+      "\nCódigo: " + error.code
+    );
+    return;
+  }
+
+  const pessoasUnicas = new Set();
+
+  (amizades || []).forEach(amizade => {
+    const outraPessoa =
+      amizade.requester_id === currentProfileId
+        ? amizade.recipient_id
+        : amizade.requester_id;
+
+    pessoasUnicas.add(outraPessoa);
+  });
+
+  document.getElementById("friendCount").textContent =
+    pessoasUnicas.size;
+}
 document.addEventListener("DOMContentLoaded", async () => {
   const session = await window.verificarAcesso();
   if (!session) return;
@@ -1223,6 +1255,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     avatar.src = profile.avatar_url;
   }
   await carregarPublicacoes();
+  await carregarAmizades();
 
   const editButton = document.querySelector(".profile-top button");
   const editor = document.getElementById("editor");
