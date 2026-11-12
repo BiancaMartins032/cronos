@@ -1121,16 +1121,20 @@ async function saveInterests() {
     .order("created_at", { ascending: false });
 
   if (error) {
-    console.error("Erro ao carregar publicações:", error);
+  alert(
+    "Erro ao carregar publicações:\n" +
+    error.message +
+    "\nCódigo: " + error.code
+  );
 
-    containers.forEach(container => {
-      if (container) {
-        container.textContent = "Não foi possível carregar as publicações.";
-      }
-    });
+  containers.forEach(container => {
+    if (container) {
+      container.textContent = "Não foi possível carregar as publicações.";
+    }
+  });
 
-    return;
-  }
+  return;
+}
 
   containers.forEach(container => {
     if (!container) return;
