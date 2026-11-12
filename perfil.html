@@ -626,11 +626,12 @@ label {display:block;font-size:13px;margin:15px 0 7px}
   <a href="perfil.html" class="active"><span>♙</span>Perfil</a>
 </nav>
 
+
 <script>
 const defaultBio =
   "Apaixonado por história antiga, mitologia, jogos de estratégia e ficção científica. Sempre em busca de novos conhecimentos.";
 
-  function showProfileTab(tabName, button) {
+function showProfileTab(tabName, button) {
   document.querySelectorAll(".tab-content").forEach(tab => {
     tab.classList.remove("active");
   });
@@ -642,10 +643,12 @@ const defaultBio =
   document.getElementById("tab-" + tabName).classList.add("active");
   button.classList.add("active");
 }
-  function toggleCollections() {
+
+function toggleCollections() {
   const collections = document.getElementById("tab-collections");
   collections.hidden = !collections.hidden;
 }
+
 function toggleEditor() {
   const editor = document.getElementById("editor");
   editor.classList.toggle("open");
@@ -696,12 +699,29 @@ function saveProfile() {
   alert("Perfil atualizado neste navegador!");
 }
 
-function renderProfile() {
-  document.getElementById("profileName").textContent =
-    localStorage.getItem("mn_profile_name") || "RafaelNerd";
+function escapeText(value) {
+  return String(value).replace(/[&<>"']/g, char => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;"
+  })[char]);
+}
 
-  document.getElementById("bioDisplay").textContent =
-    localStorage.getItem("mn_profile_bio") || defaultBio;
+function renderProfile() {
+  const profileName = document.getElementById("profileName");
+  const bioDisplay = document.getElementById("bioDisplay");
+
+  if (profileName) {
+    profileName.textContent =
+      localStorage.getItem("mn_profile_name") || "RafaelNerd";
+  }
+
+  if (bioDisplay) {
+    bioDisplay.textContent =
+      localStorage.getItem("mn_profile_bio") || defaultBio;
+  }
 
   const interests = JSON.parse(
     localStorage.getItem("mn_profile_interests") || "[]"
@@ -709,26 +729,18 @@ function renderProfile() {
 
   const interestDisplay = document.getElementById("interestDisplay");
 
-if (interestDisplay) {
-  interestDisplay.innerHTML = interests.length
-    ? interests.map(item =>
-        `<span class="tag">${escapeText(item)}</span>`
-      ).join("")
-    : "Nenhum interesse selecionado.";
-}
-
-function escapeText(value) {
-  return value.replace(/[&<>"']/g, char => ({
-    "&":"&amp;",
-    "<":"&lt;",
-    ">":"&gt;",
-    '"':"&quot;",
-    "'":"&#39;"
-  })[char]);
+  if (interestDisplay) {
+    interestDisplay.innerHTML = interests.length
+      ? interests.map(item =>
+          `<span class="tag">${escapeText(item)}</span>`
+        ).join("")
+      : "Nenhum interesse selecionado.";
+  }
 }
 
 renderProfile();
 </script>
+
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="auth.js"></script>
