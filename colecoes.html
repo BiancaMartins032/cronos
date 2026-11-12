@@ -2278,34 +2278,16 @@ botaoEditora.classList.toggle("favorito-ativo", editoraFavorita);
 
   atualizarBotoes();
 }
-  // ABRIR E FECHAR A JANELA DE FAVORITOS
+  // ABRIR A PÁGINA MEUS FAVORITOS
 document.addEventListener("DOMContentLoaded", () => {
   const abrir = document.getElementById("abrirFavoritosLiterarios");
-  const fechar = document.getElementById("fecharFavoritosLiterarios");
-  const janela = document.getElementById("janelaFavoritosLiterarios");
 
-  if (abrir && janela) {
+  if (abrir) {
     abrir.addEventListener("click", () => {
-      janela.style.display = "flex";
-      renderFavoritosLiterarios();
-    });
-  }
-
-  if (fechar && janela) {
-    fechar.addEventListener("click", () => {
-      janela.style.display = "none";
-    });
-  }
-
-  if (janela) {
-    janela.addEventListener("click", evento => {
-      if (evento.target === janela) {
-        janela.style.display = "none";
-      }
+      window.location.href = "favoritos.html";
     });
   }
 });
-
   document.addEventListener("DOMContentLoaded", () => {
   const abas = document.querySelectorAll(".aba-favoritos");
   const busca = document.getElementById("buscarFavoritosLiterarios");
