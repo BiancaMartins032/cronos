@@ -1087,6 +1087,122 @@ main {
   border-color: #9B79C8;
   color: #FFFFFF;
 }
+  /* MODAL DE MÍDIAS — LAYOUT COMPACTO */
+#modalMidia .book-modal-content {
+  position: relative;
+  width: min(92%, 440px);
+  max-height: 82vh;
+  overflow-y: auto;
+  box-sizing: border-box;
+  padding: 18px;
+  border-radius: 20px;
+  text-align: left;
+
+  display: grid;
+  grid-template-columns: 76px minmax(0, 1fr);
+  grid-template-areas:
+    "poster titulo"
+    "poster ano"
+    "sinopse sinopse"
+    "equipe equipe"
+    "favoritos favoritos"
+    "rotulo rotulo"
+    "acoes acoes";
+  gap: 5px 13px;
+}
+
+#modalMidia #modalMidiaPoster {
+  grid-area: poster;
+  width: 76px;
+  height: 112px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin: 0;
+}
+
+#modalMidia #modalMidiaTitulo {
+  grid-area: titulo;
+  align-self: end;
+  margin: 0;
+  font-size: 18px;
+  text-align: left;
+}
+
+#modalMidia #modalMidiaAno {
+  grid-area: ano;
+  align-self: start;
+  margin: 0;
+  font-size: 13px;
+  text-align: left;
+}
+
+#modalMidia #modalMidiaSinopse {
+  grid-area: sinopse;
+  margin: 7px 0;
+  font-size: 12px;
+  line-height: 1.4;
+  text-align: left;
+
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+#modalMidia .midia-equipe {
+  grid-area: equipe;
+  display: grid;
+  grid-template-columns: 76px minmax(0, 1fr);
+  gap: 5px 10px;
+  align-items: start;
+  text-align: left;
+}
+
+#modalMidia .midia-equipe h3 {
+  margin: 0;
+  font-size: 12px;
+  text-align: left;
+}
+
+#modalMidia .midia-equipe p {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.35;
+  text-align: left;
+}
+
+#modalMidia #modalMidiaFavoritos {
+  grid-area: favoritos;
+}
+
+#modalMidia .book-modal-content > h3 {
+  grid-area: rotulo;
+  margin: 8px 0 3px;
+  font-size: 13px;
+  text-align: left;
+}
+
+#modalMidia .modal-midia-acoes {
+  grid-area: acoes;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+#modalMidia .modal-midia-acoes button {
+  flex: 1;
+  min-width: 0;
+  padding: 9px 5px;
+  font-size: 11px;
+  border-radius: 9px;
+}
+
+#modalMidia .close-modal {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  z-index: 2;
+}
 </style>
 </head>
 
