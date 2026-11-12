@@ -1470,6 +1470,7 @@ function showCollection(collectionId, button) {
 }
   
 
+
 function renderMediaCollection() {
   let movies = [];
 
@@ -1490,6 +1491,8 @@ function renderMediaCollection() {
     container.innerHTML = "";
 
     if (items.length === 0) {
+      container.style.display = "block";
+
       const empty = document.createElement("div");
       empty.className = "empty";
       empty.textContent = emptyMessage;
@@ -1497,43 +1500,41 @@ function renderMediaCollection() {
       return;
     }
 
+    container.style.display = "flex";
+    container.style.flexWrap = "wrap";
+    container.style.alignItems = "flex-start";
+    container.style.gap = "10px";
+
     items.forEach(item => {
+      if (!item.poster) return;
+
       const card = document.createElement("div");
-      card.className = "item book-result";
+      card.className = "media-cover-item";
+      card.style.cssText = `
+        width: 64px;
+        height: 96px;
+        padding: 0;
+        margin: 0;
+        border: none;
+        background: transparent;
+        flex: 0 0 64px;
+        overflow: hidden;
+        border-radius: 7px;
+      `;
 
-      if (item.poster) {
-        const poster = document.createElement("img");
-        poster.src = item.poster;
-        poster.alt = "Capa de " + item.name;
-        poster.loading = "lazy";
-        card.appendChild(poster);
-      }
+      const poster = document.createElement("img");
+      poster.src = item.poster;
+      poster.alt = "Capa de " + item.name;
+      poster.loading = "lazy";
+      poster.style.cssText = `
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 7px;
+      `;
 
-      const info = document.createElement("div");
-      info.className = "book-result-info";
-
-      const title = document.createElement("strong");
-      title.textContent = item.name;
-      info.appendChild(title);
-
-      if (item.year) {
-        const year = document.createElement("small");
-        year.textContent = item.year;
-        info.appendChild(year);
-      }
-
-      const statusInfo = document.createElement("small");
-      statusInfo.textContent = status;
-      info.appendChild(statusInfo);
-
-      if (status === "Já assisti" && item.rating > 0) {
-        const rating = document.createElement("small");
-        rating.textContent =
-          "Sua avaliação: " + "★".repeat(item.rating);
-        info.appendChild(rating);
-      }
-
-      card.appendChild(info);
+      card.appendChild(poster);
       container.appendChild(card);
     });
   }
@@ -1553,6 +1554,7 @@ function renderMediaCollection() {
   renderGroup("series-desejadas", "Série", "Quero assistir",
     "Sua lista de séries que deseja assistir está vazia.");
 }
+
 
 
 
