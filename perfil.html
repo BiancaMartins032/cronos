@@ -229,8 +229,12 @@ label {display:block;font-size:13px;margin:15px 0 7px}
 }
 
 .tab-content {
-  display:block;
-  margin-bottom:16px;
+  display: none;
+  margin-bottom: 16px;
+}
+
+.tab-content.active {
+  display: block;
 }
 .tab-content[hidden] {
   display:none !important;
