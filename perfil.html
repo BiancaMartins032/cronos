@@ -1165,6 +1165,11 @@ document.addEventListener("DOMContentLoaded", async () => {
       .select("id, username, display_name, bio, avatar_url")
       .eq("id", currentProfileId)
       .maybeSingle();
+  alert(
+  "Perfil encontrado: " + (profile?.display_name || "NENHUM") +
+  "\nID retornado: " + (profile?.id || "NENHUM") +
+  "\nErro: " + (profileError?.message || "Nenhum")
+);
 
   if (profileError || !profile) {
     alert(profileError
