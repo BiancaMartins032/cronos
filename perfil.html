@@ -697,29 +697,12 @@ if (sessionStorage.getItem("mn_ultima_tela_perfil") === "interesses") {
   </section>
 
   <section class="publications-section">
-    <h2 class="section-title">Publicações</h2>
+  <h2 class="section-title">Publicações</h2>
 
-    <div class="publications-grid">
-      <div class="publication-item">
-        <img class="publication-image" src="https://images.unsplash.com/photo-1461360370896-922624d12aa1?w=400" alt="História">
-      </div>
-      <div class="publication-item">
-        <img class="publication-image" src="https://images.unsplash.com/photo-1542751371-adc38448a05e?w=400" alt="Games">
-      </div>
-      <div class="publication-item">
-        <img class="publication-image" src="https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=400" alt="Cinema">
-      </div>
-      <div class="publication-item">
-        <img class="publication-image" src="https://images.unsplash.com/photo-1512820790803-83ca734da794?w=400" alt="Literatura">
-      </div>
-      <div class="publication-item">
-        <img class="publication-image" src="https://images.unsplash.com/photo-1578632767115-351597cf2477?w=400" alt="Anime">
-      </div>
-      <div class="publication-item">
-        <img class="publication-image" src="https://images.unsplash.com/photo-1518770660439-4636190af475?w=400" alt="Tecnologia">
-      </div>
-    </div>
-  </section>
+  <div class="publications-grid" id="overviewPosts">
+    <p class="bio">Carregando publicações...</p>
+  </div>
+</section>
 
 </div>
 
@@ -782,30 +765,8 @@ if (sessionStorage.getItem("mn_ultima_tela_perfil") === "interesses") {
   <section class="publications-section">
     <h2 class="section-title">Publicações</h2>
 
-    <div class="publications-grid">
-      <div class="publication-item">
-        <div class="publication-placeholder">HISTÓRIA</div>
-      </div>
-
-      <div class="publication-item">
-        <div class="publication-placeholder">GAMES</div>
-      </div>
-
-      <div class="publication-item">
-        <img class="publication-image" src="https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=400" alt="Cinema">
-      </div>
-
-      <div class="publication-item">
-        <div class="publication-placeholder">LITERATURA</div>
-      </div>
-
-      <div class="publication-item">
-        <div class="publication-placeholder">ANIME</div>
-      </div>
-
-      <div class="publication-item">
-        <div class="publication-placeholder">TECNOLOGIA</div>
-      </div>
+    <div class="publications-grid" id="profilePosts">
+      <p class="bio">Carregando publicações...</p>
     </div>
   </section>
 </div>
@@ -1147,6 +1108,69 @@ async function saveInterests() {
   alert("Interesses atualizados com sucesso!");
 }
 
+  async function carregarPublicacoes() {
+  const containers = [
+    document.getElementById("overviewPosts"),
+    document.getElementById("profilePosts")
+  ];
+
+  const { data: posts, error } = await window.mnSupabaseClient
+    .from("mn_posts")
+    .select("id, universe, content, image_url, created_at")
+    .eq("author_id", currentProfileId)
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error("Erro ao carregar publicações:", error);
+
+    containers.forEach(container => {
+      if (container) {
+        container.textContent = "Não foi possível carregar as publicações.";
+      }
+    });
+
+    return;
+  }
+
+  containers.forEach(container => {
+    if (!container) return;
+
+    container.replaceChildren();
+
+    if (!posts || posts.length === 0) {
+      container.textContent = "Esta pessoa ainda não fez publicações.";
+      return;
+    }
+
+    posts.forEach(post => {
+      const card = document.createElement("div");
+      card.className = "publication-item";
+
+      if (post.image_url) {
+        const image = document.createElement("img");
+        image.className = "publication-image";
+        image.src = post.image_url;
+        image.alt = "Imagem da publicação";
+        image.loading = "lazy";
+        card.appendChild(image);
+      }
+
+      if (post.content) {
+        const text = document.createElement("p");
+        text.textContent = post.content;
+        card.appendChild(text);
+      }
+
+      if (post.universe) {
+        const universe = document.createElement("small");
+        universe.textContent = post.universe;
+        card.appendChild(universe);
+      }
+
+      container.appendChild(card);
+    });
+  });
+}
 document.addEventListener("DOMContentLoaded", async () => {
   const session = await window.verificarAcesso();
   if (!session) return;
@@ -1191,6 +1215,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   if (avatar && profile.avatar_url) {
     avatar.src = profile.avatar_url;
   }
+  await carregarPublicacoes();
 
   const editButton = document.querySelector(".profile-top button");
   const editor = document.getElementById("editor");
