@@ -737,7 +737,7 @@ if (sessionStorage.getItem("mn_ultima_tela_perfil") === "interesses") {
   <div class="stats">
   <div class="stat"><strong id="postCount">0</strong><span>Publicações</span></div>
   <div class="stat"><strong id="friendCount">0</strong><span>Amigos</span></div>
-  <div class="stat"><strong id="collectionCount">0</strong><span>Coleções</span></div>
+  <div class="stat"><strong id="interestCount">0</strong><span>Interesses</span></div>
 </div>
   
  <div class="profile-actions" id="profileActions" hidden>
@@ -1283,22 +1283,22 @@ containers.forEach(container => {
   document.getElementById("friendCount").textContent =
     quantidade || 0;
 }
-  async function carregarColecoes() {
+ async function carregarInteressesCount() {
   const { count, error } = await window.mnSupabaseClient
-    .from("mn_collections")
-    .select("id", { count: "exact", head: true })
-    .eq("user_id", currentProfileId);
+    .from("mn_profile_interests")
+    .select("interest_id", { count: "exact", head: true })
+    .eq("profile_id", currentProfileId);
 
   if (error) {
     alert(
-      "Erro ao carregar itens salvos:\n" +
+      "Erro ao carregar quantidade de interesses:\n" +
       error.message +
       "\nCódigo: " + error.code
     );
     return;
   }
 
-  document.getElementById("collectionCount").textContent =
+  document.getElementById("interestCount").textContent =
     count || 0;
 }
 document.addEventListener("DOMContentLoaded", async () => {
@@ -1347,7 +1347,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
   await carregarPublicacoes();
   await carregarAmizades();
-  await carregarColecoes();
+  await carregarInteressesCount();
 
   const editButton = document.getElementById("editProfileMenuButton");
   const editor = document.getElementById("editor");
