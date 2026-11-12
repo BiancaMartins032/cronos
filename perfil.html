@@ -539,8 +539,17 @@ label {display:block;font-size:13px;margin:15px 0 7px}
 
 .interesses-modal-acoes {
   display: flex;
+  flex-direction: row-reverse;
   gap: 10px;
   margin-top: 22px;
+
+  position: sticky;
+  bottom: -18px;
+  z-index: 5;
+
+  background: #111111;
+  padding: 14px 0 4px;
+  border-top: 1px solid #292929;
 }
 
 .interesses-modal-acoes button {
