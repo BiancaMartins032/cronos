@@ -500,11 +500,82 @@ button {
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="auth.js"></script>
 
+
 <script>
 document.addEventListener("DOMContentLoaded", async () => {
-  await verificarAcesso();
+  const session = await verificarAcesso();
+  if (!session) return;
+
+  const grid = document.getElementById("peopleGrid");
+  const status = document.getElementById("readerStatus");
+  const search = document.getElementById("readerSearch");
+
+  const { data, error } = await window.mnSupabaseClient
+    .from("mn_profiles")
+    .select("id, username, display_name, bio, avatar_url, created_at")
+    .neq("id", session.user.id)
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error("Erro ao buscar leitores:", error);
+    status.textContent = "Não foi possível carregar os leitores.";
+    return;
+  }
+
+  const readers = data || [];
+
+  function showReaders(term = "") {
+    grid.replaceChildren();
+
+    const filtered = readers.filter(reader => {
+      const name = (reader.display_name || "").toLowerCase();
+      const username = (reader.username || "").toLowerCase();
+      const query = term.toLowerCase().replace(/^@/, "");
+
+      return name.includes(query) || username.includes(query);
+    });
+
+    status.textContent = filtered.length
+      ? filtered.length + " leitor(es) encontrado(s)."
+      : "Nenhum leitor encontrado.";
+
+    filtered.forEach(reader => {
+      const card = document.createElement("a");
+      card.className = "person";
+      card.href = "perfil.html?id=" + encodeURIComponent(reader.id);
+      card.style.textDecoration = "none";
+      card.style.color = "var(--text)";
+      card.style.display = "block";
+
+      const avatar = document.createElement("img");
+      avatar.src = reader.avatar_url || "https://i.pravatar.cc/150";
+      avatar.alt = "Foto do leitor";
+      avatar.onerror = () => {
+        avatar.src = "https://i.pravatar.cc/150";
+      };
+
+      const name = document.createElement("strong");
+      name.textContent = reader.display_name || reader.username || "Leitor";
+
+      const username = document.createElement("p");
+      username.textContent = reader.username ? "@" + reader.username : "";
+
+      const bio = document.createElement("p");
+      bio.textContent = reader.bio || "Ainda não adicionou uma biografia.";
+
+      card.append(avatar, name, username, bio);
+      grid.appendChild(card);
+    });
+  }
+
+  search.addEventListener("input", () => {
+    showReaders(search.value.trim());
+  });
+
+  showReaders();
 });
 </script>
+
 
 </body>
 </html>
