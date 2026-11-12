@@ -1238,6 +1238,106 @@ main {
   height: 27px;
   filter: drop-shadow(0 2px 1px rgba(150,40,60,0.18));
 }
+  /* JANELA MEUS FAVORITOS */
+.janela-favoritos {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(0, 0, 0, 0.65);
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  box-sizing: border-box;
+}
+
+.conteudo-favoritos {
+  width: 100%;
+  max-width: 430px;
+  max-height: 85vh;
+  overflow-y: auto;
+  background: var(--surface, #1A1A1A);
+  border: 1px solid var(--border, #333);
+  border-radius: 20px;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.favoritos-cabecalho {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.favoritos-cabecalho h2 {
+  margin: 0;
+  font-size: 21px;
+}
+
+.favoritos-cabecalho button {
+  border: none;
+  background: transparent;
+  color: inherit;
+  font-size: 30px;
+  cursor: pointer;
+}
+
+.favoritos-abas {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.aba-favoritos {
+  flex: 1;
+  padding: 11px;
+  border: none;
+  border-radius: 12px;
+  background: var(--surface-2, #292929);
+  color: inherit;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.aba-favoritos.ativa {
+  background: #5267D8;
+  color: white;
+}
+
+.favoritos-busca {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.favoritos-busca button {
+  border: none;
+  background: transparent;
+  color: inherit;
+  padding: 7px;
+  cursor: pointer;
+}
+
+.favoritos-busca input {
+  width: 100%;
+  min-width: 0;
+  padding: 10px 12px;
+  border: 1px solid var(--border, #444);
+  border-radius: 10px;
+  background: var(--surface-2, #292929);
+  color: inherit;
+  outline: none;
+}
+
+#listaFavoritosEscritores,
+#listaFavoritosEditoras {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
 </style>
 </head>
 
@@ -2059,76 +2159,52 @@ function salvarEditorasFavoritas(lista) {
 
   return nomes[normalizar(nome)] || nome;
 }
-  function renderFavoritosLiterarios() {
-  const container = document.getElementById("favoritosLiterarios");
+  
+document.addEventListener("DOMContentLoaded", () => {
+  const abas = document.querySelectorAll(".aba-favoritos");
+  const busca = document.getElementById("buscarFavoritosLiterarios");
+  const botaoBusca = document.getElementById("abrirBuscaFavoritos");
 
-  if (!container) return;
+  abas.forEach(aba => {
+    aba.addEventListener("click", () => {
+      abas.forEach(item => item.classList.remove("ativa"));
+      aba.classList.add("ativa");
 
-  container.innerHTML = "";
+      const escritores = document.getElementById("listaFavoritosEscritores");
+      const editoras = document.getElementById("listaFavoritosEditoras");
 
-  const autores = obterAutoresFavoritos().map(item => ({
-    ...item,
-    tipo: "autor"
-  }));
+      const mostrarEscritores =
+        aba.dataset.categoria === "escritores";
 
-  const editoras = obterEditorasFavoritas().map(item => ({
-    ...item,
-    tipo: "editora"
-  }));
+      escritores.style.display = mostrarEscritores ? "flex" : "none";
+      editoras.style.display = mostrarEscritores ? "none" : "flex";
 
-  const favoritos = [...autores, ...editoras].sort(
-    (a, b) => a.nome.localeCompare(b.nome, "pt-BR")
-  );
+      if (busca) busca.value = "";
 
-  favoritos.forEach(item => {
-    const botao = document.createElement("button");
-    botao.className = "favorito-literario";
-    botao.type = "button";
-
-    if (item.imagem) {
-      const imagem = document.createElement("img");
-      imagem.src = item.imagem;
-      imagem.alt = item.nome;
-
-      imagem.style.cursor = "pointer";
-      imagem.style.touchAction = "pan-y";
-      imagem.style.userSelect = "none";
-      imagem.style.webkitUserSelect = "none";
-      imagem.style.webkitTouchCallout = "none";
-      imagem.draggable = false;
-
-      botao.appendChild(imagem);
-    } else {
-      const inicial = document.createElement("div");
-      inicial.className = "favorito-inicial";
-      inicial.textContent = item.nome.charAt(0).toUpperCase();
-      botao.appendChild(inicial);
-    }
-
-    const nome = document.createElement("span");
-    nome.textContent = item.tipo === "autor"
-      ? nomeConhecidoAutor(item.nome)
-      : item.nome;
-
-    botao.appendChild(nome);
-
-    botao.addEventListener("contextmenu", evento => {
-      evento.preventDefault();
+      renderFavoritosLiterarios();
     });
-
-    botao.addEventListener("click", () => {
-  const parametro = new URLSearchParams({
-    tipo: item.tipo,
-    nome: item.nome
   });
 
-  window.location.href =
-    "detalhes-literarios.html?" + parametro.toString();
+  if (botaoBusca && busca) {
+    botaoBusca.addEventListener("click", () => {
+      const fechada = busca.style.display === "none";
+
+      busca.style.display = fechada ? "block" : "none";
+
+      if (fechada) {
+        busca.focus();
+      } else {
+        busca.value = "";
+        renderFavoritosLiterarios();
+      }
+    });
+  }
+
+  if (busca) {
+    busca.addEventListener("input", renderFavoritosLiterarios);
+  }
 });
 
-    container.appendChild(botao);
-  });
-}
 
 function alternarFavorito(tipo, nome, imagem = "") {
   if (!nome || nome === "Autor não informado" || nome === "Editora não informada") {
@@ -2202,7 +2278,75 @@ botaoEditora.classList.toggle("favorito-ativo", editoraFavorita);
 
   atualizarBotoes();
 }
+  // ABRIR E FECHAR A JANELA DE FAVORITOS
+document.addEventListener("DOMContentLoaded", () => {
+  const abrir = document.getElementById("abrirFavoritosLiterarios");
+  const fechar = document.getElementById("fecharFavoritosLiterarios");
+  const janela = document.getElementById("janelaFavoritosLiterarios");
 
+  if (abrir && janela) {
+    abrir.addEventListener("click", () => {
+      janela.style.display = "flex";
+      renderFavoritosLiterarios();
+    });
+  }
+
+  if (fechar && janela) {
+    fechar.addEventListener("click", () => {
+      janela.style.display = "none";
+    });
+  }
+
+  if (janela) {
+    janela.addEventListener("click", evento => {
+      if (evento.target === janela) {
+        janela.style.display = "none";
+      }
+    });
+  }
+});
+
+  document.addEventListener("DOMContentLoaded", () => {
+  const abas = document.querySelectorAll(".aba-favoritos");
+  const busca = document.getElementById("buscarFavoritosLiterarios");
+  const botaoBusca = document.getElementById("abrirBuscaFavoritos");
+
+  abas.forEach(aba => {
+    aba.addEventListener("click", () => {
+      abas.forEach(item => item.classList.remove("ativa"));
+      aba.classList.add("ativa");
+
+      const escritores = document.getElementById("listaFavoritosEscritores");
+      const editoras = document.getElementById("listaFavoritosEditoras");
+
+      const mostrarEscritores = aba.dataset.categoria === "escritores";
+
+      escritores.style.display = mostrarEscritores ? "flex" : "none";
+      editoras.style.display = mostrarEscritores ? "none" : "flex";
+
+      if (busca) busca.value = "";
+      renderFavoritosLiterarios();
+    });
+  });
+
+  if (botaoBusca && busca) {
+    botaoBusca.addEventListener("click", () => {
+      const fechada = busca.style.display === "none";
+      busca.style.display = fechada ? "block" : "none";
+
+      if (fechada) {
+        busca.focus();
+      } else {
+        busca.value = "";
+        renderFavoritosLiterarios();
+      }
+    });
+  }
+
+  if (busca) {
+    busca.addEventListener("input", renderFavoritosLiterarios);
+  }
+});
 function renderLivros() {
   let livros = [];
 
