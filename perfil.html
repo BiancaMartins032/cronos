@@ -394,6 +394,170 @@ label {display:block;font-size:13px;margin:15px 0 7px}
   letter-spacing: 1px;
   background: #191919;
 }
+  
+/* MENU MEUS INTERESSES */
+.menu-interesses {
+  display: block;
+  width: 100%;
+  padding: 13px 4px;
+  margin-bottom: 2px;
+  background: transparent;
+  color: #E5E5E5;
+  text-align: left;
+  font-size: 14px;
+  font-weight: normal;
+  border-bottom: 1px solid #292929;
+}
+
+.menu-interesses:hover {
+  color: #B99BFF;
+}
+
+/* JANELA DE INTERESSES */
+.interesses-modal-fundo {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 1001;
+  background: rgba(0,0,0,.82);
+  padding: 16px;
+  align-items: center;
+  justify-content: center;
+}
+
+.interesses-modal-fundo.aberto {
+  display: flex;
+}
+
+.interesses-modal {
+  width: 100%;
+  max-width: 650px;
+  max-height: 90vh;
+  overflow-y: auto;
+  background: #111111;
+  border: 1px solid #39304F;
+  border-radius: 18px;
+  padding: 18px;
+}
+
+.interesses-modal-topo {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.interesses-modal-topo h2 {
+  font-size: 19px;
+  margin: 0 0 7px;
+}
+
+.interesses-modal-topo p {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.interesses-modal-topo button {
+  background: transparent;
+  color: white;
+  font-size: 28px;
+}
+
+.interesses-contador {
+  color: #B99BFF;
+  font-size: 12px;
+  margin: 20px 0;
+}
+
+.interesse-grupo {
+  margin-bottom: 24px;
+}
+
+.interesse-grupo h3 {
+  font-size: 14px;
+  margin: 0 0 12px;
+}
+
+.interesse-grade {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.interesse-card {
+  position: relative;
+  padding: 5px;
+  background: #191919;
+  border: 2px solid #292929;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: .2s;
+}
+
+.interesse-card.selecionado {
+  border-color: #A98AFF;
+  background: #241B38;
+}
+
+.interesse-card img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.interesse-card strong {
+  display: block;
+  padding: 10px 4px 7px;
+  color: #E5E5E5;
+  font-size: 12px;
+  text-align: center;
+}
+
+.interesse-check {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 25px;
+  height: 25px;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: #8064D8;
+  color: white;
+  border: 2px solid white;
+  border-radius: 50%;
+  font-size: 14px;
+}
+
+.interesse-card.selecionado .interesse-check {
+  display: flex;
+}
+
+.interesses-modal-acoes {
+  display: flex;
+  gap: 10px;
+  margin-top: 22px;
+}
+
+.interesses-modal-acoes button {
+  flex: 1;
+  min-height: 43px;
+}
+
+@media (max-width: 380px) {
+  .interesses-modal {
+    padding: 13px;
+  }
+
+  .interesse-grade {
+    gap: 8px;
+  }
+}
+
 </style>
 </head>
 
@@ -420,8 +584,49 @@ label {display:block;font-size:13px;margin:15px 0 7px}
     </div>
 
     <a href="aparencia.html">Alterar aparência do aplicativo</a>
+
+<button class="menu-interesses" id="abrirInteresses" type="button">
+  Meus interesses
+</button>
   </nav>
 </div>
+  
+<!-- JANELA MEUS INTERESSES -->
+<div class="interesses-modal-fundo" id="interessesModal">
+  <section class="interesses-modal">
+
+    <div class="interesses-modal-topo">
+      <div>
+        <h2>Meus interesses</h2>
+        <p>Escolha os assuntos que fazem parte do seu universo.</p>
+      </div>
+
+      <button id="fecharInteresses" type="button" aria-label="Fechar">
+        ×
+      </button>
+    </div>
+
+    <div class="interesses-contador" id="interessesContador">
+      Nenhum interesse selecionado
+    </div>
+
+    <div id="interestOptions" class="interest-cards">
+      <p>Carregando interesses...</p>
+    </div>
+
+    <div class="interesses-modal-acoes">
+      <button class="secondary" id="cancelarInteresses" type="button">
+        Cancelar
+      </button>
+
+      <button class="primary" id="salvarInteresses" type="button">
+        Salvar interesses
+      </button>
+    </div>
+
+  </section>
+</div>
+
 
 <main>
 
@@ -455,18 +660,6 @@ label {display:block;font-size:13px;margin:15px 0 7px}
   <label for="bioInput">Biografia</label>
   <textarea id="bioInput" maxlength="300"
     placeholder="Por favor, coloque seus hobbies nerds na Bio."></textarea>
-
-  <h3 class="section-title">Quais são suas nerdices?</h3>
-  <p style="font-size:12px;color:var(--muted)">
-    Selecione os assuntos que realmente fazem parte dos seus interesses.
-  </p>
-
-  
-<div class="interests" id="interestOptions">
-  <p style="color:var(--muted);font-size:13px;">
-    Carregando interesses...
-  </p>
-</div>
 
 
   <button class="primary full" onclick="saveProfile()">
@@ -653,18 +846,44 @@ label {display:block;font-size:13px;margin:15px 0 7px}
 
 
 
+
 <script>
 let currentProfileId = null;
 let currentIsOwnProfile = false;
 let interestCatalog = [];
 let selectedInterestIds = [];
+let draftInterestIds = [];
 
 const interestGroups = {
-  ciencias_conhecimento: "Ciências e conhecimento",
-  literatura_linguagem: "Literatura e linguagem",
-  artes_entretenimento: "Artes e entretenimento",
-  mitologia_cultura: "Mitologia e cultura",
-  tecnologia_jogos: "Tecnologia e jogos"
+  entretenimento_cultura_pop: "Entretenimento e Cultura Pop",
+  jogos_interatividade: "Jogos e Interatividade",
+  tecnologia_ciencia: "Tecnologia e Ciência",
+  comunidade_colecionismo: "Comunidade e Colecionismo",
+  historia_mitologia: "História, Civilizações e Mitologia",
+  idiomas_linguagens: "Idiomas e Linguagens",
+  musica: "Música"
+};
+
+const interestImages = {
+  "Animes e Mangás": "https://images.unsplash.com/photo-1578632767115-351597cf2477?w=600",
+  "Filmes e Séries": "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=600",
+  "Histórias em Quadrinhos (HQs)": "https://images.unsplash.com/photo-1612036782180-6f0b6cd846fe?w=600",
+  "Literatura": "https://images.unsplash.com/photo-1512820790803-83ca734da794?w=600",
+  "Card Games": "https://images.unsplash.com/photo-1610890716171-6b1bb98ffd09?w=600",
+  "Jogos de Tabuleiro": "https://images.unsplash.com/photo-1606503153255-59d8b8b2c5b3?w=600",
+  "RPG de Mesa": "https://images.unsplash.com/photo-1511512578047-dfb367046420?w=600",
+  "Videogames": "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=600",
+  "Ciência e Astronomia": "https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?w=600",
+  "Gadgets e Inovação": "https://images.unsplash.com/photo-1518770660439-4636190af475?w=600",
+  "Programação e Computação": "https://images.unsplash.com/photo-1515879218367-8466d910aaa4?w=600",
+  "Colecionáveis": "https://images.unsplash.com/photo-1577083552431-6e5fd01aa342?w=600",
+  "Cosplay": "https://images.unsplash.com/photo-1535223289827-42f1e9919769?w=600",
+  "Eventos e Convenções": "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=600",
+  "Teorias e Lore": "https://images.unsplash.com/photo-1534447677768-be436bb09401?w=600",
+  "História e Civilizações": "https://images.unsplash.com/photo-1461360370896-922624d12aa1?w=600",
+  "Mitologia e Lendas": "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=600",
+  "Idiomas": "https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?w=600",
+  "Música": "https://images.unsplash.com/photo-1511379938547-c1f69419868d?w=600"
 };
 
 function showProfileTab(tabName, button) {
@@ -696,14 +915,22 @@ function toggleEditor() {
       document.getElementById("profileName").textContent;
 
     document.getElementById("bioInput").value =
-      document.getElementById("bioDisplay").textContent;
-
-    document.querySelectorAll(
-      '#interestOptions input[type="checkbox"]'
-    ).forEach(input => {
-      input.checked = selectedInterestIds.includes(Number(input.value));
-    });
+      document.getElementById("bioDisplay").textContent ===
+      "Ainda não adicionou uma biografia."
+        ? ""
+        : document.getElementById("bioDisplay").textContent;
   }
+}
+
+function updateInterestCounter() {
+  const counter = document.getElementById("interessesContador");
+  if (!counter) return;
+
+  const total = draftInterestIds.length;
+
+  counter.textContent = total === 1
+    ? "1 interesse selecionado"
+    : total + " interesses selecionados";
 }
 
 function renderInterestOptions() {
@@ -719,34 +946,74 @@ function renderInterestOptions() {
 
     if (!groupInterests.length) return;
 
-    const group = document.createElement("div");
-    group.style.cssText = "width:100%;margin-bottom:16px;";
+    const group = document.createElement("section");
+    group.className = "interesse-grupo";
 
-    const heading = document.createElement("h4");
+    const heading = document.createElement("h3");
     heading.textContent = groupName;
-    heading.style.cssText =
-      "margin:0 0 10px;color:var(--text);font-size:14px;";
 
-    const options = document.createElement("div");
-    options.style.cssText =
-      "display:flex;flex-wrap:wrap;gap:8px;";
+    const grid = document.createElement("div");
+    grid.className = "interesse-grade";
 
     groupInterests.forEach(item => {
-      const label = document.createElement("label");
-      label.className = "choice";
+      const card = document.createElement("div");
+      card.className = "interesse-card";
+      card.tabIndex = 0;
+      card.setAttribute("role", "checkbox");
 
-      const checkbox = document.createElement("input");
-      checkbox.type = "checkbox";
-      checkbox.value = item.id;
-      checkbox.checked = selectedInterestIds.includes(item.id);
+      const image = document.createElement("img");
+      image.src = interestImages[item.name] || "";
+      image.alt = item.name;
+      image.loading = "lazy";
 
-      label.append(checkbox, document.createTextNode(" " + item.name));
-      options.appendChild(label);
+      const check = document.createElement("span");
+      check.className = "interesse-check";
+      check.textContent = "✓";
+      check.setAttribute("aria-hidden", "true");
+
+      const name = document.createElement("strong");
+      name.textContent = item.name;
+
+      card.append(image, check, name);
+
+      function toggleInterest() {
+        const index = draftInterestIds.indexOf(item.id);
+
+        if (index >= 0) {
+          draftInterestIds.splice(index, 1);
+        } else {
+          draftInterestIds.push(item.id);
+        }
+
+        updateInterestCard(card, item.id);
+        updateInterestCounter();
+      }
+
+      card.addEventListener("click", toggleInterest);
+
+      card.addEventListener("keydown", event => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          toggleInterest();
+        }
+      });
+
+      updateInterestCard(card, item.id);
+      grid.appendChild(card);
     });
 
-    group.append(heading, options);
+    group.append(heading, grid);
     container.appendChild(group);
   });
+
+  updateInterestCounter();
+}
+
+function updateInterestCard(card, interestId) {
+  const selected = draftInterestIds.includes(interestId);
+
+  card.classList.toggle("selecionado", selected);
+  card.setAttribute("aria-checked", String(selected));
 }
 
 function renderInterestDisplay() {
@@ -783,13 +1050,7 @@ async function saveProfile() {
     return;
   }
 
-  const interestIds = Array.from(
-    document.querySelectorAll(
-      '#interestOptions input[type="checkbox"]:checked'
-    )
-  ).map(input => Number(input.value));
-
-  const { error: profileError } = await window.mnSupabaseClient
+  const { error } = await window.mnSupabaseClient
     .from("mn_profiles")
     .update({
       display_name: name,
@@ -797,10 +1058,28 @@ async function saveProfile() {
     })
     .eq("id", currentProfileId);
 
-  if (profileError) {
-    alert("Erro ao salvar o perfil: " + profileError.message);
+  if (error) {
+    alert("Erro ao salvar o perfil: " + error.message);
     return;
   }
+
+  document.getElementById("profileName").textContent = name;
+  document.getElementById("bioDisplay").textContent =
+    bio || "Ainda não adicionou uma biografia.";
+
+  document.getElementById("editor").classList.remove("open");
+
+  alert("Perfil atualizado com sucesso!");
+}
+
+async function saveInterests() {
+  if (!currentIsOwnProfile) return;
+
+  const button = document.getElementById("salvarInteresses");
+  button.disabled = true;
+  button.textContent = "Salvando...";
+
+  const previousIds = [...selectedInterestIds];
 
   const { error: deleteError } = await window.mnSupabaseClient
     .from("mn_profile_interests")
@@ -808,12 +1087,14 @@ async function saveProfile() {
     .eq("profile_id", currentProfileId);
 
   if (deleteError) {
-    alert("Erro ao atualizar os interesses: " + deleteError.message);
+    alert("Erro ao atualizar interesses: " + deleteError.message);
+    button.disabled = false;
+    button.textContent = "Salvar interesses";
     return;
   }
 
-  if (interestIds.length) {
-    const relations = interestIds.map(interestId => ({
+  if (draftInterestIds.length > 0) {
+    const relations = draftInterestIds.map(interestId => ({
       profile_id: currentProfileId,
       interest_id: interestId
     }));
@@ -823,22 +1104,32 @@ async function saveProfile() {
       .insert(relations);
 
     if (insertError) {
-      alert("Erro ao salvar os interesses: " + insertError.message);
+      if (previousIds.length > 0) {
+        await window.mnSupabaseClient
+          .from("mn_profile_interests")
+          .insert(previousIds.map(interestId => ({
+            profile_id: currentProfileId,
+            interest_id: interestId
+          })));
+      }
+
+      alert("Erro ao salvar interesses: " + insertError.message);
+      button.disabled = false;
+      button.textContent = "Salvar interesses";
       return;
     }
   }
 
-  selectedInterestIds = interestIds;
-
-  document.getElementById("profileName").textContent = name;
-  document.getElementById("bioDisplay").textContent =
-    bio || "Ainda não adicionou uma biografia.";
+  selectedInterestIds = [...draftInterestIds];
 
   renderInterestDisplay();
 
-  document.getElementById("editor").classList.remove("open");
+  document.getElementById("interessesModal").classList.remove("aberto");
 
-  alert("Perfil atualizado com sucesso!");
+  button.disabled = false;
+  button.textContent = "Salvar interesses";
+
+  alert("Interesses atualizados com sucesso!");
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
@@ -879,9 +1170,14 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   const editButton = document.querySelector(".profile-top button");
   const editor = document.getElementById("editor");
+  const openInterestsButton = document.getElementById("abrirInteresses");
 
   if (editButton) editButton.hidden = !currentIsOwnProfile;
   if (editor) editor.hidden = !currentIsOwnProfile;
+
+  if (openInterestsButton) {
+    openInterestsButton.hidden = !currentIsOwnProfile;
+  }
 
   const { data: catalog, error: catalogError } =
     await window.mnSupabaseClient
@@ -914,6 +1210,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     item => Number(item.interest_id)
   );
 
+  draftInterestIds = [...selectedInterestIds];
+
   renderInterestOptions();
   renderInterestDisplay();
 
@@ -922,6 +1220,48 @@ document.addEventListener("DOMContentLoaded", async () => {
       profile.display_name || profile.username || "";
 
     document.getElementById("bioInput").value = profile.bio || "";
+  }
+
+  const modal = document.getElementById("interessesModal");
+  const openButton = document.getElementById("abrirInteresses");
+  const closeButton = document.getElementById("fecharInteresses");
+  const cancelButton = document.getElementById("cancelarInteresses");
+  const saveButton = document.getElementById("salvarInteresses");
+
+  if (openButton && modal) {
+    openButton.addEventListener("click", () => {
+      if (!currentIsOwnProfile) return;
+
+      draftInterestIds = [...selectedInterestIds];
+      renderInterestOptions();
+      modal.classList.add("aberto");
+    });
+  }
+
+  function closeInterestModal() {
+    draftInterestIds = [...selectedInterestIds];
+    modal.classList.remove("aberto");
+    renderInterestOptions();
+  }
+
+  if (closeButton) {
+    closeButton.addEventListener("click", closeInterestModal);
+  }
+
+  if (cancelButton) {
+    cancelButton.addEventListener("click", closeInterestModal);
+  }
+
+  if (modal) {
+    modal.addEventListener("click", event => {
+      if (event.target === modal) {
+        closeInterestModal();
+      }
+    });
+  }
+
+  if (saveButton) {
+    saveButton.addEventListener("click", saveInterests);
   }
 });
 </script>
