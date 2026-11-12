@@ -1211,21 +1211,32 @@ main {
 }
 
 .botao-favoritos-literarios {
-  width: 44px;
-  height: 44px;
+  width: 48px;
+  height: 48px;
   flex-shrink: 0;
   border: none;
   border-radius: 50%;
-  background: #FCE4E8;
+  background: radial-gradient(circle at 35% 28%, #fff0f2, #f7cbd3 72%, #edabb9);
+  box-shadow:
+    inset 3px 3px 6px rgba(255,255,255,0.9),
+    inset -3px -4px 7px rgba(190,90,110,0.16),
+    0 3px 7px rgba(0,0,0,0.16);
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   padding: 0;
+  transition: transform 0.15s ease;
+}
+
+.botao-favoritos-literarios:active {
+  transform: scale(0.91);
 }
 
 .botao-favoritos-literarios svg {
-  display: block;
+  width: 27px;
+  height: 27px;
+  filter: drop-shadow(0 2px 1px rgba(150,40,60,0.18));
 }
 </style>
 </head>
@@ -3760,5 +3771,52 @@ document.addEventListener("DOMContentLoaded", async () => {
   </div>
 </div>
 
+  <!-- JANELA MEUS FAVORITOS -->
+<div id="janelaFavoritosLiterarios" class="janela-favoritos">
+  <div class="conteudo-favoritos">
+
+    <div class="favoritos-cabecalho">
+      <h2>Meus Favoritos</h2>
+
+      <button type="button" id="fecharFavoritosLiterarios">
+        ×
+      </button>
+    </div>
+
+    <div class="favoritos-abas">
+      <button type="button" class="aba-favoritos ativa"
+              data-categoria="escritores">
+        Escritores
+      </button>
+
+      <button type="button" class="aba-favoritos"
+              data-categoria="editoras">
+        Editoras
+      </button>
+    </div>
+
+    <div class="favoritos-busca">
+      <button type="button" id="abrirBuscaFavoritos"
+              aria-label="Pesquisar favoritos">
+        <svg viewBox="0 0 24 24" width="21" height="21"
+             fill="none" stroke="currentColor"
+             stroke-width="2" stroke-linecap="round">
+          <circle cx="11" cy="11" r="7"></circle>
+          <path d="m16 16 4 4"></path>
+        </svg>
+      </button>
+
+      <input id="buscarFavoritosLiterarios"
+             type="search"
+             placeholder="Pesquisar..."
+             autocomplete="off"
+             style="display:none;">
+    </div>
+
+    <div id="listaFavoritosEscritores"></div>
+    <div id="listaFavoritosEditoras" style="display:none;"></div>
+
+  </div>
+</div>
 </body>
 </html>
