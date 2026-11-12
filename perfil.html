@@ -44,9 +44,9 @@ main {max-width:720px;margin:auto;padding:18px 14px}
 .card {
   background:var(--surface);
   border:1px solid var(--border);
-  border-radius:17px;
-  padding:17px;
-  margin-bottom:15px;
+  border-radius:12px;
+  padding:13px;
+  margin-bottom:10px;
 }
 .profile-top {
   text-align:left;
@@ -66,35 +66,53 @@ main {max-width:720px;margin:auto;padding:18px 14px}
   border:2px solid var(--purple);
   grid-row:1 / span 4;
 }
-.username {font-size:23px;margin:12px 0 5px}
-.handle {color:var(--muted);font-size:13px}
-.seal {
-  display:inline-block;
-  margin-top:12px;
-  padding:8px 13px;
-  border-radius:20px;
-  background:#422C77;
-  color:#DECFFF;
+.username {
+  font-size:18px;
+  margin:0 0 3px;
+  font-weight:600;
+}
+.handle {
+  color:var(--muted);
   font-size:12px;
 }
 .stats {
+  grid-column:1 / -1;
   display:grid;
   grid-template-columns:repeat(3,1fr);
-  margin-top:22px;
+  margin-top:18px;
+  padding-top:12px;
   border-top:1px solid var(--border);
-  padding-top:17px;
+  text-align:center;
 }
-.stat strong {display:block;font-size:19px}
-.stat span {font-size:11px;color:var(--muted)}
-.section-title {font-size:17px;margin:22px 0 12px}
+.stat strong {
+  display:block;
+  font-size:16px;
+  font-weight:600;
+}
+
+.stat span {
+  font-size:10px;
+  color:var(--muted);
+}
+.section-title {
+  font-size:14px;
+  font-weight:600;
+  margin:10px 0;
+}
 .bio {font-size:14px;line-height:1.6;color:#DED7F0}
-.interests {display:flex;flex-wrap:wrap;gap:8px}
+.interests {
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+}
+
 .tag {
-  background:#30254E;
-  color:#D8C8FF;
-  padding:9px 12px;
-  border-radius:20px;
-  font-size:12px;
+  background:#191919;
+  color:#D5C9F5;
+  border:1px solid #30283F;
+  padding:6px 9px;
+  border-radius:15px;
+  font-size:10px;
 }
 .progress {
   height:8px;
@@ -149,13 +167,20 @@ button {
   border:0;cursor:pointer;font-weight:bold;
 }
 .primary {
-  background:linear-gradient(120deg,var(--purple),var(--blue));
-  color:white;padding:12px 20px;border-radius:22px;
+  background:var(--purple);
+  color:white;
+  padding:9px 15px;
+  border-radius:8px;
+  font-size:12px;
 }
+
 .secondary {
-  background:var(--card);color:#CBB7FF;
-  border:1px solid var(--border);
-  padding:11px 18px;border-radius:22px;
+  background:transparent;
+  color:#E5E5E5;
+  border:1px solid #393939;
+  padding:9px 15px;
+  border-radius:8px;
+  font-size:12px;
 }
 .full {width:100%;margin-top:15px}
 input,textarea {
@@ -352,10 +377,6 @@ label {display:block;font-size:13px;margin:15px 0 7px}
 
   <h1 class="username" id="profileName">RafaelNerd</h1>
   <div class="handle">@rafaelnerd</div>
-
-  <div class="seal" id="profileSeal">
-    ✦ Explorador dos Mundos
-  </div>
 
   <div class="stats">
     <div class="stat">
