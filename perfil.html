@@ -670,6 +670,11 @@ label {display:block;font-size:13px;margin:15px 0 7px}
 
     <a href="aparencia.html">Alterar aparência do aplicativo</a>
 
+<button class="menu-interesses" id="editProfileMenuButton" type="button"
+  onclick="document.getElementById('fecharMenuPerfil').click(); toggleEditor();">
+  Editar meu perfil
+</button>
+
 <button class="menu-interesses" id="abrirInteresses" type="button">
   Meus interesses
 </button>
@@ -744,10 +749,6 @@ if (sessionStorage.getItem("mn_ultima_tela_perfil") === "interesses") {
     Enviar mensagem
   </button>
 </div>
-
-  <button class="secondary full" onclick="toggleEditor()">
-    ✎ Editar meu perfil
-  </button>
 </section>
 
 <section class="card editor" id="editor">
@@ -1348,7 +1349,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   await carregarAmizades();
   await carregarColecoes();
 
-  const editButton = document.querySelector(".profile-top > button");
+  const editButton = document.getElementById("editProfileMenuButton");
   const editor = document.getElementById("editor");
   const openInterestsButton = document.getElementById("abrirInteresses");
 
