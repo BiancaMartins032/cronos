@@ -9,14 +9,14 @@
 
 <style>
 :root {
-  --bg:#100D20;
-  --surface:#19152D;
-  --card:#211B3B;
-  --purple:#8655F5;
-  --blue:#536DFF;
-  --text:#F5F1FF;
-  --muted:#AAA0C7;
-  --border:#393052;
+  --bg:#080808;
+  --surface:#111111;
+  --card:#191919;
+  --purple:#8064D8;
+  --blue:#8064D8;
+  --text:#FFFFFF;
+  --muted:#A1A1A1;
+  --border:#292929;
 }
 * {box-sizing:border-box}
 body {
@@ -48,10 +48,23 @@ main {max-width:720px;margin:auto;padding:18px 14px}
   padding:17px;
   margin-bottom:15px;
 }
-.profile-top {text-align:center;padding:25px 17px}
+.profile-top {
+  text-align:left;
+  padding:16px;
+  background:transparent;
+  border:0;
+  display:grid;
+  grid-template-columns:76px 1fr;
+  column-gap:14px;
+  align-items:center;
+}
 .avatar {
-  width:110px;height:110px;border-radius:50%;
-  object-fit:cover;border:3px solid var(--purple);
+  width:76px;
+  height:76px;
+  border-radius:50%;
+  object-fit:cover;
+  border:2px solid var(--purple);
+  grid-row:1 / span 4;
 }
 .username {font-size:23px;margin:12px 0 5px}
 .handle {color:var(--muted);font-size:13px}
