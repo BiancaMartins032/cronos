@@ -689,5 +689,24 @@ document.addEventListener("DOMContentLoaded", async () => {
 });
 </script>
 
+  <script>
+  const abrirMenuPerfil = document.getElementById("abrirMenuPerfil");
+  const fecharMenuPerfil = document.getElementById("fecharMenuPerfil");
+  const menuPerfilFundo = document.getElementById("menuPerfilFundo");
+
+  abrirMenuPerfil.addEventListener("click", () => {
+    menuPerfilFundo.style.display = "block";
+  });
+
+  fecharMenuPerfil.addEventListener("click", () => {
+    menuPerfilFundo.style.display = "none";
+  });
+
+  menuPerfilFundo.addEventListener("click", (evento) => {
+    if (evento.target === menuPerfilFundo) {
+      menuPerfilFundo.style.display = "none";
+    }
+  });
+</script>
 </body>
 </html>
