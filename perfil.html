@@ -642,7 +642,52 @@ label {display:block;font-size:13px;margin:15px 0 7px}
   color: var(--text);
   border: 1px solid var(--purple);
 }
-  
+
+  .collection-shelf {
+  margin-top: 28px;
+}
+
+.collection-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.collection-header h3 {
+  margin: 0;
+  font-size: 17px;
+  color: var(--text);
+}
+
+.collection-header button {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: transparent;
+  border: none;
+  color: var(--purple);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.collection-header button span {
+  font-size: 21px;
+}
+
+.collection-covers {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.collection-covers img {
+  width: 100%;
+  aspect-ratio: 2 / 3;
+  object-fit: cover;
+  border-radius: 7px;
+}
 </style>
 </head>
 
