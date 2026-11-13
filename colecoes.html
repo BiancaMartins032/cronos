@@ -3540,10 +3540,8 @@ grupo.appendChild(linhaProgresso);
 linhaProgresso.style.cursor = "pointer";
 linhaProgresso.title = "Ver conquistas";
 
-linhaProgresso.addEventListener("click", () => {
-  window.location.href =
-    "conquistas.html?id=" + encodeURIComponent(jogo.id);
-});
+linhaProgresso.style.cursor = "default";
+linhaProgresso.title = "";
 
 const botaoConquistas = document.createElement("button");
 botaoConquistas.type = "button";
