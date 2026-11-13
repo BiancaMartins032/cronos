@@ -1039,6 +1039,27 @@ function showProfileTab(tabName, button) {
   document.getElementById("tab-" + tabName).classList.add("active");
   button.classList.add("active");
 }
+  document.addEventListener("DOMContentLoaded", () => {
+  const params = new URLSearchParams(window.location.search);
+
+  if (params.get("colecao") === "livros") {
+    const abas = document.querySelector(".tabs");
+
+    if (abas) {
+      abas.style.display = "none";
+    }
+
+    document.querySelectorAll(".collection-page").forEach(page => {
+      page.classList.remove("active");
+    });
+
+    const livros = document.getElementById("livros");
+
+    if (livros) {
+      livros.classList.add("active");
+    }
+  }
+});
 
 function toggleCollections() {
   const collections = document.getElementById("tab-collections");
@@ -1450,9 +1471,9 @@ async function carregarColecoes() {
   
 window.abrirColecao = async function(universo) {
     if (universo === "leitura") {
-    window.location.href = "colecoes.html";
-    return;
-  }
+  window.location.href = "colecoes.html?colecao=livros";
+  return;
+}
   const nomes = {
   animes: "Animes",
   filmes: "Filmes",
