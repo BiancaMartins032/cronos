@@ -1612,6 +1612,31 @@ function showCollection(collectionId, button) {
   document.getElementById(collectionId).classList.add("active");
   button.classList.add("active");
 }
+  (function() {
+  const params = new URLSearchParams(window.location.search);
+
+  if (params.get("colecao") !== "livros") return;
+
+  function abrirSomenteLivros() {
+    const abas = document.querySelector(".tabs");
+
+    if (abas) abas.style.display = "none";
+
+    document.querySelectorAll(".collection-page").forEach(page => {
+      page.classList.remove("active");
+    });
+
+    const livros = document.getElementById("livros");
+
+    if (livros) livros.classList.add("active");
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", abrirSomenteLivros);
+  } else {
+    abrirSomenteLivros();
+  }
+})();
   
 
 
