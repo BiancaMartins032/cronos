@@ -783,35 +783,19 @@ if (sessionStorage.getItem("mn_ultima_tela_perfil") === "interesses") {
 </section>
 
 <div class="profile-tabs">
-  <button
-    type="button"
-    class="tab-button active"
-    onclick="showProfileTab('publications', this)"
-  >
-    <svg viewBox="0 0 24 24" width="22" height="22"
-      fill="none" stroke="currentColor" stroke-width="1.7"
-      stroke-linecap="round" stroke-linejoin="round">
-      <rect x="3" y="3" width="7" height="7" rx="1"/>
-      <rect x="14" y="3" width="7" height="7" rx="1"/>
-      <rect x="3" y="14" width="7" height="7" rx="1"/>
-      <rect x="14" y="14" width="7" height="7" rx="1"/>
-    </svg>
-    <span>Publicações</span>
+  <button type="button" class="tab-button active"
+    onclick="showProfileTab('publications', this)">
+    Publicações
   </button>
 
-  <button
-    type="button"
-    class="tab-button"
-    onclick="showProfileTab('collections', this)"
-  >
-    <svg viewBox="0 0 24 24" width="22" height="22"
-      fill="none" stroke="currentColor" stroke-width="1.7"
-      stroke-linecap="round" stroke-linejoin="round">
-      <path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v17H6.5A2.5 2.5 0 0 1 4 17.5z"/>
-      <path d="M4 17.5A2.5 2.5 0 0 1 6.5 15H20"/>
-      <path d="M8 7h8"/>
-    </svg>
-    <span>Minhas coleções</span>
+  <button type="button" class="tab-button"
+    onclick="showProfileTab('collections', this)">
+    Coleções
+  </button>
+
+  <button type="button" class="tab-button"
+    onclick="showProfileTab('favorites', this)">
+    Favoritos
   </button>
 </div>
 
