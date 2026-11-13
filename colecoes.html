@@ -3883,13 +3883,95 @@ async function sincronizarColecaoLivrosInicial() {
   }
 }
 
+  
+async function sincronizarColecaoJogosInicial() {
+  const cliente = window.mnSupabaseClient;
+
+  try {
+    const { data: sessaoData, error: erroSessao } =
+      await cliente.auth.getSession();
+
+    if (erroSessao || !sessaoData.session) return;
+
+    const usuarioId = sessaoData.session.user.id;
+
+    const jogosLocais = JSON.parse(
+      localStorage.getItem("mn_jogos") || "[]"
+    );
+
+    const chaveMigracao = "mn_jogos_migrados_" + usuarioId;
+
+    if (!localStorage.getItem(chaveMigracao)) {
+      const registros = jogosLocais.map(jogo => ({
+        user_id: usuarioId,
+        universe: "games",
+        item_id: String(jogo.id),
+        title: jogo.title || jogo.name || "Jogo sem título",
+        cover: jogo.cover || null,
+        status: jogo.status,
+        data: {
+          localId: jogo.id,
+          avaliacao: jogo.avaliacao || 0,
+          jogoOriginal: jogo
+        }
+      }));
+
+      if (registros.length) {
+        const { error } = await cliente
+          .from("mn_collections")
+          .upsert(registros, {
+            onConflict: "user_id,universe,item_id",
+            ignoreDuplicates: true
+          });
+
+        if (error) throw error;
+      }
+
+      localStorage.setItem(chaveMigracao, "sim");
+    }
+
+    const { data, error } = await cliente
+      .from("mn_collections")
+      .select("*")
+      .eq("user_id", usuarioId)
+      .eq("universe", "games");
+
+    if (error) throw error;
+
+    const jogosAtualizados = data.map(registro => ({
+      ...(registro.data?.jogoOriginal || {}),
+      id: registro.data?.localId ?? registro.item_id,
+      title: registro.title,
+      cover: registro.cover || "",
+      status: registro.status,
+      avaliacao: registro.data?.avaliacao || 0
+    }));
+
+    localStorage.setItem(
+      "mn_jogos",
+      JSON.stringify(jogosAtualizados)
+    );
+
+    renderJogos();
+
+  } catch (erro) {
+    console.error("Erro ao sincronizar jogos:", erro);
+    alert(
+      "Não foi possível sincronizar os jogos. Seus dados locais foram preservados."
+    );
+  }
+}
+
+
 document.addEventListener("DOMContentLoaded", async () => {
   const sessao = await verificarAcesso();
 
   if (sessao) {
     await sincronizarColecaoLivrosInicial();
+    await sincronizarColecaoJogosInicial();
   }
 });
+
 </script>
   
 <!-- MODAL DE FILMES E SÉRIES -->
