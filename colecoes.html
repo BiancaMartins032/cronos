@@ -3536,17 +3536,18 @@ document.addEventListener("DOMContentLoaded", () => {
       seletorStatusJogo.value === "Concluído" ? "block" : "none";
   });
 
-  const botaoSalvarJogo = document.getElementById("salvarJogoColecao");
+  
+const botaoSalvarJogo = document.getElementById("salvarJogoColecao");
 
-  if (botaoSalvarJogo) {
-    botaoSalvarJogo.addEventListener("click", () => {
+if (botaoSalvarJogo) {
+  botaoSalvarJogo.addEventListener("click", async () => {
     if (!jogoSelecionado) return;
 
     const jogos = obterJogosSalvos();
     const status = document.getElementById("modalStatusJogo").value;
 
     const indice = jogos.findIndex(
-      item => item.id === jogoSelecionado.id
+      item => String(item.id) === String(jogoSelecionado.id)
     );
 
     const jogoExistente = indice >= 0 ? jogos[indice] : null;
@@ -3572,8 +3573,53 @@ document.addEventListener("DOMContentLoaded", () => {
       jogos.push(jogo);
     }
 
+    // Primeiro salva no dispositivo, preservando os dados locais.
     salvarJogosLocais(jogos);
     renderJogos();
+
+    let mensagemErro = "";
+
+    // Depois sincroniza com o Supabase.
+    try {
+      const cliente = window.mnSupabaseClient;
+
+      const { data: sessaoData, error: erroSessao } =
+        await cliente.auth.getSession();
+
+      if (erroSessao) throw erroSessao;
+
+      if (!sessaoData.session) {
+        throw new Error("Você precisa estar conectado para sincronizar.");
+      }
+
+      const usuarioId = sessaoData.session.user.id;
+
+      const { error } = await cliente
+        .from("mn_collections")
+        .upsert({
+          user_id: usuarioId,
+          universe: "games",
+          item_id: String(jogo.id),
+          title: jogo.title,
+          cover: jogo.cover || null,
+          status: jogo.status,
+          data: {
+            localId: jogo.id,
+            avaliacao: jogo.avaliacao || 0,
+            jogoOriginal: jogo
+          }
+        }, {
+          onConflict: "user_id,universe,item_id"
+        });
+
+      if (error) throw error;
+
+    } catch (erro) {
+      console.error("Erro ao sincronizar jogo:", erro);
+      mensagemErro =
+        "O jogo foi salvo neste dispositivo, mas não foi possível sincronizá-lo com a conta. Erro: " +
+        erro.message;
+    }
 
     campoBuscaJogo.value = "";
     resultadosJogos.innerHTML = "";
@@ -3581,9 +3627,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
     modalJogo.style.display = "none";
     jogoSelecionado = null;
+
+    if (mensagemErro) {
+      alert(mensagemErro);
+    }
   });
 }
 });
+
 
 document.addEventListener("DOMContentLoaded", () => {
   const botaoExcluirJogo = document.getElementById("excluirJogoColecao");
