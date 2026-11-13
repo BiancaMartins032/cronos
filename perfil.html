@@ -1449,6 +1449,10 @@ async function carregarColecoes() {
 }
   
 window.abrirColecao = async function(universo) {
+    if (universo === "leitura") {
+    window.location.href = "colecoes.html";
+    return;
+  }
   const nomes = {
   animes: "Animes",
   filmes: "Filmes",
