@@ -3452,11 +3452,7 @@ if (jogo.status === "Concluído") {
 
   botaoCapa.appendChild(imagem);
 
-  botaoCapa.addEventListener("click", () => {
-    window.location.href =
-      "conquistas.html?id=" + encodeURIComponent(jogo.id);
-  });
-
+  botaoCapa.addEventListener("click", () => abrirModalJogo(jogo));
   grupo.appendChild(botaoCapa);
 
   if (jogo.avaliacao > 0) {
