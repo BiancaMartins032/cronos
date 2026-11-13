@@ -771,29 +771,52 @@ if (sessionStorage.getItem("mn_ultima_tela_perfil") === "interesses") {
   </button>
 </section>
 
-<div id="tab-overview" class="tab-content active">
 
-  <section class="gostos-comum">
-    <h2 class="section-title">Meus interesses</h2>
-    <div class="interests" id="interestDisplay">
-      <span class="tag">História</span>
-      <span class="tag">Games</span>
-      <span class="tag">Mitologia</span>
-      <span class="tag">Ficção científica</span>
-    </div>
-  </section>
-
-  <section class="publications-section">
-  <h2 class="section-title">Publicações</h2>
-
-  <div class="publications-grid" id="overviewPosts">
-    <p class="bio">Carregando publicações...</p>
+<section class="gostos-comum">
+  <h2 class="section-title">Meus interesses</h2>
+  <div class="interests" id="interestDisplay">
+    <span class="tag">História</span>
+    <span class="tag">Games</span>
+    <span class="tag">Mitologia</span>
+    <span class="tag">Ficção científica</span>
   </div>
 </section>
 
+<div class="profile-tabs">
+  <button
+    type="button"
+    class="tab-button active"
+    onclick="showProfileTab('publications', this)"
+  >
+    <svg viewBox="0 0 24 24" width="22" height="22"
+      fill="none" stroke="currentColor" stroke-width="1.7"
+      stroke-linecap="round" stroke-linejoin="round">
+      <rect x="3" y="3" width="7" height="7" rx="1"/>
+      <rect x="14" y="3" width="7" height="7" rx="1"/>
+      <rect x="3" y="14" width="7" height="7" rx="1"/>
+      <rect x="14" y="14" width="7" height="7" rx="1"/>
+    </svg>
+    <span>Publicações</span>
+  </button>
+
+  <button
+    type="button"
+    class="tab-button"
+    onclick="showProfileTab('collections', this)"
+  >
+    <svg viewBox="0 0 24 24" width="22" height="22"
+      fill="none" stroke="currentColor" stroke-width="1.7"
+      stroke-linecap="round" stroke-linejoin="round">
+      <path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v17H6.5A2.5 2.5 0 0 1 4 17.5z"/>
+      <path d="M4 17.5A2.5 2.5 0 0 1 6.5 15H20"/>
+      <path d="M8 7h8"/>
+    </svg>
+    <span>Minhas coleções</span>
+  </button>
 </div>
 
-<div id="tab-collections" class="tab-content" hidden>
+
+<div id="tab-collections" class="tab-content">
   <section class="card">
     <h2 class="section-title">Minhas coleções</h2>
     <p class="bio">Organize seus itens favoritos e acompanhe suas descobertas em cada universo.</p>
@@ -848,7 +871,7 @@ if (sessionStorage.getItem("mn_ultima_tela_perfil") === "interesses") {
   </section>
 </div>
 
-<div id="tab-publications" class="tab-content">
+<div id="tab-publications" class="tab-content active">
   <section class="publications-section">
     <h2 class="section-title">Publicações</h2>
 
