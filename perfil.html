@@ -1434,6 +1434,127 @@ async function carregarColecoes() {
     });
   });
 }
+  
+window.abrirColecao = async function(universo) {
+  const nomes = {
+    animes: "Animes",
+    filmes: "Filmes",
+    games: "Games",
+    mangas: "Mangás",
+    musicas: "Músicas",
+    series: "Séries"
+  };
+
+  const modal = document.createElement("div");
+
+  modal.style.cssText = `
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    z-index: 99999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+  `;
+
+  const conteudo = document.createElement("div");
+
+  conteudo.style.cssText = `
+    background: #191919;
+    color: white;
+    width: 100%;
+    max-width: 750px;
+    max-height: 85vh;
+    overflow-y: auto;
+    border-radius: 16px;
+    padding: 22px;
+  `;
+
+  const cabecalho = document.createElement("div");
+  cabecalho.style.cssText =
+    "display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;";
+
+  const titulo = document.createElement("h2");
+  titulo.textContent = nomes[universo] || "Coleção";
+
+  const fechar = document.createElement("button");
+  fechar.textContent = "×";
+  fechar.style.cssText =
+    "background:none;border:none;color:white;font-size:30px;cursor:pointer;";
+
+  fechar.onclick = () => modal.remove();
+
+  cabecalho.append(titulo, fechar);
+
+  const grade = document.createElement("div");
+  grade.style.cssText =
+    "display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:14px;";
+
+  const carregando = document.createElement("p");
+  carregando.textContent = "Carregando coleção...";
+
+  conteudo.append(cabecalho, carregando, grade);
+  modal.appendChild(conteudo);
+  document.body.appendChild(modal);
+
+  modal.addEventListener("click", event => {
+    if (event.target === modal) modal.remove();
+  });
+
+  try {
+    const { data: itens, error } = await window.mnSupabaseClient
+      .from("mn_collections")
+      .select("id, title, cover, status")
+      .eq("user_id", currentProfileId)
+      .eq("universe", universo)
+      .order("updated_at", { ascending: false });
+
+    if (error) throw error;
+
+    carregando.remove();
+
+    if (!itens || itens.length === 0) {
+      const vazio = document.createElement("p");
+      vazio.textContent = "Nenhum item cadastrado nesta coleção.";
+      conteudo.appendChild(vazio);
+      return;
+    }
+
+    itens.forEach(item => {
+      const card = document.createElement("div");
+
+      card.style.cssText =
+        "display:flex;flex-direction:column;gap:6px;min-width:0;";
+
+      if (item.cover) {
+        const imagem = document.createElement("img");
+        imagem.src = item.cover;
+        imagem.alt = item.title;
+        imagem.loading = "lazy";
+        imagem.style.cssText =
+          "width:100%;aspect-ratio:2/3;object-fit:cover;border-radius:8px;";
+        card.appendChild(imagem);
+      }
+
+      const nome = document.createElement("strong");
+      nome.textContent = item.title;
+      nome.style.cssText = "font-size:13px;";
+
+      const status = document.createElement("small");
+      status.textContent = item.status;
+      status.style.color = "#A1A1A1";
+
+      card.append(nome, status);
+      grade.appendChild(card);
+    });
+
+  } catch (error) {
+    carregando.textContent =
+      "Não foi possível carregar a coleção: " + error.message;
+  }
+};
+
 
 document.addEventListener("DOMContentLoaded", async () => {
   const session = await window.verificarAcesso();
