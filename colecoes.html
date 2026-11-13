@@ -1700,7 +1700,8 @@ function renderMediaCollection() {
 
 
 
-function salvarMidia(midia, tipo, status) {
+
+async function salvarMidia(midia, tipo, status) {
   let lista = [];
 
   try {
@@ -1714,36 +1715,83 @@ function salvarMidia(midia, tipo, status) {
     item.type === tipo
   );
 
+  const registroLocal = {
+    ...(existente || {}),
+    id: midia.id,
+    name: midia.name || existente?.name,
+    type: tipo,
+    status: status,
+    poster: midia.poster || existente?.poster || "",
+    year: midia.year || existente?.year || "",
+    overview: midia.overview || existente?.overview || "",
+    directors: midia.directors || existente?.directors || [],
+    writers: midia.writers || existente?.writers || [],
+    producers: midia.producers || existente?.producers || [],
+    creators: midia.creators || existente?.creators || [],
+    awards: midia.awards ?? existente?.awards ?? null,
+    rating: existente?.rating || 0
+  };
+
   if (existente) {
-    existente.status = status;
-    existente.poster = midia.poster || existente.poster;
-    existente.year = midia.year || existente.year;
-    existente.overview = midia.overview || existente.overview;
-    existente.directors = midia.directors || existente.directors || [];
-    existente.writers = midia.writers || existente.writers || [];
-    existente.producers = midia.producers || existente.producers || [];
-    existente.creators = midia.creators || existente.creators || [];
-    existente.awards = midia.awards ?? existente.awards ?? null;
+    Object.assign(existente, registroLocal);
   } else {
-    lista.push({
-      id: midia.id,
-      name: midia.name,
-      type: tipo,
-      status: status,
-      poster: midia.poster,
-      year: midia.year,
-      overview: midia.overview,
-      directors: midia.directors || [],
-      writers: midia.writers || [],
-      producers: midia.producers || [],
-      creators: midia.creators || [],
-      awards: midia.awards ?? null,
-      rating: 0
-    });
+    lista.push(registroLocal);
   }
 
+  // Preserva os dados no navegador
   localStorage.setItem("cronosMovies", JSON.stringify(lista));
   renderMediaCollection();
+
+  try {
+    const cliente = window.mnSupabaseClient;
+
+    const { data, error: erroSessao } =
+      await cliente.auth.getSession();
+
+    if (erroSessao) throw erroSessao;
+
+    if (!data.session) {
+      throw new Error("Usuário não autenticado.");
+    }
+
+    const universo = tipo === "Filme" ? "filmes" : "series";
+
+    const registroSupabase = {
+      user_id: data.session.user.id,
+      universe: universo,
+      item_id: String(midia.id),
+      title: registroLocal.name,
+      cover: registroLocal.poster,
+      status: status,
+      data: {
+        type: tipo,
+        year: registroLocal.year,
+        overview: registroLocal.overview,
+        directors: registroLocal.directors,
+        writers: registroLocal.writers,
+        producers: registroLocal.producers,
+        creators: registroLocal.creators,
+        awards: registroLocal.awards,
+        rating: registroLocal.rating
+      }
+    };
+
+    const { error } = await cliente
+      .from("mn_collections")
+      .upsert(registroSupabase, {
+        onConflict: "user_id,universe,item_id"
+      });
+
+    if (error) throw error;
+
+  } catch (error) {
+    console.error("Erro ao sincronizar mídia:", error);
+
+    alert(
+      "A mídia foi salva neste dispositivo, mas não foi sincronizada com sua conta. Erro: " +
+      error.message
+    );
+  }
 }
 
 
@@ -1833,21 +1881,23 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (modal) {
     modal.querySelectorAll(".modal-midia-acoes button").forEach(botao => {
-      botao.addEventListener("click", () => {
-        if (!midiaModalAtual) return;
+      
+botao.addEventListener("click", async () => {
+  if (!midiaModalAtual) return;
 
-        const tipo = midiaModalAtual.type === "movie"
-          ? "Filme"
-          : "Série";
+  const tipo = midiaModalAtual.type === "movie"
+    ? "Filme"
+    : "Série";
 
-        salvarMidia(
-          midiaModalAtual,
-          tipo,
-          botao.dataset.status
-        );
+  await salvarMidia(
+    midiaModalAtual,
+    tipo,
+    botao.dataset.status
+  );
 
-        modal.style.display = "none";
-      });
+  modal.style.display = "none";
+});
+
     });
   }
 });
