@@ -2162,6 +2162,62 @@ estrelasLivro.forEach(botao => {
 // AUTORES E EDITORAS FAVORITOS
 // ===============================
 
+  
+function renderFavoritosLiterarios() {
+  const listaEscritores = document.getElementById("listaFavoritosEscritores");
+  const listaEditoras = document.getElementById("listaFavoritosEditoras");
+  const busca = document.getElementById("buscarFavoritosLiterarios");
+
+  if (!listaEscritores || !listaEditoras) return;
+
+  const termo = (busca?.value || "").trim().toLowerCase();
+
+  function preencherLista(container, favoritos, mensagem) {
+    container.innerHTML = "";
+
+    const filtrados = favoritos.filter(item =>
+      (item.nome || "").toLowerCase().includes(termo)
+    );
+
+    if (!filtrados.length) {
+      const vazio = document.createElement("p");
+      vazio.textContent = mensagem;
+      container.appendChild(vazio);
+      return;
+    }
+
+    filtrados.forEach(item => {
+      const card = document.createElement("div");
+      card.className = "favorito-literario-item";
+
+      if (item.imagem) {
+        const imagem = document.createElement("img");
+        imagem.src = item.imagem;
+        imagem.alt = item.nome;
+        card.appendChild(imagem);
+      }
+
+      const nome = document.createElement("span");
+      nome.textContent = item.nome;
+      card.appendChild(nome);
+
+      container.appendChild(card);
+    });
+  }
+
+  preencherLista(
+    listaEscritores,
+    obterAutoresFavoritos(),
+    "Você ainda não favoritou nenhum escritor."
+  );
+
+  preencherLista(
+    listaEditoras,
+    obterEditorasFavoritas(),
+    "Você ainda não favoritou nenhuma editora."
+  );
+}
+
 function obterAutoresFavoritos() {
   return JSON.parse(
     localStorage.getItem("mn_autores_favoritos") || "[]"
