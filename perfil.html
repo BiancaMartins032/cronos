@@ -1368,6 +1368,73 @@ containers.forEach(container => {
   document.getElementById("interestCount").textContent =
     count || 0;
 }
+  
+async function carregarColecoes() {
+  const categorias = {
+    animes: "collection-animes",
+    filmes: "collection-filmes",
+    games: "collection-games",
+    mangas: "collection-mangas",
+    musicas: "collection-musicas",
+    series: "collection-series"
+  };
+
+  const { data: itens, error } = await window.mnSupabaseClient
+    .from("mn_collections")
+    .select("id, universe, title, cover, status")
+    .eq("user_id", currentProfileId)
+    .in("universe", Object.keys(categorias))
+    .order("updated_at", { ascending: false });
+
+  if (error) {
+    alert("Erro ao carregar coleções: " + error.message);
+    return;
+  }
+
+  Object.entries(categorias).forEach(([universo, containerId]) => {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+
+    container.replaceChildren();
+
+    const itensDaCategoria = (itens || [])
+      .filter(item => item.universe === universo)
+      .slice(0, 5);
+
+    if (itensDaCategoria.length === 0) {
+      const vazio = document.createElement("p");
+      vazio.className = "collection-empty";
+      vazio.textContent = "Nenhum item salvo ainda.";
+      container.appendChild(vazio);
+      return;
+    }
+
+    itensDaCategoria.forEach(item => {
+      const card = document.createElement("div");
+      card.className = "collection-cover-item";
+
+      if (item.cover) {
+        const img = document.createElement("img");
+        img.src = item.cover;
+        img.alt = item.title || "Capa da coleção";
+        img.loading = "lazy";
+        card.appendChild(img);
+      } else {
+        const placeholder = document.createElement("div");
+        placeholder.className = "collection-cover-placeholder";
+        placeholder.textContent = item.title || "Sem capa";
+        card.appendChild(placeholder);
+      }
+
+      const title = document.createElement("small");
+      title.textContent = item.title || "Sem título";
+      card.appendChild(title);
+
+      container.appendChild(card);
+    });
+  });
+}
+
 document.addEventListener("DOMContentLoaded", async () => {
   const session = await window.verificarAcesso();
   if (!session) return;
@@ -1415,6 +1482,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   await carregarPublicacoes();
   await carregarAmizades();
   await carregarInteressesCount();
+  await carregarColecoes();
 
   const editButton = document.getElementById("editProfileMenuButton");
   const editor = document.getElementById("editor");
